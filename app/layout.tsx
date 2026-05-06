@@ -1,18 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
 
 export const metadata: Metadata = {
-  title: 'Body&Mind28 - Transform Your Body & Mind in 28 Days',
-  description: 'Join thousands who have transformed their bodies and minds with our personalized 28-day fitness program. AI-powered workouts, mental clarity, and real results.',
-  keywords: 'fitness program, mental wellness, 28-day challenge, personalized workouts, AI coach',
+  title: 'Luxury28 | Premium Timepieces',
+  description: 'Hand-selected luxury timepieces. Certified authenticity. Limited availability.',
+  keywords: 'luxury watches, premium timepieces, certified authentic, rolex, patek philippe, audemars piguet',
   generator: 'v0.app',
   openGraph: {
-    title: 'Body&Mind28 - Transform Your Body & Mind in 28 Days',
-    description: 'Join thousands who have transformed their bodies and minds with our personalized 28-day fitness program.',
+    title: 'Luxury28 | Premium Timepieces',
+    description: 'Hand-selected luxury timepieces. Certified authenticity. Limited availability.',
     type: 'website',
   },
   icons: {
@@ -41,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark bg-background">
-      <body className={`${inter.className} font-sans antialiased text-foreground`}>
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground selection:bg-primary/30`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

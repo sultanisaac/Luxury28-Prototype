@@ -1,25 +1,352 @@
-import { Navbar } from '@/components/landing/navbar'
-import { Hero } from '@/components/landing/hero'
-import { Features } from '@/components/landing/features'
-import { Program } from '@/components/landing/program'
-import { Testimonials } from '@/components/landing/testimonials'
-import { Pricing } from '@/components/landing/pricing'
-import { FAQ } from '@/components/landing/faq'
-import { CTASection } from '@/components/landing/cta-section'
-import { Footer } from '@/components/landing/footer'
+'use client';
 
-export default function Page() {
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, Truck, Clock, Shield, Star, X } from 'lucide-react';
+import { watches } from '@/lib/watches';
+import { Button } from '@/components/ui/button';
+
+export default function Home() {
+  const [showExitIntent, setShowExitIntent] = useState(false);
+
+  useEffect(() => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0) {
+        setShowExitIntent(true);
+      }
+    };
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => document.removeEventListener('mouseleave', handleMouseLeave);
+  }, []);
+
+  const featuredWatches = watches.slice(0, 4);
+
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <Navbar />
-      <Hero />
-      <Features />
-      <Program />
-      <Testimonials />
-      <Pricing />
-      <FAQ />
-      <CTASection />
-      <Footer />
+    <main className="min-h-screen bg-background text-foreground font-sans">
+      
+      {/* NAVIGATION */}
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="font-serif text-2xl font-bold tracking-widest text-primary">LUXURY28</div>
+          <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
+            <Link href="#collection" className="hover:text-primary transition-colors">Shop</Link>
+            <Link href="#trust" className="hover:text-primary transition-colors">About</Link>
+            <Link href="#faq" className="hover:text-primary transition-colors">FAQ</Link>
+          </div>
+          <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6">
+            Client Portal
+          </Button>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/hero-watch.png" 
+            alt="Luxury Watch" 
+            fill
+            className="object-cover opacity-60"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-20">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl md:text-7xl font-serif text-white mb-6 tracking-wide"
+          >
+            Time Is Status.<br />Wear It.
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light"
+          >
+            Hand-selected luxury timepieces. Certified authenticity. Limited availability.
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Button size="lg" className="bg-primary text-background hover:bg-primary/90 rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
+              Shop Collection
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-background rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
+              View Featured
+            </Button>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 text-sm text-gray-400 uppercase tracking-widest"
+          >
+            <div className="flex items-center gap-2"><ShieldCheck size={16} className="text-primary" /> Certified Authentic</div>
+            <div className="flex items-center gap-2"><Shield size={16} className="text-primary" /> 2-Year Warranty</div>
+            <div className="flex items-center gap-2"><Truck size={16} className="text-primary" /> Global Shipping</div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FEATURED COLLECTION */}
+      <section className="py-32 bg-background relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">The Curator's Choice</h2>
+            <div className="w-16 h-1 bg-primary mx-auto"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {featuredWatches.map((watch) => (
+              <Link href={`/product/${watch.id}`} key={watch.id} className="group cursor-pointer">
+                <div className="bg-card p-6 border border-border transition-all duration-500 hover:border-primary/50 relative overflow-hidden h-[400px] flex flex-col justify-end">
+                  <div className="absolute inset-0 p-8 flex items-center justify-center">
+                    <Image src={watch.image} alt={watch.name} width={250} height={250} className="object-contain group-hover:scale-110 transition-transform duration-700" />
+                  </div>
+                  <div className="relative z-10 bg-background/90 backdrop-blur p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <h3 className="font-serif text-lg mb-1 truncate">{watch.name}</h3>
+                    <p className="text-primary font-medium tracking-wider">${watch.price.toLocaleString()}</p>
+                    <div className="mt-4 flex items-center text-xs uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
+                      <span>View Details</span>
+                      <span className="ml-2">→</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHY LUXURY28 (TRUST SECTION) */}
+      <section id="trust" className="py-24 bg-[#0a0a0a] border-y border-border">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-center">
+            <div className="space-y-4">
+              <ShieldCheck size={40} className="mx-auto text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-xl">Authenticity Guaranteed</h3>
+              <p className="text-muted-foreground text-sm">Every piece is rigorously inspected and certified by master watchmakers.</p>
+            </div>
+            <div className="space-y-4">
+              <Star size={40} className="mx-auto text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-xl">Curated Selection Only</h3>
+              <p className="text-muted-foreground text-sm">We don't sell everything. We only offer timepieces of significance.</p>
+            </div>
+            <div className="space-y-4">
+              <Truck size={40} className="mx-auto text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-xl">Insured Worldwide</h3>
+              <p className="text-muted-foreground text-sm">Secure, fully-insured priority shipping to your doorstep.</p>
+            </div>
+            <div className="space-y-4">
+              <Clock size={40} className="mx-auto text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-xl">Private Client Experience</h3>
+              <p className="text-muted-foreground text-sm">Dedicated concierge service from acquisition to ownership.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCT GRID */}
+      <section id="collection" className="py-32 bg-background">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Complete Inventory</h2>
+            <div className="w-16 h-1 bg-primary mx-auto mb-8"></div>
+            <p className="text-muted-foreground tracking-widest uppercase text-sm">Available Pieces</p>
+          </div>
+
+          {['Ultra Luxury', 'High Luxury', 'Entry Luxury', 'Accessible Luxury'].map((tier) => (
+            <div key={tier} className="mb-20">
+              <h3 className="text-2xl font-serif mb-8 border-b border-border pb-4">{tier}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                {watches.filter(w => w.tier === tier).map((watch) => (
+                  <Link href={`/product/${watch.id}`} key={watch.id} className="group">
+                    <div className="bg-card p-4 border border-border transition-colors hover:border-primary/50 text-center">
+                      <div className="aspect-square relative mb-4 overflow-hidden bg-[#111]">
+                        <Image 
+                          src={watch.image} 
+                          alt={watch.name} 
+                          fill
+                          className="object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
+                        />
+                      </div>
+                      <h4 className="font-serif text-sm mb-2 truncate">{watch.name}</h4>
+                      <p className="text-primary text-sm tracking-wider mb-4">${watch.price.toLocaleString()}</p>
+                      <Button variant="outline" className="w-full rounded-none border-border group-hover:border-primary group-hover:bg-primary group-hover:text-background transition-all text-xs uppercase tracking-widest">
+                        View Details
+                      </Button>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SOCIAL PROOF */}
+      <section className="py-32 bg-[#0a0a0a] border-y border-border relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Trusted by Collectors Worldwide</h2>
+            <div className="w-16 h-1 bg-primary mx-auto mb-12"></div>
+            
+            <div className="flex flex-wrap justify-center gap-12 md:gap-24">
+              <div>
+                <div className="text-4xl md:text-5xl font-serif text-primary mb-2">5,000+</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">Watches Sold</div>
+              </div>
+              <div>
+                <div className="text-4xl md:text-5xl font-serif text-primary mb-2">98%</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">Satisfaction Rate</div>
+              </div>
+              <div>
+                <div className="text-4xl md:text-5xl font-serif text-primary mb-2">42</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">Countries Shipped</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {[
+              { text: "The watch exceeded expectations. Packaging, authenticity, everything flawless.", author: "Daniel K., Zurich" },
+              { text: "Luxury28 feels like a private dealer, not a store. Incredible service.", author: "Marcus L., Dubai" },
+              { text: "Fast delivery, certified piece, zero doubts. Will buy again.", author: "Kenji S., Tokyo" }
+            ].map((testimonial, i) => (
+              <div key={i} className="bg-card p-8 border border-border relative">
+                <div className="text-primary text-4xl font-serif absolute top-4 left-6 opacity-20">"</div>
+                <p className="text-gray-300 mb-6 relative z-10 font-light italic">"{testimonial.text}"</p>
+                <div className="text-sm uppercase tracking-widest text-primary">— {testimonial.author}</div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4">
+             <div className="relative h-64 w-full opacity-60 hover:opacity-100 transition-opacity"><Image src="/wrist-shot.png" alt="Wrist Shot" fill className="object-cover" /></div>
+             <div className="relative h-64 w-full opacity-60 hover:opacity-100 transition-opacity"><Image src="/hero-watch.png" alt="Details" fill className="object-cover" /></div>
+             <div className="relative h-64 w-full opacity-60 hover:opacity-100 transition-opacity"><Image src="/wrist-shot.png" alt="Lifestyle" fill className="object-cover" /></div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-32 bg-background">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Before You Invest</h2>
+            <div className="w-16 h-1 bg-primary mx-auto"></div>
+          </div>
+
+          <div className="space-y-6">
+            {[
+              { q: "Are the watches authentic?", a: "100% certified authentic. Every piece undergoes a rigorous multi-point inspection by our master watchmakers before being listed." },
+              { q: "Do you offer a warranty?", a: "Yes, we provide a comprehensive 2-year international warranty on all our timepieces." },
+              { q: "How does shipping work?", a: "All shipments are fully insured and tracked. We use overnight priority service for domestic and expedited for international." },
+              { q: "What is your return policy?", a: "We offer a 7-day no-questions-asked return window from the day of delivery, provided the watch is in identical condition." },
+              { q: "What payment methods are accepted?", a: "We accept all major credit cards, bank wire transfers, and select cryptocurrencies." }
+            ].map((faq, i) => (
+              <div key={i} className="border border-border p-6 hover:border-primary/30 transition-colors">
+                <h4 className="font-serif text-lg mb-2">{faq.q}</h4>
+                <p className="text-muted-foreground text-sm font-light">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="bg-[#050505] pt-24 pb-12 border-t border-border">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div className="col-span-1 md:col-span-2">
+              <div className="font-serif text-3xl font-bold tracking-widest text-primary mb-6">LUXURY28</div>
+              <p className="text-muted-foreground max-w-sm font-light">
+                Curated luxury timepieces for the modern collector. We deal exclusively in excellence.
+              </p>
+            </div>
+            <div>
+              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Navigation</h5>
+              <ul className="space-y-4 text-muted-foreground text-sm font-light">
+                <li><Link href="#collection" className="hover:text-primary transition-colors">Shop Collection</Link></li>
+                <li><Link href="#trust" className="hover:text-primary transition-colors">Our Standard</Link></li>
+                <li><Link href="#faq" className="hover:text-primary transition-colors">Before You Invest</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Newsletter</h5>
+              <p className="text-muted-foreground text-sm mb-4 font-light">Get priority access to rare, limited pieces.</p>
+              <div className="flex">
+                <input type="email" placeholder="Your email address" className="bg-transparent border border-border px-4 py-2 w-full text-sm focus:outline-none focus:border-primary" />
+                <Button className="rounded-none bg-primary text-background hover:bg-primary/90 px-6">JOIN</Button>
+              </div>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-border/50 text-center text-xs text-muted-foreground uppercase tracking-widest flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>&copy; {new Date().getFullYear()} Luxury28. All Rights Reserved.</p>
+            <div className="flex gap-6">
+              <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
+              <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* STICKY MOBILE CTA */}
+      <div className="md:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur border-t border-border p-4 z-40">
+        <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6">
+          Shop Collection
+        </Button>
+      </div>
+
+      {/* EXIT INTENT POPUP */}
+      <AnimatePresence>
+        {showExitIntent && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-card border border-border p-8 max-w-md w-full relative text-center"
+            >
+              <button 
+                onClick={() => setShowExitIntent(false)}
+                className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+              <div className="w-12 h-12 border border-primary flex items-center justify-center mx-auto mb-6 text-primary">
+                <Star size={24} />
+              </div>
+              <h3 className="text-2xl font-serif mb-4">Wait. Before you leave.</h3>
+              <p className="text-muted-foreground mb-8 font-light text-sm">
+                Join our private collector list. Get priority access to limited pieces and off-market allocations before they are publicly listed.
+              </p>
+              <input type="email" placeholder="Your email address" className="bg-background border border-border px-4 py-3 w-full text-sm focus:outline-none focus:border-primary mb-4" />
+              <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6">
+                Request Access
+              </Button>
+              <p className="mt-4 text-xs text-muted-foreground uppercase tracking-widest cursor-pointer hover:text-white" onClick={() => setShowExitIntent(false)}>
+                No thanks, I'll pass
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
-  )
+  );
 }
