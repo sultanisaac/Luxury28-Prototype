@@ -13,7 +13,7 @@ export default function ProductPage() {
   const watch = watches.find(w => w.id === id);
 
   if (!watch) {
-    return <div className="min-h-screen flex items-center justify-center font-serif text-2xl">Watch not found.</div>;
+    return <div className="min-h-screen flex items-center justify-center font-serif text-2xl">Jam tangan tidak ditemukan.</div>;
   }
 
   return (
@@ -22,7 +22,7 @@ export default function ProductPage() {
       <nav className="w-full border-b border-border">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center text-sm uppercase tracking-widest text-muted-foreground hover:text-white transition-colors">
-            <ArrowLeft size={16} className="mr-2" /> Back
+            <ArrowLeft size={16} className="mr-2" /> Kembali
           </Link>
           <div className="font-serif text-2xl font-bold tracking-widest text-primary">LUXURY28</div>
           <div className="w-[70px]"></div> {/* Spacer */}
@@ -55,7 +55,7 @@ export default function ProductPage() {
                   <Image src="/wrist-shot.png" alt="On Wrist" fill className="object-cover" />
                </div>
                <div className="bg-[#111] border border-border aspect-square relative cursor-pointer hover:border-primary/50 transition-colors flex items-center justify-center group">
-                 <div className="text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Play Video</div>
+                 <div className="text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Putar Video</div>
                </div>
             </div>
           </motion.div>
@@ -71,7 +71,7 @@ export default function ProductPage() {
             <h1 className="text-4xl md:text-5xl font-serif mb-6">{watch.name}</h1>
             
             <p className="text-gray-400 font-light italic mb-8 border-l-2 border-primary pl-4">
-              "Worn by collectors who value precision and presence."
+              "Dikenakan oleh kolektor yang menghargai presisi dan kehadiran."
             </p>
 
             <div className="text-4xl font-light tracking-wider mb-8">
@@ -79,15 +79,15 @@ export default function ProductPage() {
             </div>
 
             <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-3 text-sm font-medium inline-block mb-10">
-              Only {watch.stock} left in stock — Limited collector batch
+              Tersisa {watch.stock} lagi — Edisi kolektor terbatas
             </div>
 
             <div className="space-y-4 mb-12">
               <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none h-16 text-lg uppercase tracking-widest">
-                Buy Now
+                Beli Sekarang
               </Button>
               <Button variant="outline" className="w-full rounded-none h-16 text-lg uppercase tracking-widest border-border hover:bg-white hover:text-background">
-                Add to Cart
+                Tambah ke Keranjang
               </Button>
             </div>
 
@@ -96,22 +96,22 @@ export default function ProductPage() {
               <div className="flex items-center gap-4 text-sm text-gray-300">
                 <ShieldCheck size={24} className="text-primary flex-shrink-0" />
                 <div>
-                  <span className="block font-medium uppercase tracking-widest text-white mb-1">Certified Authenticity</span>
-                  <span className="font-light text-muted-foreground">Rigorously inspected by master watchmakers. Papers included.</span>
+                  <span className="block font-medium uppercase tracking-widest text-white mb-1">Keaslian Bersertifikat</span>
+                  <span className="font-light text-muted-foreground">Diperiksa secara ketat oleh ahli pembuat jam. Surat-surat disertakan.</span>
                 </div>
               </div>
               <div className="flex items-center gap-4 text-sm text-gray-300">
                 <Lock size={24} className="text-primary flex-shrink-0" />
                 <div>
-                  <span className="block font-medium uppercase tracking-widest text-white mb-1">Secure Transaction</span>
-                  <span className="font-light text-muted-foreground">Bank-grade encryption. Escrow options available.</span>
+                  <span className="block font-medium uppercase tracking-widest text-white mb-1">Transaksi Aman</span>
+                  <span className="font-light text-muted-foreground">Enkripsi tingkat bank. Pilihan escrow tersedia.</span>
                 </div>
               </div>
               <div className="flex items-center gap-4 text-sm text-gray-300">
                 <Truck size={24} className="text-primary flex-shrink-0" />
                 <div>
-                  <span className="block font-medium uppercase tracking-widest text-white mb-1">Insured Delivery</span>
-                  <span className="font-light text-muted-foreground">Overnight priority shipping. Fully insured to your door.</span>
+                  <span className="block font-medium uppercase tracking-widest text-white mb-1">Pengiriman Berasuransi</span>
+                  <span className="font-light text-muted-foreground">Pengiriman prioritas kilat. Diasuransikan penuh sampai pintu Anda.</span>
                 </div>
               </div>
             </div>
