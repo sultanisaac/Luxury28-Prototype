@@ -7,13 +7,13 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
 
 export const metadata: Metadata = {
-  title: 'Luxury28 | Premium Timepieces',
-  description: 'Hand-selected luxury timepieces. Certified authenticity. Limited availability.',
-  keywords: 'luxury watches, premium timepieces, certified authentic, rolex, patek philippe, audemars piguet',
+  title: 'Luxury28 | Jam Tangan Premium',
+  description: 'Jam tangan mewah pilihan. Keaslian bersertifikat. Ketersediaan terbatas.',
+  keywords: 'jam tangan mewah, jam tangan premium, keaslian bersertifikat, rolex, patek philippe, audemars piguet',
   generator: 'v0.app',
   openGraph: {
-    title: 'Luxury28 | Premium Timepieces',
-    description: 'Hand-selected luxury timepieces. Certified authenticity. Limited availability.',
+    title: 'Luxury28 | Jam Tangan Premium',
+    description: 'Jam tangan mewah pilihan. Keaslian bersertifikat. Ketersediaan terbatas.',
     type: 'website',
   },
   icons: {
@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark bg-background">
+    <html lang="id" className="dark bg-background">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground selection:bg-primary/30`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

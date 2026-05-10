@@ -31,12 +31,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="font-serif text-2xl font-bold tracking-widest text-primary">LUXURY28</div>
           <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
-            <Link href="#collection" className="hover:text-primary transition-colors">Shop</Link>
-            <Link href="#trust" className="hover:text-primary transition-colors">About</Link>
+            <Link href="#collection" className="hover:text-primary transition-colors">Belanja</Link>
+            <Link href="#trust" className="hover:text-primary transition-colors">Tentang</Link>
             <Link href="#faq" className="hover:text-primary transition-colors">FAQ</Link>
           </div>
           <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6">
-            Client Portal
+            Portal Klien
           </Button>
         </div>
       </nav>
@@ -61,7 +61,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-5xl md:text-7xl font-serif text-white mb-6 tracking-wide"
           >
-            Time Is Status.<br />Wear It.
+            Waktu Adalah Status.<br />Kenakanlah.
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -69,7 +69,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light"
           >
-            Hand-selected luxury timepieces. Certified authenticity. Limited availability.
+            Jam tangan mewah pilihan. Keaslian bersertifikat. Ketersediaan terbatas.
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -78,10 +78,10 @@ export default function Home() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button size="lg" className="bg-primary text-background hover:bg-primary/90 rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
-              Shop Collection
+              Beli Koleksi
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-background rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
-              View Featured
+              Lihat Unggulan
             </Button>
           </motion.div>
 
@@ -91,9 +91,9 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.8 }}
             className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 text-sm text-gray-400 uppercase tracking-widest"
           >
-            <div className="flex items-center gap-2"><ShieldCheck size={16} className="text-primary" /> Certified Authentic</div>
-            <div className="flex items-center gap-2"><Shield size={16} className="text-primary" /> 2-Year Warranty</div>
-            <div className="flex items-center gap-2"><Truck size={16} className="text-primary" /> Global Shipping</div>
+            <div className="flex items-center gap-2"><ShieldCheck size={16} className="text-primary" /> Keaslian Bersertifikat</div>
+            <div className="flex items-center gap-2"><Shield size={16} className="text-primary" /> Garansi 2 Tahun</div>
+            <div className="flex items-center gap-2"><Truck size={16} className="text-primary" /> Pengiriman Global</div>
           </motion.div>
         </div>
       </section>
@@ -102,7 +102,7 @@ export default function Home() {
       <section className="py-32 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">The Curator's Choice</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Pilihan Kurator</h2>
             <div className="w-16 h-1 bg-primary mx-auto"></div>
           </div>
           
@@ -117,7 +117,7 @@ export default function Home() {
                     <h3 className="font-serif text-lg mb-1 truncate">{watch.name}</h3>
                     <p className="text-primary font-medium tracking-wider">${watch.price.toLocaleString()}</p>
                     <div className="mt-4 flex items-center text-xs uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
-                      <span>View Details</span>
+                      <span>Lihat Detail</span>
                       <span className="ml-2">→</span>
                     </div>
                   </div>
@@ -134,23 +134,23 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-center">
             <div className="space-y-4">
               <ShieldCheck size={40} className="mx-auto text-primary" strokeWidth={1} />
-              <h3 className="font-serif text-xl">Authenticity Guaranteed</h3>
-              <p className="text-muted-foreground text-sm">Every piece is rigorously inspected and certified by master watchmakers.</p>
+              <h3 className="font-serif text-xl">Keaslian Terjamin</h3>
+              <p className="text-muted-foreground text-sm">Setiap jam tangan diperiksa secara ketat dan disertifikasi oleh ahli pembuat jam.</p>
             </div>
             <div className="space-y-4">
               <Star size={40} className="mx-auto text-primary" strokeWidth={1} />
-              <h3 className="font-serif text-xl">Curated Selection Only</h3>
-              <p className="text-muted-foreground text-sm">We don't sell everything. We only offer timepieces of significance.</p>
+              <h3 className="font-serif text-xl">Hanya Pilihan Kurasi</h3>
+              <p className="text-muted-foreground text-sm">Kami tidak menjual semuanya. Kami hanya menawarkan jam tangan yang bermakna.</p>
             </div>
             <div className="space-y-4">
               <Truck size={40} className="mx-auto text-primary" strokeWidth={1} />
-              <h3 className="font-serif text-xl">Insured Worldwide</h3>
-              <p className="text-muted-foreground text-sm">Secure, fully-insured priority shipping to your doorstep.</p>
+              <h3 className="font-serif text-xl">Diasuransikan di Seluruh Dunia</h3>
+              <p className="text-muted-foreground text-sm">Pengiriman prioritas yang aman dan berasuransi penuh ke pintu Anda.</p>
             </div>
             <div className="space-y-4">
               <Clock size={40} className="mx-auto text-primary" strokeWidth={1} />
-              <h3 className="font-serif text-xl">Private Client Experience</h3>
-              <p className="text-muted-foreground text-sm">Dedicated concierge service from acquisition to ownership.</p>
+              <h3 className="font-serif text-xl">Pengalaman Klien Pribadi</h3>
+              <p className="text-muted-foreground text-sm">Layanan pramutamu khusus dari akuisisi hingga kepemilikan.</p>
             </div>
           </div>
         </div>
@@ -160,12 +160,12 @@ export default function Home() {
       <section id="collection" className="py-32 bg-background">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">Complete Inventory</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Inventaris Lengkap</h2>
             <div className="w-16 h-1 bg-primary mx-auto mb-8"></div>
-            <p className="text-muted-foreground tracking-widest uppercase text-sm">Available Pieces</p>
+            <p className="text-muted-foreground tracking-widest uppercase text-sm">Jam Tangan Tersedia</p>
           </div>
 
-          {['Ultra Luxury', 'High Luxury', 'Entry Luxury', 'Accessible Luxury'].map((tier) => (
+          {['Ultra Mewah', 'Mewah Kelas Atas', 'Mewah Menengah', 'Mewah Terjangkau'].map((tier) => (
             <div key={tier} className="mb-20">
               <h3 className="text-2xl font-serif mb-8 border-b border-border pb-4">{tier}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -183,7 +183,7 @@ export default function Home() {
                       <h4 className="font-serif text-sm mb-2 truncate">{watch.name}</h4>
                       <p className="text-primary text-sm tracking-wider mb-4">${watch.price.toLocaleString()}</p>
                       <Button variant="outline" className="w-full rounded-none border-border group-hover:border-primary group-hover:bg-primary group-hover:text-background transition-all text-xs uppercase tracking-widest">
-                        View Details
+                        Lihat Detail
                       </Button>
                     </div>
                   </Link>
@@ -198,30 +198,30 @@ export default function Home() {
       <section className="py-32 bg-[#0a0a0a] border-y border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">Trusted by Collectors Worldwide</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Dipercaya oleh Kolektor di Seluruh Dunia</h2>
             <div className="w-16 h-1 bg-primary mx-auto mb-12"></div>
             
             <div className="flex flex-wrap justify-center gap-12 md:gap-24">
               <div>
                 <div className="text-4xl md:text-5xl font-serif text-primary mb-2">5,000+</div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">Watches Sold</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">Jam Tangan Terjual</div>
               </div>
               <div>
                 <div className="text-4xl md:text-5xl font-serif text-primary mb-2">98%</div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">Satisfaction Rate</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">Tingkat Kepuasan</div>
               </div>
               <div>
                 <div className="text-4xl md:text-5xl font-serif text-primary mb-2">42</div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">Countries Shipped</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">Negara Pengiriman</div>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {[
-              { text: "The watch exceeded expectations. Packaging, authenticity, everything flawless.", author: "Daniel K., Zurich" },
-              { text: "Luxury28 feels like a private dealer, not a store. Incredible service.", author: "Marcus L., Dubai" },
-              { text: "Fast delivery, certified piece, zero doubts. Will buy again.", author: "Kenji S., Tokyo" }
+              { text: "Jam tangan melebihi ekspektasi. Kemasan, keaslian, semuanya tanpa cacat.", author: "Daniel K., Zurich" },
+              { text: "Luxury28 terasa seperti dealer pribadi, bukan toko. Pelayanan luar biasa.", author: "Marcus L., Dubai" },
+              { text: "Pengiriman cepat, barang bersertifikat, tanpa keraguan. Akan beli lagi.", author: "Kenji S., Tokyo" }
             ].map((testimonial, i) => (
               <div key={i} className="bg-card p-8 border border-border relative">
                 <div className="text-primary text-4xl font-serif absolute top-4 left-6 opacity-20">"</div>
@@ -243,17 +243,17 @@ export default function Home() {
       <section id="faq" className="py-32 bg-background">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">Before You Invest</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Sebelum Anda Berinvestasi</h2>
             <div className="w-16 h-1 bg-primary mx-auto"></div>
           </div>
 
           <div className="space-y-6">
             {[
-              { q: "Are the watches authentic?", a: "100% certified authentic. Every piece undergoes a rigorous multi-point inspection by our master watchmakers before being listed." },
-              { q: "Do you offer a warranty?", a: "Yes, we provide a comprehensive 2-year international warranty on all our timepieces." },
-              { q: "How does shipping work?", a: "All shipments are fully insured and tracked. We use overnight priority service for domestic and expedited for international." },
-              { q: "What is your return policy?", a: "We offer a 7-day no-questions-asked return window from the day of delivery, provided the watch is in identical condition." },
-              { q: "What payment methods are accepted?", a: "We accept all major credit cards, bank wire transfers, and select cryptocurrencies." }
+              { q: "Apakah jam tangan ini asli?", a: "100% bersertifikat asli. Setiap jam tangan melewati pemeriksaan ketat oleh ahli pembuat jam kami sebelum didaftarkan." },
+              { q: "Apakah Anda menawarkan garansi?", a: "Ya, kami memberikan garansi internasional komprehensif selama 2 tahun untuk semua jam tangan kami." },
+              { q: "Bagaimana sistem pengirimannya?", a: "Semua pengiriman diasuransikan penuh dan dapat dilacak. Kami menggunakan layanan prioritas kilat untuk domestik dan dipercepat untuk internasional." },
+              { q: "Apa kebijakan pengembalian Anda?", a: "Kami menawarkan waktu pengembalian 7 hari tanpa syarat sejak hari pengiriman, asalkan jam tangan dalam kondisi yang sama." },
+              { q: "Metode pembayaran apa saja yang diterima?", a: "Kami menerima semua kartu kredit utama, transfer bank, dan mata uang kripto pilihan." }
             ].map((faq, i) => (
               <div key={i} className="border border-border p-6 hover:border-primary/30 transition-colors">
                 <h4 className="font-serif text-lg mb-2">{faq.q}</h4>
@@ -271,31 +271,31 @@ export default function Home() {
             <div className="col-span-1 md:col-span-2">
               <div className="font-serif text-3xl font-bold tracking-widest text-primary mb-6">LUXURY28</div>
               <p className="text-muted-foreground max-w-sm font-light">
-                Curated luxury timepieces for the modern collector. We deal exclusively in excellence.
+                Jam tangan mewah kurasi untuk kolektor modern. Kami hanya berurusan dengan keunggulan.
               </p>
             </div>
             <div>
-              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Navigation</h5>
+              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Navigasi</h5>
               <ul className="space-y-4 text-muted-foreground text-sm font-light">
-                <li><Link href="#collection" className="hover:text-primary transition-colors">Shop Collection</Link></li>
-                <li><Link href="#trust" className="hover:text-primary transition-colors">Our Standard</Link></li>
-                <li><Link href="#faq" className="hover:text-primary transition-colors">Before You Invest</Link></li>
+                <li><Link href="#collection" className="hover:text-primary transition-colors">Beli Koleksi</Link></li>
+                <li><Link href="#trust" className="hover:text-primary transition-colors">Standar Kami</Link></li>
+                <li><Link href="#faq" className="hover:text-primary transition-colors">Sebelum Berinvestasi</Link></li>
               </ul>
             </div>
             <div>
-              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Newsletter</h5>
-              <p className="text-muted-foreground text-sm mb-4 font-light">Get priority access to rare, limited pieces.</p>
+              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Nawala</h5>
+              <p className="text-muted-foreground text-sm mb-4 font-light">Dapatkan akses prioritas ke jam tangan langka dan terbatas.</p>
               <div className="flex">
-                <input type="email" placeholder="Your email address" className="bg-transparent border border-border px-4 py-2 w-full text-sm focus:outline-none focus:border-primary" />
-                <Button className="rounded-none bg-primary text-background hover:bg-primary/90 px-6">JOIN</Button>
+                <input type="email" placeholder="Alamat email Anda" className="bg-transparent border border-border px-4 py-2 w-full text-sm focus:outline-none focus:border-primary" />
+                <Button className="rounded-none bg-primary text-background hover:bg-primary/90 px-6">GABUNG</Button>
               </div>
             </div>
           </div>
           <div className="pt-8 border-t border-border/50 text-center text-xs text-muted-foreground uppercase tracking-widest flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>&copy; {new Date().getFullYear()} Luxury28. All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Luxury28. Hak Cipta Dilindungi Undang-Undang.</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
+              <Link href="#" className="hover:text-primary transition-colors">Syarat</Link>
+              <Link href="#" className="hover:text-primary transition-colors">Privasi</Link>
             </div>
           </div>
         </div>
@@ -304,7 +304,7 @@ export default function Home() {
       {/* STICKY MOBILE CTA */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur border-t border-border p-4 z-40">
         <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6">
-          Shop Collection
+          Beli Koleksi
         </Button>
       </div>
 
@@ -332,16 +332,16 @@ export default function Home() {
               <div className="w-12 h-12 border border-primary flex items-center justify-center mx-auto mb-6 text-primary">
                 <Star size={24} />
               </div>
-              <h3 className="text-2xl font-serif mb-4">Wait. Before you leave.</h3>
+              <h3 className="text-2xl font-serif mb-4">Tunggu. Sebelum Anda pergi.</h3>
               <p className="text-muted-foreground mb-8 font-light text-sm">
-                Join our private collector list. Get priority access to limited pieces and off-market allocations before they are publicly listed.
+                Bergabunglah dengan daftar kolektor pribadi kami. Dapatkan akses prioritas ke jam tangan terbatas dan alokasi di luar pasar sebelum didaftarkan secara publik.
               </p>
-              <input type="email" placeholder="Your email address" className="bg-background border border-border px-4 py-3 w-full text-sm focus:outline-none focus:border-primary mb-4" />
+              <input type="email" placeholder="Alamat email Anda" className="bg-background border border-border px-4 py-3 w-full text-sm focus:outline-none focus:border-primary mb-4" />
               <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6">
-                Request Access
+                Minta Akses
               </Button>
               <p className="mt-4 text-xs text-muted-foreground uppercase tracking-widest cursor-pointer hover:text-white" onClick={() => setShowExitIntent(false)}>
-                No thanks, I'll pass
+                Tidak, terima kasih
               </p>
             </motion.div>
           </motion.div>
