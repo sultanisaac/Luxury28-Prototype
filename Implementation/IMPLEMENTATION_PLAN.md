@@ -69,8 +69,9 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 ### Phase 3: Role Assignment & Verification
 - [x] **Manual Role Assignment:** Manually create `admin`, `staff`, and `customer` users in the Supabase dashboard once the tables and roles are created.
 
-### Phase 4: Mockup Dashboards (Auth & Role Testing)
+### Phase 4: Mockup Dashboards & Profiles (Auth & Role Testing)
 - [x] **Admin Dashboard Mockup:** Create a basic `/admin` layout to test access.
+  - [ ] **Admin Profile Implementation:** See [`ADMIN_PROFILE.md`](./ADMIN_PROFILE.md) for detailed profile features (Avatar upload, Security, Audit Logs).
 - [x] **Staff Dashboard Mockup:** Create a basic `/staff` layout to test access.
 - [x] **Customer Dashboard Mockup:** Create a basic `/customer` layout to test access.
 - [ ] **End-to-End Testing:** Test user signup, login, and roles across dashboards.
