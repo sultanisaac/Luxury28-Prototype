@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { logout } from '@/app/auth/actions'
+import { Button } from '@/components/ui/button'
+import { LogOut, Home as HomeIcon } from 'lucide-react'
 
 export default async function StaffDashboard() {
   const supabase = await createClient()
@@ -16,8 +19,8 @@ export default async function StaffDashboard() {
     .eq('id', user.id)
     .single()
 
-  if (userData?.role !== 'staff' && userData?.role !== 'admin') {
-    redirect('/dashboard-redirect')
+  if (userData?.role !== 'staff') {
+    notFound()
   }
 
   return (
@@ -27,9 +30,14 @@ export default async function StaffDashboard() {
           <h1 className="text-3xl font-bold">Staff Dashboard</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-zinc-400">{user.email}</span>
-            <Link href="/" className="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-md">
-              Home
+            <Link href="/" className="text-sm bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-md flex items-center gap-2">
+              <HomeIcon size={14} /> Home
             </Link>
+            <form action={logout}>
+              <Button variant="ghost" type="submit" className="text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center gap-2">
+                <LogOut size={14} /> Sign Out
+              </Button>
+            </form>
           </div>
         </header>
 

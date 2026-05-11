@@ -4,12 +4,35 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Truck, Clock, Shield, Star, X } from 'lucide-react';
+import { ShieldCheck, Truck, Clock, Shield, Star, X, LogOut, User } from 'lucide-react';
 import { watches } from '@/lib/watches';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase/client';
+import { logout } from '@/app/auth/actions';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export default function Home() {
   const [showExitIntent, setShowExitIntent] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleMouseLeave = (e: MouseEvent) => {
@@ -35,9 +58,28 @@ export default function Home() {
             <Link href="#trust" className="hover:text-primary transition-colors">About</Link>
             <Link href="#faq" className="hover:text-primary transition-colors">FAQ</Link>
           </div>
-          <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6" asChild>
-            <Link href="/login">Client Portal</Link>
-          </Button>
+          <div className="flex items-center gap-4">
+            {!loading && (
+              user ? (
+                <div className="flex items-center gap-4">
+                  <Button variant="ghost" className="text-muted-foreground hover:text-white uppercase tracking-widest text-xs hidden md:flex items-center gap-2" asChild>
+                    <Link href="/dashboard-redirect">
+                      <User size={14} /> My Account
+                    </Link>
+                  </Button>
+                  <form action={logout}>
+                    <Button variant="outline" type="submit" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 flex items-center gap-2">
+                      <LogOut size={14} /> <span className="hidden sm:inline">Sign Out</span>
+                    </Button>
+                  </form>
+                </div>
+              ) : (
+                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6" asChild>
+                  <Link href="/login">Client Portal</Link>
+                </Button>
+              )
+            )}
+          </div>
         </div>
       </nav>
 
@@ -301,11 +343,23 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* STICKY MOBILE CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur border-t border-border p-4 z-40">
-        <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6">
-          Shop Collection
-        </Button>
+      <div className="md:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur border-t border-border p-4 z-40 flex gap-4">
+        {user ? (
+          <>
+            <Button className="flex-1 bg-zinc-800 text-white hover:bg-zinc-700 rounded-none uppercase tracking-widest py-6" asChild>
+              <Link href="/dashboard-redirect" className="text-center flex items-center justify-center">Dashboard</Link>
+            </Button>
+            <form action={logout} className="flex-1">
+              <Button variant="outline" type="submit" className="w-full border-primary text-primary hover:bg-primary hover:text-background rounded-none uppercase tracking-widest py-6">
+                Sign Out
+              </Button>
+            </form>
+          </>
+        ) : (
+          <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6" asChild>
+            <Link href="/login" className="flex items-center justify-center">Client Portal</Link>
+          </Button>
+        )}
       </div>
 
       {/* EXIT INTENT POPUP */}
