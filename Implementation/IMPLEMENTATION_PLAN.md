@@ -44,29 +44,30 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 
 ## 3. Step-by-Step Implementation Phases
 
-> **Immediate Focus (Executing One by One):**
 > - [x] 1. Set up Supabase as needed, creating all tables and roles.
 > - [x] 2. Create the signup, login pages with forgot password.
-> - [ ] 3. Handle user roles and create the admin, staff, and customer users manually on Supabase.
+> - [x] 3. Handle user roles and create the admin, staff, and customer users manually on Supabase.
 > - [x] 4. Create mockup admin, staff, and customer dashboards to test user signup, login, and roles.
+> - [x] 5. Implement persistent session UI (Dashboard/Logout buttons) across all pages.
 
 ### Phase 1: Supabase Initialization & Database Setup
 - [x] **Create Supabase Project:** Setup project, retrieve API keys and URLs.
 - [x] **Environment Variables:** Add keys to `.env.local`.
 - [x] **Define Enums & Tables:** Write SQL migrations for roles, order statuses, and core tables (`users`, `products`, `orders`, `order_items`, `shipping_addresses`, etc.).
-- [ ] **Storage Setup:** Create buckets for `product-images`, `user-avatars`.
+- [x] **Storage Setup:** Create buckets for `product-images`, `user-avatars`.
 - [x] **Implement RLS Policies:** Apply the security matrix directly to PostgreSQL using Supabase RLS.
 - [x] **Database Triggers:** 
-  - [ ] Create a trigger to automatically insert into `audit_logs` on sensitive table mutations.
+  - [x] Create a trigger to automatically insert into `audit_logs` on sensitive table mutations.
   - [x] Create a trigger to sync `auth.users` with the public `users` table upon signup.
 
 ### Phase 2: Authentication & Frontend Integration
 - [x] **Supabase Client Wrapper:** Setup SSR and Client-side Supabase clients using `@supabase/ssr`.
 - [x] **Authentication Flow:** Build Signup/Register, Login, and Forgot Password pages.
-- [ ] **Role-based Route Protection:** Create Next.js middleware to protect `/admin`, `/staff`, and `/customer` routes and redirect unauthorized access.
+- [x] **Session Persistence:** Implement logout functionality and authenticated UI states.
+- [x] **Role-based Route Protection:** Create Next.js middleware to protect `/admin`, `/staff`, and `/customer` routes and redirect unauthorized access.
 
 ### Phase 3: Role Assignment & Verification
-- [ ] **Manual Role Assignment:** Manually create `admin`, `staff`, and `customer` users in the Supabase dashboard once the tables and roles are created.
+- [x] **Manual Role Assignment:** Manually create `admin`, `staff`, and `customer` users in the Supabase dashboard once the tables and roles are created.
 
 ### Phase 4: Mockup Dashboards (Auth & Role Testing)
 - [x] **Admin Dashboard Mockup:** Create a basic `/admin` layout to test access.
