@@ -1,4 +1,6 @@
 import { login } from '@/app/auth/actions'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +11,13 @@ type Props = {
 }
 
 export default async function LoginPage(props: Props) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect('/dashboard-redirect')
+  }
+
   const searchParams = await props.searchParams;
   const message = searchParams?.message as string | undefined;
   const error = searchParams?.error as string | undefined;

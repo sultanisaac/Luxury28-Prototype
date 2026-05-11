@@ -61,3 +61,9 @@ export async function resetPassword(formData: FormData) {
   
   return redirect('/forgot-password?message=Check your email for the reset link')
 }
+
+export async function logout() {
+  const supabase = await createClient()
+  await supabase.auth.signOut()
+  return redirect('/')
+}
