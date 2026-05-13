@@ -12,7 +12,10 @@ import {
   UserCircle,
   LogOut,
   Home as HomeIcon,
-  Bell
+  Bell,
+  Tag,
+  Settings,
+  MessageSquare
 } from 'lucide-react'
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -24,7 +27,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     { name: 'Users & Roles', href: '/admin/users', icon: Users },
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
+    { name: 'Marketing', href: '/admin/marketing', icon: Tag },
+    { name: 'Customer Support', href: '/admin/support', icon: MessageSquare },
     { name: 'Notifications', href: '/admin/notifications', icon: Bell },
+    { name: 'Store Settings', href: '/admin/settings', icon: Settings },
     { name: 'Audit Logs', href: '/admin/audit', icon: ShieldAlert },
     { name: 'My Profile', href: '/admin/profile', icon: UserCircle },
   ]
