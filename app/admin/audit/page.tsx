@@ -1,84 +1,159 @@
-import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { Activity, Clock } from 'lucide-react'
-
-// Mock Data
-const mockAuditLogs = [
-  { id: '1', user: 'sultan.admin@luxury28.com', role: 'admin', action: 'UPDATE', resource: 'products (ID: 1)', created_at: '2026-05-11T20:45:12Z' },
-  { id: '2', user: 'staff1@luxury28.com', role: 'staff', action: 'UPDATE', resource: 'orders (ID: 402)', created_at: '2026-05-11T19:30:00Z' },
-  { id: '3', user: 'staff1@luxury28.com', role: 'staff', action: 'INSERT', resource: 'products (ID: 8)', created_at: '2026-05-11T14:15:22Z' },
-  { id: '4', user: 'sultan.admin@luxury28.com', role: 'admin', action: 'DELETE', resource: 'users (ID: 99)', created_at: '2026-05-10T10:05:00Z' },
-  { id: '5', user: 'system', role: 'system', action: 'INSERT', resource: 'audit_logs (ID: 5)', created_at: '2026-05-10T09:00:00Z' },
-]
+import { 
+  History, 
+  Search, 
+  Filter, 
+  User, 
+  Activity, 
+  Clock, 
+  Database,
+  ShieldCheck,
+  UserCog,
+  AlertCircle
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table'
 
 export default async function AuditPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) notFound()
-
-  // Verify Admin Role
-  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
-  if (userData?.role !== 'admin') notFound()
+  
+  const { data: logs } = await supabase
+    .from('audit_logs')
+    .select(`
+      *,
+      users:user_id (
+        first_name,
+        last_name,
+        role
+      )
+    `)
+    .order('created_at', { ascending: false })
+    .limit(50)
 
   const getActionColor = (action: string) => {
-    switch (action) {
-      case 'INSERT': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-      case 'UPDATE': return 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-      case 'DELETE': return 'text-red-400 bg-red-500/10 border-red-500/20'
-      default: return 'text-zinc-400 bg-zinc-800 border-zinc-700'
-    }
+    if (action.includes('CREATE') || action.includes('INSERT')) return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20'
+    if (action.includes('UPDATE')) return 'text-amber-500 bg-amber-500/10 border-amber-500/20'
+    if (action.includes('DELETE')) return 'text-red-500 bg-red-500/10 border-red-500/20'
+    return 'text-blue-400 bg-blue-500/10 border-blue-500/20'
   }
 
   return (
     <div className="space-y-8 pb-12">
-      <div>
-        <h1 className="text-3xl font-bold font-serif tracking-wide">System Audit Logs</h1>
-        <p className="text-zinc-400 mt-2">Global oversight of sensitive mutations across the platform.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold font-serif tracking-wide text-white drop-shadow-md">Global Audit Trail</h1>
+          <p className="text-zinc-400 mt-2">Comprehensive system logs tracking all administrative actions and security events.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" className="border-zinc-800 text-zinc-400 hover:bg-zinc-800">
+            <History size={18} className="mr-2" />
+            Archive Logs
+          </Button>
+        </div>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-zinc-800 flex items-center gap-2 text-sm text-zinc-400">
-          <Activity size={16} className="text-amber-500" /> Live monitoring active
+      {/* Logs Dashboard Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          { label: 'Total Events', value: logs?.length.toString() || '0', icon: Database, color: 'text-zinc-400' },
+          { label: 'Security Alerts', value: '0', icon: AlertCircle, color: 'text-red-500' },
+          { label: 'Admin Actions', value: logs?.filter(l => l.role === 'admin').length.toString() || '0', icon: ShieldCheck, color: 'text-amber-500' },
+          { label: 'Staff Actions', value: logs?.filter(l => l.role === 'staff').length.toString() || '0', icon: UserCog, color: 'text-blue-400' },
+        ].map((stat, i) => (
+          <div key={i} className="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl backdrop-blur-sm shadow-xl">
+            <div className="flex items-center gap-3 mb-3">
+              <stat.icon size={18} className={stat.color} />
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{stat.label}</span>
+            </div>
+            <p className="text-2xl font-bold text-white font-serif">{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Audit Table */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 flex flex-wrap gap-4 items-center justify-between">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
+            <input 
+              type="text" 
+              placeholder="Filter by action, user, or resource..." 
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-all shadow-inner"
+            />
+          </div>
+          <Button variant="outline" className="border-zinc-800 text-zinc-400 hover:bg-zinc-800">
+            <Filter size={16} className="mr-2" />
+            Advanced Filters
+          </Button>
         </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-zinc-400">
-            <thead className="bg-zinc-950/50 border-b border-zinc-800 text-zinc-300 uppercase tracking-wider text-xs">
-              <tr>
-                <th className="px-6 py-4 font-medium">Timestamp</th>
-                <th className="px-6 py-4 font-medium">User</th>
-                <th className="px-6 py-4 font-medium">Role</th>
-                <th className="px-6 py-4 font-medium">Action</th>
-                <th className="px-6 py-4 font-medium">Resource</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800/50">
-              {mockAuditLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-zinc-800/20 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 text-zinc-300">
-                      <Clock size={14} className="text-zinc-500" />
-                      {new Date(log.created_at).toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-zinc-200">
-                    {log.user}
-                  </td>
-                  <td className="px-6 py-4 uppercase tracking-wider text-xs">
-                    {log.role}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border ${getActionColor(log.action)}`}>
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-mono text-xs text-zinc-300">
-                    {log.resource}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table>
+            <TableHeader className="bg-zinc-950/30">
+              <TableRow className="border-zinc-800 hover:bg-transparent">
+                <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Timestamp</TableHead>
+                <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Actor</TableHead>
+                <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Action</TableHead>
+                <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Resource</TableHead>
+                <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px] text-right">Reference</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logs && logs.length > 0 ? (
+                logs.map((log) => (
+                  <TableRow key={log.id} className="border-zinc-800 hover:bg-zinc-800/20 transition-all group">
+                    <TableCell className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 text-zinc-400 font-mono text-xs">
+                        <Clock size={12} className="text-zinc-600" />
+                        {new Date(log.created_at).toLocaleString()}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                          {log.users?.first_name?.[0] || 'S'}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-white leading-none">{log.users?.first_name} {log.users?.last_name}</p>
+                          <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-tighter">{log.role}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border ${getActionColor(log.action_type)}`}>
+                        {log.action_type.replace(/_/g, ' ')}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-sm text-zinc-300">
+                        <Activity size={14} className="text-zinc-600" />
+                        {log.resource}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-right">
+                      <span className="text-xs font-mono text-zinc-600 bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800 group-hover:border-zinc-700 transition-colors">
+                        {log.id.slice(0, 8)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="py-20 text-center">
+                    <History size={40} className="mx-auto mb-4 text-zinc-800" />
+                    <p className="text-zinc-500 text-sm">No system logs available yet.</p>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
