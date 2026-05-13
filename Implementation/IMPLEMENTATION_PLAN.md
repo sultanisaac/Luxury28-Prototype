@@ -74,7 +74,7 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 - [x] **Admin Dashboard Mockup:** Create a basic `/admin` layout to test access.
   - [x] **Admin Profile Implementation:** See [`ADMIN_PROFILE.md`](./ADMIN_PROFILE.md) for detailed profile features (Avatar upload, Security, Audit Logs).
 - [x] **Staff Dashboard Mockup:** Create a basic `/staff` layout to test access.
-  - [ ] **Staff Profile Implementation:** See [`STAFF_PROFILE.md`](./STAFF_PROFILE.md) for detailed profile features (Fulfillment, Inventory, Support).
+  - [x] **Staff Profile Implementation:** See [`STAFF_PROFILE.md`](./STAFF_PROFILE.md) for detailed profile features (Fulfillment, Inventory, Support).
 - [x] **Customer Dashboard Mockup:** Create a basic `/customer` layout to test access.
 - [ ] **End-to-End Testing:** Test user signup, login, and roles across dashboards.
 
