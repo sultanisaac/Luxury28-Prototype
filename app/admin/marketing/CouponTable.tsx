@@ -102,7 +102,7 @@ export default function CouponTable({ coupons }: CouponTableProps) {
                 </div>
               </TableCell>
             </TableRow>
-          ))}TableBody>
+          ))}
         </TableBody>
       </Table>
     </div>
