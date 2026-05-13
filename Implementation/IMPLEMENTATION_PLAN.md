@@ -31,7 +31,8 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 
 *   **Admin:** `true` (bypass RLS or explicit `ALL` policies for `role = 'admin'`).
 *   **Staff:** 
-    *   `SELECT`, `UPDATE` on `orders` and `products` (inventory only).
+    *   `SELECT`, `UPDATE` on `orders`.
+    *   `SELECT`, `INSERT`, `UPDATE`, `DELETE` on `products` (Full Catalog Management).
     *   `SELECT` on `users` (shipping details only).
     *   `SELECT`, `INSERT` on `order_notes`.
     *   No access to financial analytics or audit logs.
@@ -71,8 +72,9 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 
 ### Phase 4: Mockup Dashboards & Profiles (Auth & Role Testing)
 - [x] **Admin Dashboard Mockup:** Create a basic `/admin` layout to test access.
-  - [ ] **Admin Profile Implementation:** See [`ADMIN_PROFILE.md`](./ADMIN_PROFILE.md) for detailed profile features (Avatar upload, Security, Audit Logs).
+  - [x] **Admin Profile Implementation:** See [`ADMIN_PROFILE.md`](./ADMIN_PROFILE.md) for detailed profile features (Avatar upload, Security, Audit Logs).
 - [x] **Staff Dashboard Mockup:** Create a basic `/staff` layout to test access.
+  - [ ] **Staff Profile Implementation:** See [`STAFF_PROFILE.md`](./STAFF_PROFILE.md) for detailed profile features (Fulfillment, Inventory, Support).
 - [x] **Customer Dashboard Mockup:** Create a basic `/customer` layout to test access.
 - [ ] **End-to-End Testing:** Test user signup, login, and roles across dashboards.
 
