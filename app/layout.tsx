@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { GlobalHeader } from '@/components/global-header'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
@@ -43,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-background">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground selection:bg-primary/30`}>
+        <GlobalHeader />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
