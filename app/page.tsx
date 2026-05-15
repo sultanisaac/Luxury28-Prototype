@@ -49,39 +49,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground font-sans">
       
-      {/* NAVIGATION */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="font-serif text-2xl font-bold tracking-widest text-primary">LUXURY28</div>
-          <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
-            <Link href="#collection" className="hover:text-primary transition-colors">Shop</Link>
-            <Link href="#trust" className="hover:text-primary transition-colors">About</Link>
-            <Link href="#faq" className="hover:text-primary transition-colors">FAQ</Link>
-          </div>
-          <div className="flex items-center gap-4">
-            {!loading && (
-              user ? (
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" className="text-muted-foreground hover:text-white uppercase tracking-widest text-xs hidden md:flex items-center gap-2" asChild>
-                    <Link href="/dashboard-redirect">
-                      <User size={14} /> My Account
-                    </Link>
-                  </Button>
-                  <form action={logout}>
-                    <Button variant="outline" type="submit" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 flex items-center gap-2">
-                      <LogOut size={14} /> <span className="hidden sm:inline">Sign Out</span>
-                    </Button>
-                  </form>
-                </div>
-              ) : (
-                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6" asChild>
-                  <Link href="/login">Client Portal</Link>
-                </Button>
-              )
-            )}
-          </div>
-        </div>
-      </nav>
 
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
