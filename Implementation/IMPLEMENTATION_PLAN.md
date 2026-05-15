@@ -76,6 +76,7 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 - [x] **Staff Dashboard Mockup:** Create a basic `/staff` layout to test access.
   - [x] **Staff Profile Implementation:** See [`STAFF_PROFILE.md`](./STAFF_PROFILE.md) for detailed profile features (Fulfillment, Inventory, Support).
 - [x] **Customer Dashboard Mockup:** Create a basic `/customer` layout to test access.
+  - [ ] **Customer Profile Implementation:** See [`CUSTOMER_PROFILE.md`](./CUSTOMER_PROFILE.md) for detailed profile features (Address book, Order tracking, Authenticity Vault).
 - [ ] **End-to-End Testing:** Test user signup, login, and roles across dashboards.
 
 ### Phase 5: Backend Edge Functions & Integrations
