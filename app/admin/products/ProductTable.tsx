@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Trash2, 
   Edit3, 
@@ -9,7 +10,8 @@ import {
   Archive, 
   TrendingUp, 
   TrendingDown,
-  AlertCircle
+  AlertCircle,
+  Search
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { deleteProduct, toggleProductStatus } from './actions'
@@ -29,8 +31,31 @@ interface ProductTableProps {
   categories: any[]
 }
 
-export default function ProductTable({ products, categories }: ProductTableProps) {
+export default function ProductTable({ products: initialProducts, categories }: ProductTableProps) {
+  const [products, setProducts] = useState(initialProducts)
   const [searchTerm, setSearchTerm] = useState('')
+  const supabase = createClient()
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-products')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        async () => {
+          const { data } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false })
+          if (data) setProducts(data)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to remove this masterpiece from the collection?')) return
@@ -77,7 +102,7 @@ export default function ProductTable({ products, categories }: ProductTableProps
             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-all shadow-lg"
           />
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600">
-            <MoreHorizontal size={20} />
+            <Search size={20} />
           </div>
         </div>
       </div>
