@@ -10,7 +10,7 @@ interface SmartImageProps extends Omit<ImageProps, 'src'> {
 }
 
 const FALLBACKS = {
-  luxury: '/fallback-luxury.png',
+  luxury: '/luxury_watch_placeholder.png',
   modern: '/fallback-modern.png',
   vintage: '/fallback-vintage.png',
   generic: '/featured-watch.png'
