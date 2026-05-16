@@ -11,6 +11,7 @@ export default function AddressBookClient({ initialAddresses, userId }: { initia
   const [addresses, setAddresses] = useState(initialAddresses)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({
     label: '', recipient_name: '', street_address: '', city: '', province: '', postal_code: '', phone: '', is_default: false
   })
@@ -33,15 +34,46 @@ export default function AddressBookClient({ initialAddresses, userId }: { initia
     return () => { supabase.removeChannel(channel) }
   }, [supabase, userId])
 
-  const handleAdd = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    setForm({ label: '', recipient_name: '', street_address: '', city: '', province: '', postal_code: '', phone: '', is_default: false })
+    setEditingId(null)
+    setShowForm(false)
+  }
+
+  const handleEdit = (address: any) => {
+    setForm({
+      label: address.label || '',
+      recipient_name: address.recipient_name || '',
+      street_address: address.street_address || '',
+      city: address.city || '',
+      province: address.province || '',
+      postal_code: address.postal_code || '',
+      phone: address.phone || '',
+      is_default: address.is_default || false
+    })
+    setEditingId(address.id)
+    setShowForm(true)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     try {
-      const { error } = await supabase.from('shipping_addresses').insert({ ...form, user_id: userId })
-      if (error) throw error
-      toast.success('Address saved')
-      setShowForm(false)
-      setForm({ label: '', recipient_name: '', street_address: '', city: '', province: '', postal_code: '', phone: '', is_default: false })
+      if (editingId) {
+        const { error } = await supabase
+          .from('shipping_addresses')
+          .update({ ...form })
+          .eq('id', editingId)
+        if (error) throw error
+        toast.success('Address updated')
+      } else {
+        const { error } = await supabase
+          .from('shipping_addresses')
+          .insert({ ...form, user_id: userId })
+        if (error) throw error
+        toast.success('Address added')
+      }
+      resetForm()
     } catch (err: any) {
       toast.error('Error: ' + err.message)
     } finally {
@@ -61,20 +93,20 @@ export default function AddressBookClient({ initialAddresses, userId }: { initia
   return (
     <div>
       <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
-        <h1 className="font-serif text-3xl">Address Book</h1>
+        <h1 className="font-serif text-3xl">Address</h1>
         <Button onClick={() => setShowForm(true)} className="bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest text-xs flex items-center gap-2">
           <Plus size={16} /> Add New
         </Button>
       </div>
 
-      {/* Add Form */}
+      {/* Form */}
       {showForm && (
         <div className="mb-8 border border-primary/30 p-6 bg-background/50 relative">
-          <button onClick={() => setShowForm(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-white">
+          <button onClick={resetForm} className="absolute top-4 right-4 text-muted-foreground hover:text-white">
             <X size={18} />
           </button>
-          <h2 className="font-serif text-xl mb-6">New Address</h2>
-          <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <h2 className="font-serif text-xl mb-6">{editingId ? 'Edit Address' : 'New Address'}</h2>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2 space-y-1">
               <label className="text-xs uppercase tracking-widest text-muted-foreground">Label (e.g. Home, Office)</label>
               <input required value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} className={inputClass} />
@@ -109,9 +141,9 @@ export default function AddressBookClient({ initialAddresses, userId }: { initia
             </div>
             <div className="sm:col-span-2 flex gap-4 pt-2">
               <Button disabled={saving} type="submit" className="bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest text-xs px-8">
-                {saving ? <Loader2 size={14} className="animate-spin mr-2" /> : null} Save Address
+                {saving ? <Loader2 size={14} className="animate-spin mr-2" /> : null} {editingId ? 'Update Address' : 'Save Address'}
               </Button>
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="rounded-none text-xs">Cancel</Button>
+              <Button type="button" variant="outline" onClick={resetForm} className="rounded-none text-xs">Cancel</Button>
             </div>
           </form>
         </div>
@@ -138,7 +170,10 @@ export default function AddressBookClient({ initialAddresses, userId }: { initia
                 <p>{address.phone}</p>
               </div>
               <div className="flex gap-4 mt-6 pt-4 border-t border-border">
-                <button onClick={() => handleDelete(address.id)} className="text-xs uppercase tracking-widest text-muted-foreground hover:text-red-400 flex items-center gap-1 transition-colors">
+                <button onClick={() => handleEdit(address)} className="text-xs uppercase tracking-widest text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
+                  <Edit2 size={12} /> Edit
+                </button>
+                <button onClick={() => handleDelete(address.id)} className="text-xs uppercase tracking-widest text-muted-foreground hover:text-red-400 flex items-center gap-1 transition-colors ml-auto">
                   <Trash2 size={12} /> Delete
                 </button>
               </div>

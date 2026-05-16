@@ -12,7 +12,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   const links = [
     { href: '/customer/profile', icon: User, label: 'Personal Details' },
     { href: '/customer/orders', icon: Package, label: 'Order History' },
-    { href: '/customer/addresses', icon: MapPin, label: 'Address Book' },
+    { href: '/customer/addresses', icon: MapPin, label: 'ADDRESS' },
     { href: '/customer/authenticity', icon: ShieldCheck, label: 'Authenticity Vault' },
     { href: '/customer/wishlist', icon: Heart, label: 'Saved Items' },
     { href: '/customer/payment', icon: CreditCard, label: 'Payment Settings' },
