@@ -20,7 +20,7 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
           className="rounded-full object-cover"
         />
       </div>
-      <span className="font-serif text-xl font-bold tracking-widest text-white group-hover:text-amber-500 transition-colors">
+      <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.2em] sm:tracking-widest text-white group-hover:text-amber-500 transition-colors whitespace-nowrap">
         LUXURY28
       </span>
     </Link>
