@@ -311,11 +311,18 @@ export default function Home() {
             <Button className="flex-1 bg-zinc-800 text-white hover:bg-zinc-700 rounded-none uppercase tracking-widest py-6" asChild>
               <Link href="/dashboard-redirect" className="text-center flex items-center justify-center">Dashboard</Link>
             </Button>
-            <form action={logout} className="flex-1">
-              <Button variant="outline" type="submit" className="w-full border-primary text-primary hover:bg-primary hover:text-background rounded-none uppercase tracking-widest py-6">
-                Sign Out
-              </Button>
-            </form>
+            <Button 
+              variant="outline" 
+              className="flex-1 border-primary text-primary hover:bg-primary hover:text-background rounded-none uppercase tracking-widest py-6"
+              onClick={async () => {
+                const { createClient } = await import('@/lib/supabase/client');
+                const supabase = createClient();
+                await supabase.auth.signOut({ scope: 'local' });
+                window.location.href = '/';
+              }}
+            >
+              Sign Out
+            </Button>
           </>
         ) : (
           <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6" asChild>

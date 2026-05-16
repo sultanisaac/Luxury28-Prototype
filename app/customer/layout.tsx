@@ -3,11 +3,27 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X } from 'lucide-react';
+import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X, LogOut, Home } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await supabase.auth.signOut({ scope: 'local' });
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      router.push('/');
+    }
+  };
 
   const links = [
     { href: '/customer/profile', icon: User, label: 'Personal Details' },
@@ -60,6 +76,13 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       {mobileMenuOpen && (
         <div className="md:hidden bg-card border-b border-border flex flex-col shadow-xl z-30">
           <NavLinks onClick={() => setMobileMenuOpen(false)} />
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-widest text-red-400 hover:bg-red-950/20 transition-colors border-t border-border"
+          >
+            <LogOut size={16} /> {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
+          </button>
         </div>
       )}
 
@@ -71,6 +94,21 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <h2 className="font-serif text-2xl mb-8 border-b border-border pb-4">My Account</h2>
             <nav className="flex flex-col gap-2">
               <NavLinks />
+              <div className="mt-8 pt-6 border-t border-border space-y-2">
+                <Link
+                  href="/"
+                  className="flex items-center gap-3 px-4 py-2 text-sm uppercase tracking-widest text-muted-foreground hover:text-white transition-colors"
+                >
+                  <Home size={16} /> Back to Site
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="flex items-center gap-3 px-4 py-2 text-sm uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors w-full text-left"
+                >
+                  <LogOut size={16} /> {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
+                </button>
+              </div>
             </nav>
           </div>
         </aside>
