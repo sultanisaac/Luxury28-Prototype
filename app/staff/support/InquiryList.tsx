@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { 
   MessageSquare, 
   Search, 
@@ -29,10 +30,27 @@ interface InquiryListProps {
 }
 
 export default function InquiryList({ initialInquiries }: InquiryListProps) {
+  const [inquiries, setInquiries] = useState(initialInquiries)
   const [filter, setFilter] = useState('')
   const [activeStatus, setActiveStatus] = useState('All')
+  const supabase = createClient()
 
-  const filteredInquiries = initialInquiries.filter(iq => {
+  useEffect(() => {
+    const channel = supabase.channel('rt-support-inquiries')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_inquiries' },
+        async () => {
+          const { data } = await supabase
+            .from('contact_inquiries')
+            .select('*')
+            .order('created_at', { ascending: false })
+          if (data) setInquiries(data)
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [supabase])
+
+  const filteredInquiries = inquiries.filter(iq => {
     const matchesSearch = iq.name.toLowerCase().includes(filter.toLowerCase()) || 
                          iq.email.toLowerCase().includes(filter.toLowerCase()) ||
                          iq.subject?.toLowerCase().includes(filter.toLowerCase())
@@ -56,9 +74,9 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
   }
 
   const stats = [
-    { label: 'All', count: initialInquiries.length, color: 'text-zinc-400', bg: 'bg-zinc-800/50' },
-    { label: 'Unread', count: initialInquiries.filter(i => i.status === 'unread').length, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-    { label: 'Archived', count: initialInquiries.filter(i => i.status === 'archived').length, color: 'text-zinc-500', bg: 'bg-zinc-800/30' },
+    { label: 'All', count: inquiries.length, color: 'text-zinc-400', bg: 'bg-zinc-800/50' },
+    { label: 'Unread', count: inquiries.filter(i => i.status === 'unread').length, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+    { label: 'Archived', count: inquiries.filter(i => i.status === 'archived').length, color: 'text-zinc-500', bg: 'bg-zinc-800/30' },
   ]
 
   return (
