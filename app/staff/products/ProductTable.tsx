@@ -7,7 +7,6 @@ import {
   Edit3, 
   MoreHorizontal, 
   Archive, 
-  Archive, 
   TrendingUp,
   Image as ImageIcon
 } from 'lucide-react'
