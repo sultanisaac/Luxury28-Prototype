@@ -15,7 +15,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
     { href: '/customer/addresses', icon: MapPin, label: 'ADDRESS' },
     { href: '/customer/authenticity', icon: ShieldCheck, label: 'Authenticity Vault' },
     { href: '/customer/wishlist', icon: Heart, label: 'Saved Items' },
-    { href: '/customer/payment', icon: CreditCard, label: 'Payment Settings' },
+    { href: '/customer/payment', icon: CreditCard, label: 'Payment Security' },
   ];
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
