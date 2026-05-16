@@ -12,6 +12,7 @@ interface OrderKanbanProps {
 }
 
 const COLUMNS = [
+  { id: 'Pending', label: 'Awaiting Payment', icon: Package, color: 'text-zinc-500', nextStatus: null },
   { id: 'Paid', label: 'New Orders (Paid)', icon: Package, color: 'text-amber-500', nextStatus: 'Processing' },
   { id: 'Processing', label: 'Processing', icon: RefreshCcw, color: 'text-blue-400', nextStatus: 'Packaging' },
   { id: 'Packaging', label: 'Packaging', icon: Box, color: 'text-purple-400', nextAction: 'ship' },
@@ -30,7 +31,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
           const { data } = await supabase
             .from('orders')
             .select('*')
-            .in('status', ['Paid', 'Processing', 'Packaging', 'Shipped'])
+            .in('status', ['Pending', 'Paid', 'Processing', 'Packaging', 'Shipped'])
             .order('created_at', { ascending: false })
           if (data) setOrders(data)
         }
