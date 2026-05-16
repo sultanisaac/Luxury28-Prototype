@@ -11,6 +11,7 @@ import { logout } from '@/app/auth/actions';
 import { CartSlideOut } from '@/components/cart-slideout';
 import { Logo } from '@/components/logo';
 
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 
 export function GlobalHeader() {
