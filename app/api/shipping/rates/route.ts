@@ -71,9 +71,56 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Shipping Rates API]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch shipping rates. Please try again.' },
-      { status: 500 }
-    );
+    
+    // ── PROTOTYPE FALLBACK: If Biteship API fails (e.g. no balance), return mock rates ──
+    // This allows the user to continue testing the checkout flow.
+    console.log('[Shipping Rates API] Using mock fallback rates for prototype testing.');
+    
+    return NextResponse.json({
+      success: true,
+      destinationAreaId: 'MOCK_DEST_AREA_ID',
+      rates: [
+        {
+          courierCode: 'jne',
+          courierName: 'JNE',
+          serviceCode: 'reg',
+          serviceName: 'Regular (Fallback)',
+          duration: '2-4 Days',
+          price: 45000,
+        },
+        {
+          courierCode: 'jnt',
+          courierName: 'J&T Express',
+          serviceCode: 'ez',
+          serviceName: 'EZ (Fallback)',
+          duration: '2-3 Days',
+          price: 42000,
+        },
+        {
+          courierCode: 'sicepat',
+          courierName: 'SiCepat',
+          serviceCode: 'best',
+          serviceName: 'Best (Fallback)',
+          duration: '1-2 Days',
+          price: 65000,
+        },
+        {
+          courierCode: 'anteraja',
+          courierName: 'Anteraja',
+          serviceCode: 'reg',
+          serviceName: 'Regular (Fallback)',
+          duration: '2-4 Days',
+          price: 40000,
+        },
+        {
+          courierCode: 'ninja',
+          courierName: 'Ninja Xpress',
+          serviceCode: 'reg',
+          serviceName: 'Standard (Fallback)',
+          duration: '3-5 Days',
+          price: 38000,
+        }
+      ],
+    });
   }
 }

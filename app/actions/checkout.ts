@@ -51,6 +51,7 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
       total_amount: totalAmount,
       shipping_address_id: payload.shippingAddressId,
       shipping_cost: payload.shippingCost,
+      destination_area_id: payload.destinationAreaId,
       courier_name: `${payload.courierName} ${payload.courierServiceName}`,
     })
     .select()
