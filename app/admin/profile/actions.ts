@@ -7,6 +7,7 @@ export async function updateProfile(data: {
   first_name: string
   last_name: string
   phone?: string
+  avatar_url?: string
 }) {
   const supabase = await createClient()
   
