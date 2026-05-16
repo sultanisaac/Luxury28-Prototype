@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Trash2, 
   Edit3, 
@@ -18,8 +19,25 @@ interface ProductTableProps {
   categories: any[]
 }
 
-export default function ProductTable({ products, categories }: ProductTableProps) {
+export default function ProductTable({ products: initialProducts, categories }: ProductTableProps) {
+  const [products, setProducts] = useState(initialProducts)
   const [searchTerm, setSearchTerm] = useState('')
+  const supabase = createClient()
+
+  useEffect(() => {
+    const channel = supabase.channel('rt-staff-product-table')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' },
+        async () => {
+          const { data } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false })
+          if (data) setProducts(data)
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [supabase])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to remove this product from the catalog?')) return
