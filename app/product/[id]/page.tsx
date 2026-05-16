@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 
 export default function ProductPage() {
+  const router = useRouter();
   const { id } = useParams();
   const watch = watches.find(w => w.id === id);
 
@@ -84,10 +85,17 @@ export default function ProductPage() {
             </div>
 
             <div className="space-y-4 mb-12">
-              <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none h-16 text-lg uppercase tracking-widest">
+              <Button
+                onClick={() => router.push(`/checkout?productId=${watch.id}`)}
+                className="w-full bg-primary text-background hover:bg-primary/90 rounded-none h-16 text-lg uppercase tracking-widest"
+              >
                 Buy Now
               </Button>
-              <Button variant="outline" className="w-full rounded-none h-16 text-lg uppercase tracking-widest border-border hover:bg-white hover:text-background">
+              <Button
+                variant="outline"
+                className="w-full rounded-none h-16 text-lg uppercase tracking-widest border-border hover:bg-white hover:text-background"
+                onClick={() => alert('Cart coming soon!')}
+              >
                 Add to Cart
               </Button>
             </div>

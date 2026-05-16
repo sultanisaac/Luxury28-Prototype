@@ -22,7 +22,8 @@ The Admin area is the highest privilege zone. It serves two main purposes:
 
 ### C. Order & Financial Management
 - **Global Order View (`/admin/orders`):** Access to all customer orders, allowing admins to override statuses.
-- **Refund Processing:** A dedicated interface to process Stripe refunds via secure Edge Functions.
+- **Refund Processing:** A dedicated interface to process **Xendit** refunds/voids via secure Supabase Edge Functions. This is the platform's Indonesia-first payment processor, replacing Stripe.
+- **Payment Method Visibility:** Admin can see which payment channel the customer used (QRIS, GoPay, BCA Virtual Account, Credit Card, etc.) on each order.
 
 ### D. Global System Audit Logs
 - **Security Oversight (`/admin/audit`):** A dedicated page to view the entire `public.audit_logs` table.
