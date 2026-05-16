@@ -32,6 +32,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
   const [orders, setOrders] = useState(initialOrders)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
+  const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'shipped'>('active')
   const supabase = createClient()
 
   useEffect(() => {
@@ -81,13 +82,41 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
   }
 
   return (
-    <div className="flex gap-6 overflow-x-auto pb-4 snap-x">
-      {COLUMNS.map((col) => {
-        const columnOrders = orders.filter(o => o.status === col.id)
-        
-        return (
-          <div key={col.id} className="min-w-[300px] w-[350px] flex-shrink-0 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex flex-col snap-start">
-            <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900 rounded-t-2xl">
+    <div className="space-y-6">
+      {/* Tab Navigation */}
+      <div className="flex gap-1 p-1 bg-zinc-900 border border-zinc-800 rounded-lg w-fit">
+        <button 
+          onClick={() => setActiveTab('pending')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'pending' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          Awaiting Payment ({orders.filter(o => o.status === 'Pending').length})
+        </button>
+        <button 
+          onClick={() => setActiveTab('active')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'active' ? 'bg-primary text-background shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          Active Queue ({orders.filter(o => ['Paid', 'Processing', 'Packaging'].includes(o.status)).length})
+        </button>
+        <button 
+          onClick={() => setActiveTab('shipped')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'shipped' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          Shipped ({orders.filter(o => o.status === 'Shipped').length})
+        </button>
+      </div>
+
+      <div className="flex gap-6 overflow-x-auto pb-4 snap-x">
+        {COLUMNS.map((col) => {
+          // Filter columns based on active tab
+          if (activeTab === 'pending' && col.id !== 'Pending') return null;
+          if (activeTab === 'active' && !['Paid', 'Processing', 'Packaging'].includes(col.id)) return null;
+          if (activeTab === 'shipped' && col.id !== 'Shipped') return null;
+
+          const columnOrders = orders.filter(o => o.status === col.id)
+          
+          return (
+            <div key={col.id} className="min-w-[300px] w-full max-w-[400px] flex-shrink-0 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex flex-col snap-start animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900 rounded-t-2xl">
               <div className="flex items-center gap-2">
                 <col.icon size={18} className={col.color} />
                 <h3 className="font-bold text-white font-serif">{col.label}</h3>
@@ -179,6 +208,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
           </div>
         )
       })}
+            </div>
       {/* Order Detail Modal */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="max-w-2xl bg-zinc-950 border-zinc-800 text-white">
