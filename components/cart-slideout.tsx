@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Trash2 } from 'lucide-react';
+import { X, ShoppingBag, Trash2, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { SmartImage } from '@/components/ui/smart-image';
@@ -10,7 +10,7 @@ import { SmartImage } from '@/components/ui/smart-image';
 import { useCart } from '@/context/CartContext';
 
 export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { items, removeItem, subtotal, subtotal_idr } = useCart();
+  const { items, removeItem, updateQuantity, subtotal, subtotal_idr } = useCart();
 
   // Close on Escape key
   useEffect(() => {
@@ -77,13 +77,24 @@ export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: ()
               ) : (
                 <div className="space-y-6">
                   {items.map((item) => (
-                    <div key={item.id} className="flex gap-4 p-4 border border-border bg-card">
-                      <div className="w-20 h-20 relative bg-[#111] overflow-hidden flex-shrink-0">
-                        <SmartImage src={item.image} alt={item.name} width={80} height={80} fallbackType="modern" className="object-cover w-full h-full opacity-80" />
-                      </div>
+                    <div key={item.id} className="flex gap-4 p-4 border border-border bg-card group relative">
+                      <Link 
+                        href={`/product/${item.id}`} 
+                        onClick={onClose}
+                        className="w-20 h-20 relative bg-[#111] overflow-hidden flex-shrink-0"
+                      >
+                        <SmartImage src={item.image} alt={item.name} width={80} height={80} fallbackType="modern" className="object-cover w-full h-full opacity-80 group-hover:scale-110 transition-transform duration-500" />
+                      </Link>
+                      
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
-                          <h3 className="font-serif text-sm truncate pr-6">{item.name}</h3>
+                          <Link 
+                            href={`/product/${item.id}`} 
+                            onClick={onClose}
+                            className="font-serif text-sm pr-6 block hover:text-primary transition-colors line-clamp-1"
+                          >
+                            {item.name}
+                          </Link>
                           <div className="flex flex-col gap-0.5 mt-1">
                             <span className="text-primary font-medium tracking-wider text-sm">${item.price.toLocaleString()}</span>
                             {item.price_idr && (
@@ -93,8 +104,25 @@ export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                             )}
                           </div>
                         </div>
+                        
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-muted-foreground uppercase tracking-widest">Qty: {item.quantity}</span>
+                          <div className="flex items-center border border-border bg-background">
+                            <button 
+                              onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                              className="p-1 hover:text-primary transition-colors disabled:opacity-30"
+                              disabled={item.quantity <= 1}
+                            >
+                              <Minus size={12} />
+                            </button>
+                            <span className="w-8 text-center text-xs font-medium">{item.quantity}</span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="p-1 hover:text-primary transition-colors"
+                            >
+                              <Plus size={12} />
+                            </button>
+                          </div>
+                          
                           <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-red-400 transition-colors">
                             <Trash2 size={16} />
                           </button>
