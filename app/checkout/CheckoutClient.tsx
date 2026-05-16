@@ -33,6 +33,7 @@ interface Watch {
   id: string;
   name: string;
   price: number;
+  price_idr: number;
   tier: string;
   image: string;
 }
@@ -47,10 +48,6 @@ interface CheckoutClientProps {
 
 const formatIDR = (amount: number) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
-
-// Watches in DB are priced in USD values — treat as IDR thousands for prototype
-// e.g. price: 22500 → Rp 22.500.000
-const toIDR = (price: number) => price * 1000;
 
 // ─── Steps ────────────────────────────────────────────────────────────────────
 
@@ -68,7 +65,7 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
   const [ratesError, setRatesError] = useState('');
   const [isPending, startTransition] = useTransition();
 
-  const priceIDR = toIDR(watch.price);
+  const priceIDR = watch.price_idr;
 
   // ── Fetch shipping rates ────────────────────────────────────────────────────
   const fetchRates = async (address: ShippingAddress) => {

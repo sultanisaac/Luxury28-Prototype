@@ -16,8 +16,29 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
   if (!user) redirect('/auth/login?redirectTo=/checkout');
 
   // ── Guard: product must exist ─────────────────────────────────────────────
-  const watch = watches.find((w) => w.id === productId);
-  if (!watch) redirect('/?error=product_not_found');
+  const { data: product } = await supabase
+    .from('products')
+    .select(`
+      *,
+      categories (
+        name
+      )
+    `)
+    .eq('id', productId)
+    .single();
+
+  if (!product) redirect('/?error=product_not_found');
+
+  const watch = {
+    id: product.id,
+    name: product.name,
+    price: Number(product.price),
+    price_idr: Number(product.price_idr),
+    tier: product.categories?.name || 'Luxury',
+    image: product.images?.[0] || '/featured-watch.png',
+    stock: product.stock_quantity,
+    description: product.description
+  };
 
   // ── Fetch user's saved addresses ──────────────────────────────────────────
   const { data: addresses } = await supabase
