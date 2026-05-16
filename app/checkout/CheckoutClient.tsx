@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import Image from 'next/image';
+import { SmartImage } from '@/components/ui/smart-image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Truck, CreditCard, ShieldCheck, Loader2, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -376,7 +376,7 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
 
               <div className="flex gap-4 mb-6">
                 <div className="w-20 h-20 bg-zinc-900 border border-border relative flex-shrink-0">
-                  <Image src={watch.image} alt={watch.name} fill className="object-contain p-2" />
+                  <SmartImage src={watch.image} alt={watch.name} fill className="object-contain p-2" fallbackType="luxury" />
                 </div>
                 <div>
                   <p className="text-xs text-primary uppercase tracking-widest">{watch.tier}</p>
