@@ -63,6 +63,7 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
   const [destinationAreaId, setDestinationAreaId] = useState('');
   const [loadingRates, setLoadingRates] = useState(false);
   const [ratesError, setRatesError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [isPending, startTransition] = useTransition();
 
   const priceIDR = watch.price_idr;
@@ -128,8 +129,17 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
       shippingCost: selectedRate.price,
     };
 
-    startTransition(() => {
-      createCheckoutOrder(payload);
+    setSubmitError('');
+    startTransition(async () => {
+      try {
+        await createCheckoutOrder(payload);
+      } catch (err: any) {
+        console.error('[Checkout Submit Error]', err);
+        // Only set error if it's not a redirect (Next.js redirect throws a special error)
+        if (err.message !== 'NEXT_REDIRECT') {
+          setSubmitError(err.message || 'Failed to process payment. Please try again.');
+        }
+      }
     });
   };
 
@@ -326,10 +336,17 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
                     <ShieldCheck size={18} className="text-primary mt-0.5 flex-shrink-0" />
                     <p>
                       You will be redirected to <strong className="text-white">Xendit</strong>'s secure payment page.
-                      Pay via <strong className="text-white">QRIS, GoPay, OVO, ShopeePay, or Bank Transfer</strong>.
-                      Your card data is never stored on our servers.
+                      Pay via <strong className="text-white">QRIS, GoPay, OVO, ShopeePay, or Bank Transfer</strong>. Your card data is never stored on our servers.
                     </p>
                   </div>
+
+                  {/* Error notice */}
+                  {submitError && (
+                    <div className="flex items-center gap-3 border border-red-500/30 bg-red-500/10 text-red-400 p-4 mb-6 text-sm">
+                      <AlertCircle size={16} />
+                      {submitError}
+                    </div>
+                  )}
 
                   <div className="flex gap-3">
                     <Button variant="outline" onClick={() => setStep(1)} className="flex-1 h-14 rounded-none border-border uppercase tracking-widest">
@@ -343,7 +360,7 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
                       {isPending ? (
                         <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" /> Processing…</span>
                       ) : (
-                        `Bayar Sekarang — ${formatIDR(total)}`
+                        `PAY NOW — ${formatIDR(total)}`
                       )}
                     </Button>
                   </div>
