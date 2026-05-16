@@ -35,9 +35,10 @@ The Customer Dashboard is the personal hub for buyers on Luxury28. It provides s
 - **Real-time Sync:** Items added or removed sync instantly across devices.
 
 ### 2.6 Payment Settings (`/customer/payment`) — ✅ New Module
-- **Preferred Method:** Customer can choose their default payment method: Credit/Debit Card, Bank Transfer, or Digital Wallet (PayPal, Apple Pay, Google Pay).
-- **Saved Cards:** View and manage saved payment cards (Stripe-powered). Add or remove cards with a secure flow.
-- **Security Notice:** A prominent notice informs customers that all payment data is encrypted and handled exclusively by the payment processor.
+- **Preferred Method:** Customer can choose their default payment method: **QRIS**, **E-Wallet** (GoPay, OVO, ShopeePay, DANA), **Bank Transfer / Virtual Account** (BCA, Mandiri, BNI, BRI), or **Credit/Debit Card**.
+- **Powered by Xendit:** All payment processing goes through Xendit, Indonesia's leading payment gateway. This ensures native support for all local payment channels.
+- **Saved Preferences:** The customer's preferred payment method is stored and pre-selected at checkout.
+- **Security Notice:** A prominent notice informs customers that all payment data is encrypted and handled exclusively by Xendit's secure payment processor.
 
 ### 2.7 Global Header & Persistent Shopping Cart
 - **Persistent Navigation:** The global header (featuring "My Account" and the "Cart" toggle) will be rendered at the root layout level. This ensures the Cart button **never disappears** and is always accessible, regardless of what page the user navigates to.
@@ -53,7 +54,7 @@ The Customer Dashboard is the personal hub for buyers on Luxury28. It provides s
 - [x] **Step 4: Order Tracking UI:** Real-time fetch from `orders` and `order_items`. Status changes by staff reflect instantly on the customer's view.
 - [x] **Step 5: Authenticity Vault:** Real-time view linking purchased products to their `authenticity_records` for digital proof of authenticity.
 - [x] **Step 6: Wishlist / Saved Items:** Real-time wishlist with live add/remove sync.
-- [x] **Step 7: Payment Settings:** Added a new `/customer/payment` page for choosing preferred payment method and managing saved cards.
+- [x] **Step 7: Payment Settings:** Added a new `/customer/payment` page for choosing preferred payment method (QRIS, E-Wallet, Virtual Account, Card) powered by Xendit.
 - [x] **Step 8: Mobile-Native Experience:** Implemented mobile-responsive navigation with a hamburger toggle for the customer dashboard sidebar. Full mobile layout on all modules.
 
 ## 4. Security & RLS Context
@@ -61,4 +62,4 @@ The Customer Dashboard is the personal hub for buyers on Luxury28. It provides s
 - Customers can ONLY `SELECT`, `INSERT`, `UPDATE`, and `DELETE` their own `shipping_addresses`.
 - Customers can ONLY `SELECT` and `INSERT` their own `orders` and `order_items`.
 - Strict Row Level Security (RLS) policies on Supabase enforce these boundaries using `auth.uid()`, guaranteeing that no customer can access another customer's data or order history.
-- Payment card data is never stored on-platform — all card handling is delegated to the Stripe payment processor.
+- Payment card data is never stored on-platform — all payment handling is delegated to **Xendit**, the platform's Indonesia-first payment processor (supporting QRIS, GoPay, OVO, ShopeePay, DANA, Virtual Accounts, and Credit/Debit Cards).
