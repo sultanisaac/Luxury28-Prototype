@@ -69,13 +69,20 @@ The Admin area is the highest privilege zone. It serves two main purposes:
 - **Aesthetics:** Dark mode with glassmorphism elements, subtle borders (`border-zinc-800`), premium typography, and distinct badges for User Roles (e.g., Gold for Admin, Silver for Staff).
 - **Interactions:** Smooth toast notifications for successful saves, and loading spinners on image uploads.
 
-## 5. Implementation Steps
-- [x] **Step 1: Layout & Navigation:** Build the persistent `/admin/layout.tsx` with sidebar links.
-- [x] **Step 2: Admin Profile (`/admin/profile`):** Build the personal settings page, including Avatar upload and 2FA settings.
-- [x] **Step 3: Analytics Dashboard (`/admin`):** Implement the revenue cards and sales charts.
-- [x] **Step 4: User & Role Manager (`/admin/users`):** Build the interface to fetch the `users` table and implement role-change server actions.
-- [x] **Step 5: Product & Inventory (`/admin/products`):** Build CRUD for products and image gallery management.
-- [x] **Step 6: Marketing & Coupons (`/admin/marketing`):** Implement the discount code system.
-- [x] **Step 7: Store Settings (`/admin/settings`):** Create the global configuration page.
-- [x] **Step 8: Customer Support Hub (`/admin/support`):** Implement inquiry management and response tracking.
-- [x] **Step 9: Global Audit View (`/admin/audit`):** Build a searchable table displaying system logs.
+## 6. Real-time Architecture
+The Luxury28 Admin Dashboard is powered by **Supabase Realtime**, providing a high-performance, live-sync experience across all modules:
+- **Hydrate-then-Listen Pattern:** Pages fetch initial data server-side for speed, then immediately establish a `postgres_changes` listener for incremental updates.
+- **Global Indicators:** Live "pulsing" badges and unread counts (e.g., in the sidebar) inform administrators of incoming events as they happen.
+- **Auto-Sync:** Changes made by one administrator (e.g., updating a product price or banning a user) propagate instantly to all other active admin sessions.
+
+## 7. Implementation Steps (COMPLETED)
+- [x] **Step 1: Layout & Navigation:** Built persistent `/admin/layout.tsx` with sidebar links and real-time notification badge.
+- [x] **Step 2: Admin Profile (`/admin/profile`):** Built personal settings page with real-time identity synchronization.
+- [x] **Step 3: Analytics Dashboard (`/admin`):** Implemented live-fed revenue cards and active order trackers.
+- [x] **Step 4: User & Role Manager (`/admin/users`):** Built real-time user directory with instant role propagation.
+- [x] **Step 5: Product & Inventory (`/admin/products`):** Built real-time product catalog with live stock level monitoring.
+- [x] **Step 6: Marketing & Coupons (`/admin/marketing`):** Implemented live-syncing promotion manager and campaign stats.
+- [x] **Step 7: Store Settings (`/admin/settings`):** Created real-time global config page for instant platform adjustments.
+- [x] **Step 8: Customer Support Hub (`/admin/support`):** Implemented live inquiry management with unread notification badges.
+- [x] **Step 9: Global Audit View (`/admin/audit`):** Built searchable, real-time audit trail for security oversight.
+- [x] **Step 10: Real-time Notification Hub:** Centralized system alerts integrated across the entire administrative suite.

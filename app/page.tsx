@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { logout } from '@/app/auth/actions';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { Logo } from '@/components/logo';
 
 export default function Home() {
   const [showExitIntent, setShowExitIntent] = useState(false);
@@ -278,7 +279,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 md:col-span-2">
-              <div className="font-serif text-3xl font-bold tracking-widest text-primary mb-6">LUXURY28</div>
+              <Logo size={48} className="mb-6 !gap-4" />
               <p className="text-muted-foreground max-w-sm font-light">
                 Curated luxury watches for the modern collector. We only deal in excellence.
               </p>

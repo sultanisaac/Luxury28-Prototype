@@ -1,20 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
+import { useEffect, useState } from 'react'
 import { 
   Users, 
   ShieldCheck, 
   UserCircle, 
   Search, 
   MoreHorizontal, 
-  ShieldAlert, 
   Trash2, 
-  Check,
   UserCog
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { updateUserRole, deleteUserRecord } from './actions'
-import { toast } from 'sonner'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,8 +35,31 @@ interface UserListProps {
   users: any[]
 }
 
-export default function UserList({ users }: UserListProps) {
+export default function UserList({ users: initialUsers }: UserListProps) {
+  const [users, setUsers] = useState(initialUsers)
   const [searchTerm, setSearchTerm] = useState('')
+  const supabase = createClient()
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-users')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'users' },
+        async () => {
+          const { data } = await supabase
+            .from('users')
+            .select('*')
+            .order('created_at', { ascending: false })
+          if (data) setUsers(data)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase])
 
   const filteredUsers = users.filter(user => 
     `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||

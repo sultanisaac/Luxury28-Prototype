@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Truck, ArrowLeft, Lock } from 'lucide-react';
 import { watches } from '@/lib/watches';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/logo';
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -24,7 +25,7 @@ export default function ProductPage() {
           <Link href="/" className="flex items-center text-sm uppercase tracking-widest text-muted-foreground hover:text-white transition-colors">
             <ArrowLeft size={16} className="mr-2" /> Back
           </Link>
-          <div className="font-serif text-2xl font-bold tracking-widest text-primary">LUXURY28</div>
+          <Logo size={24} className="scale-90" />
           <div className="w-[70px]"></div> {/* Spacer */}
         </div>
       </nav>

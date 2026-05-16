@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Settings, Save, Globe, Shield, Bell, Mail, Share2, AlertTriangle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { updateStoreSettings, toggleMaintenanceMode } from './actions'
@@ -13,12 +14,39 @@ interface SettingsFormProps {
 export default function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('General Identity')
+  const [settings, setSettings] = useState(initialSettings)
+  const supabase = createClient()
 
-  const findSetting = (key: string) => initialSettings.find(s => s.key === key)?.value || {}
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-settings')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'store_settings' },
+        async () => {
+          const { data } = await supabase.from('store_settings').select('*')
+          if (data) setSettings(data)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase])
+
+  const findSetting = (key: string) => settings.find(s => s.key === key)?.value || {}
   
   const [identity, setIdentity] = useState(findSetting('store_identity'))
   const [social, setSocial] = useState(findSetting('social_links'))
   const [maintenance, setMaintenance] = useState(findSetting('maintenance_mode'))
+
+  // Sync local state when settings change from remote
+  useEffect(() => {
+    setIdentity(findSetting('store_identity'))
+    setSocial(findSetting('social_links'))
+    setMaintenance(findSetting('maintenance_mode'))
+  }, [settings])
 
   const handleSave = async () => {
     setLoading(true)
