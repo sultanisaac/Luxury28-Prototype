@@ -68,11 +68,24 @@ export function GlobalHeader() {
 
   if (isAdminOrStaffRoute) return null;
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const isHome = pathname === '/';
   const headerBg = (isHome && !isScrolled) ? 'bg-transparent border-transparent' : 'bg-background/95 backdrop-blur-md border-b border-border shadow-sm';
 
   // Only show cart to unauthenticated users or users with 'customer' role
   const showCart = !loading && (!user || userRole === 'customer');
+
+  const navLinks = [
+    { name: 'Products', href: '/products' },
+    { name: 'About', href: isHome ? '#trust' : '/#trust' },
+    { name: 'FAQ', href: isHome ? '#faq' : '/#faq' },
+  ];
 
   return (
     <>
@@ -81,65 +94,115 @@ export function GlobalHeader() {
           <Logo />
           
           <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
-            <Link href="/products" className="hover:text-primary transition-colors">Products</Link>
-            <Link href={isHome ? "#trust" : "/#trust"} className="hover:text-primary transition-colors">About</Link>
-            <Link href={isHome ? "#faq" : "/#faq"} className="hover:text-primary transition-colors">FAQ</Link>
+            {navLinks.map((link) => (
+              <Link key={link.name} href={link.href} className="hover:text-primary transition-colors">
+                {link.name}
+              </Link>
+            ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {!loading && (
-              user ? (
-                <div className="flex items-center gap-2 sm:gap-6">
-                  {showCart && (
-                    <Button variant="ghost" onClick={() => setIsCartOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 uppercase tracking-widest text-xs px-2 sm:px-4">
-                      <div className="relative">
-                        <ShoppingCart size={16} />
-                        {itemCount > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-primary text-background text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                            {itemCount}
-                          </span>
-                        )}
-                      </div>
-                      <span className="hidden sm:inline">Cart</span>
-                    </Button>
-                  )}
-                  
-                  <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-4">
+                {showCart && (
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setIsCartOpen(true)} 
+                    className="text-muted-foreground hover:text-white flex items-center gap-2 uppercase tracking-widest text-xs px-2 sm:px-4 h-10"
+                  >
+                    <div className="relative">
+                      <ShoppingCart size={18} />
+                      {itemCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-primary text-background text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                          {itemCount}
+                        </span>
+                      )}
+                    </div>
+                    <span className="hidden lg:inline">Cart</span>
+                  </Button>
+                )}
+                
+                {user ? (
+                  <div className="flex items-center gap-1 sm:gap-2">
                     <Button variant="ghost" className="text-muted-foreground hover:text-white uppercase tracking-widest text-xs hidden md:flex items-center gap-2" asChild>
                       <Link href="/dashboard-redirect">
                         <User size={16} /> My Account
                       </Link>
                     </Button>
                     <form action={logout}>
-                      <Button variant="outline" type="submit" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 flex items-center gap-2 h-9">
-                        <LogOut size={14} /> <span className="hidden lg:inline">Sign Out</span>
+                      <Button variant="ghost" type="submit" className="text-muted-foreground hover:text-red-400 p-2 md:px-4 md:border md:border-border md:rounded-none">
+                        <LogOut size={18} /> <span className="hidden lg:inline text-xs uppercase tracking-widest ml-2">Sign Out</span>
                       </Button>
                     </form>
                   </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 sm:gap-4">
-                  {showCart && (
-                    <Button variant="ghost" onClick={() => setIsCartOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 uppercase tracking-widest text-xs px-2 sm:px-4">
-                      <div className="relative">
-                        <ShoppingCart size={16} />
-                        {itemCount > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-primary text-background text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                            {itemCount}
-                          </span>
-                        )}
-                      </div>
-                      <span className="hidden sm:inline">Cart</span>
-                    </Button>
-                  )}
-                  <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6 h-9" asChild>
-                    <Link href="/login">Client Portal</Link>
+                ) : (
+                  <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 sm:px-6 h-9 text-xs uppercase tracking-widest" asChild>
+                    <Link href="/login">Portal</Link>
                   </Button>
-                </div>
-              )
+                )}
+              </div>
             )}
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-primary p-2 focus:outline-none"
+            >
+              <div className="space-y-1.5">
+                <motion.span 
+                  animate={isMobileMenuOpen ? { rotate: 45, y: 7.5 } : { rotate: 0, y: 0 }}
+                  className="block w-6 h-0.5 bg-current transition-transform"
+                />
+                <motion.span 
+                  animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+                  className="block w-6 h-0.5 bg-current"
+                />
+                <motion.span 
+                  animate={isMobileMenuOpen ? { rotate: -45, y: -7.5 } : { rotate: 0, y: 0 }}
+                  className="block w-6 h-0.5 bg-current transition-transform"
+                />
+              </div>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Slide-over Navigation */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-20 left-0 w-full bg-background/98 backdrop-blur-xl border-b border-border z-40 md:hidden p-8 flex flex-col items-center gap-8 shadow-2xl"
+            >
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.name} 
+                  href={link.href} 
+                  className="text-lg uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <div className="w-full h-px bg-border my-2" />
+              {user ? (
+                <Link 
+                  href="/dashboard-redirect"
+                  className="text-sm uppercase tracking-widest text-primary font-semibold"
+                >
+                  Customer Dashboard
+                </Link>
+              ) : (
+                <Link 
+                  href="/login"
+                  className="text-sm uppercase tracking-widest text-primary font-semibold"
+                >
+                  Client Login
+                </Link>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {showCart && <CartSlideOut isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
