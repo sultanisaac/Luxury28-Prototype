@@ -107,12 +107,11 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button size="lg" className="bg-primary text-background hover:bg-primary/90 rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
-              Shop Collection
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-background rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
-              View Featured
-            </Button>
+            <Link href="/products" className="w-full sm:w-auto">
+              <Button size="lg" className="bg-primary text-background hover:bg-primary/90 rounded-none px-12 py-6 text-lg w-full sm:w-auto uppercase tracking-widest">
+                Shop Collection
+              </Button>
+            </Link>
           </motion.div>
 
           <motion.div 
