@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SmartImage } from '@/components/ui/smart-image';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { Watch } from '@/lib/watches';
@@ -112,11 +113,12 @@ export default function ProductsPage() {
                 <Link href={`/product/${watch.id}`} className="group block">
                   <div className="bg-card border border-border group-hover:border-primary/50 transition-all duration-500 overflow-hidden relative aspect-[3/4] flex flex-col justify-end p-6">
                     <div className="absolute inset-0 p-8 flex items-center justify-center">
-                      <Image 
+                      <SmartImage 
                         src={watch.image} 
                         alt={watch.name} 
                         width={300} 
                         height={300} 
+                        fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'modern'}
                         className="object-contain group-hover:scale-110 transition-transform duration-700" 
                       />
                     </div>

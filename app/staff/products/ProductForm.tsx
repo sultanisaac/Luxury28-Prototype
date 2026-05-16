@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, Loader2, Package, Image as ImageIcon } from 'lucide-react'
 import { upsertProduct } from './actions'
 import { toast } from 'sonner'
+import { SmartImage } from '@/components/ui/smart-image'
 
 interface ProductFormProps {
   categories: any[]
@@ -201,7 +202,14 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
             <div className="grid grid-cols-4 gap-4">
               {formData.images.map((img, idx) => (
                 <div key={idx} className="relative aspect-square bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden group">
-                  <img src={img} alt="Product preview" className="w-full h-full object-cover" />
+                  <SmartImage 
+                    src={img} 
+                    alt="Product preview" 
+                    width={200}
+                    height={200}
+                    fallbackType="modern"
+                    className="w-full h-full object-cover" 
+                  />
                   <button 
                     type="button"
                     onClick={() => removeImage(idx)}

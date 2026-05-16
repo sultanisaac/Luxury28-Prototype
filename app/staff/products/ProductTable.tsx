@@ -7,8 +7,11 @@ import {
   Edit3, 
   MoreHorizontal, 
   Archive, 
-  TrendingUp
+  Archive, 
+  TrendingUp,
+  Image as ImageIcon
 } from 'lucide-react'
+import { SmartImage } from '@/components/ui/smart-image'
 import { Button } from '@/components/ui/button'
 import { deleteProduct, toggleProductStatus } from './actions'
 import { toast } from 'sonner'
@@ -98,17 +101,14 @@ export default function ProductTable({ products: initialProducts, categories }: 
           >
             {/* Image Preview */}
             <div className="relative aspect-[4/3] bg-zinc-950 overflow-hidden">
-              {product.images && product.images[0] ? (
-                <img 
-                  src={product.images[0]} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-800">
-                  <Archive size={48} />
-                </div>
-              )}
+              <SmartImage 
+                src={product.images?.[0]} 
+                alt={product.name} 
+                width={400}
+                height={300}
+                fallbackType="modern"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+              />
               <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
                 <ProductForm 
                   categories={categories} 
