@@ -1,121 +1,91 @@
 'use client'
 
-import { useState } from 'react'
-import { CreditCard, Plus, Trash2, ShieldCheck, Wallet, Building2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
-
-const PAYMENT_METHODS = [
-  { id: 'card', label: 'Credit / Debit Card', icon: CreditCard, description: 'Visa, Mastercard, AMEX' },
-  { id: 'bank', label: 'Bank Transfer', icon: Building2, description: 'Direct bank payment' },
-  { id: 'wallet', label: 'Digital Wallet', icon: Wallet, description: 'PayPal, Apple Pay, Google Pay' },
-]
-
-// Mock saved cards — in production these come from Stripe
-const MOCK_CARDS = [
-  { id: 'card_1', brand: 'Visa', last4: '4242', expiry: '12/26', isDefault: true },
-  { id: 'card_2', brand: 'Mastercard', last4: '5555', expiry: '08/27', isDefault: false },
-]
+import { ShieldCheck, Lock, CreditCard, Landmark, QrCode } from 'lucide-react'
 
 export default function PaymentSettingsPage() {
-  const [savedCards] = useState(MOCK_CARDS)
-  const [preferred, setPreferred] = useState('card')
-  const [showAddCard, setShowAddCard] = useState(false)
-
-  const handleSavePreference = () => {
-    toast.success('Payment preference saved')
-  }
-
   return (
-    <div>
-      <div className="mb-8 pb-4 border-b border-border">
-        <h1 className="font-serif text-3xl">Payment Settings</h1>
-        <p className="text-muted-foreground mt-2 font-light">Manage your preferred payment methods for checkout.</p>
+    <div className="max-w-4xl">
+      <div className="mb-10 pb-4 border-b border-border">
+        <h1 className="font-serif text-3xl">Payment Security</h1>
+        <p className="text-muted-foreground mt-2 font-light italic">Your security is our highest priority.</p>
       </div>
 
-      <div className="space-y-10 max-w-2xl">
-
-        {/* Preferred Method Selector */}
-        <div>
-          <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Preferred Payment Method</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {PAYMENT_METHODS.map((method) => {
-              const Icon = method.icon
-              const isSelected = preferred === method.id
-              return (
-                <button
-                  key={method.id}
-                  onClick={() => setPreferred(method.id)}
-                  className={`flex flex-col items-center gap-3 p-5 border text-center transition-all ${
-                    isSelected
-                      ? 'border-primary bg-primary/5 text-white'
-                      : 'border-border hover:border-primary/50 text-muted-foreground'
-                  }`}
-                >
-                  <Icon size={24} className={isSelected ? 'text-primary' : ''} />
-                  <div>
-                    <p className="text-xs uppercase tracking-widest font-medium">{method.label}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">{method.description}</p>
-                  </div>
-                  {isSelected && (
-                    <span className="text-[10px] uppercase tracking-widest text-primary border border-primary/40 px-2 py-0.5">Selected</span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-          <Button onClick={handleSavePreference} className="mt-4 bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest text-xs px-8">
-            Save Preference
-          </Button>
-        </div>
-
-        {/* Saved Cards */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xs uppercase tracking-widest text-muted-foreground">Saved Cards</h2>
-            <button onClick={() => setShowAddCard(!showAddCard)} className="text-xs uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
-              <Plus size={14} /> Add Card
-            </button>
-          </div>
-
-          {showAddCard && (
-            <div className="mb-6 border border-primary/30 p-5 bg-background/50">
-              <p className="text-xs text-muted-foreground mb-4">Card details are encrypted and stored securely via Stripe. You will be redirected to complete setup.</p>
-              <Button className="bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest text-xs" onClick={() => { toast.info('Stripe card setup coming soon'); setShowAddCard(false) }}>
-                <CreditCard size={14} className="mr-2" /> Add via Stripe
-              </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Left Column: Trust Information */}
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary">
+              <ShieldCheck size={28} strokeWidth={1.5} />
+              <h2 className="text-lg font-serif tracking-wide">Verified Secure</h2>
             </div>
-          )}
+            <p className="text-sm text-muted-foreground leading-relaxed font-light">
+              Luxury28 partners with <span className="text-white font-medium">Xendit</span>, Indonesia's leading payment gateway, to ensure every transaction is protected by bank-level encryption.
+            </p>
+          </div>
 
-          <div className="space-y-3">
-            {savedCards.map((card) => (
-              <div key={card.id} className={`flex items-center justify-between p-4 border transition-colors ${card.isDefault ? 'border-primary/40 bg-primary/5' : 'border-border'}`}>
-                <div className="flex items-center gap-4">
-                  <CreditCard size={20} className={card.isDefault ? 'text-primary' : 'text-muted-foreground'} />
-                  <div>
-                    <p className="text-sm font-medium">{card.brand} •••• {card.last4}</p>
-                    <p className="text-xs text-muted-foreground">Expires {card.expiry}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  {card.isDefault && (
-                    <span className="text-[10px] uppercase tracking-widest text-primary border border-primary/40 px-2 py-0.5">Default</span>
-                  )}
-                  <button className="text-muted-foreground hover:text-red-400 transition-colors">
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary">
+              <Lock size={28} strokeWidth={1.5} />
+              <h2 className="text-lg font-serif tracking-wide">Zero Card Storage</h2>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed font-light">
+              To guarantee absolute privacy, <span className="text-white font-medium">we never store your credit card or sensitive financial data</span> on our servers. All information is handled exclusively on Xendit's PCI-DSS compliant infrastructure.
+            </p>
+          </div>
+
+          <div className="pt-6 border-t border-border">
+            <div className="flex flex-wrap gap-8 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+              <img src="/images/payment/visa.svg" alt="Visa" className="h-8 object-contain" />
+              <img src="/images/payment/mastercard.svg" alt="Mastercard" className="h-8 object-contain" />
+              <img src="/images/payment/paypal.svg" alt="PayPal" className="h-8 object-contain" />
+              <img src="/images/payment/bca.svg" alt="BCA" className="h-8 object-contain bg-white/10 p-1 rounded" />
+            </div>
           </div>
         </div>
 
-        {/* Security Notice */}
-        <div className="flex items-start gap-3 p-4 border border-border/50 bg-background/30">
-          <ShieldCheck size={18} className="text-primary mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            All payment information is encrypted using industry-standard SSL/TLS. Card details are never stored on our servers — they are handled exclusively by our secure payment processor.
-          </p>
+        {/* Right Column: Experience Summary */}
+        <div className="bg-zinc-900/30 border border-border p-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5">
+            <Lock size={120} />
+          </div>
+          
+          <h3 className="text-xs uppercase tracking-[0.2em] text-primary mb-6">Checkout Experience</h3>
+          <ul className="space-y-6">
+            <li className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CreditCard size={16} className="text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Universal Acceptance</p>
+                <p className="text-xs text-muted-foreground mt-1">Pay with all major local and international cards.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Landmark size={16} className="text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Direct Bank Transfer</p>
+                <p className="text-xs text-muted-foreground mt-1">Seamless Virtual Account integration for all major Indonesian banks.</p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <QrCode size={16} className="text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Instant QRIS Payments</p>
+                <p className="text-xs text-muted-foreground mt-1">Scan and pay instantly using Gopay, OVO, or Dana.</p>
+              </div>
+            </li>
+          </ul>
+
+          <div className="mt-10 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+            <p className="text-[10px] uppercase tracking-widest text-primary font-bold mb-2">Private Client Concierge</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              If you require alternative payment arrangements (e.g., Bank Wire for high-value timepieces), please contact our Private Concierge.
+            </p>
+          </div>
         </div>
       </div>
     </div>
