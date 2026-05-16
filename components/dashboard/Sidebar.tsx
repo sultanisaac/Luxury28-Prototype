@@ -28,7 +28,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { logout } from '@/app/auth/actions'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 interface NavItem {
   name: string
@@ -45,7 +46,22 @@ interface SidebarProps {
 
 export function Sidebar({ navItems, userEmail, role, notificationComponent }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const supabase = createClient()
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      await supabase.auth.signOut({ scope: 'local' })
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Fallback if window.location fails
+      router.push('/')
+    }
+  }
 
   const iconMap: Record<string, any> = {
     LayoutDashboard,
@@ -104,12 +120,15 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
             Back to Site
           </Link>
         </Button>
-        <form action={logout}>
-          <Button type="submit" variant="ghost" className="w-full justify-start text-zinc-400 hover:text-red-400 hover:bg-red-950/30 rounded-md">
-            <LogOut size={16} className="mr-2" />
-            Sign Out
-          </Button>
-        </form>
+        <Button 
+          variant="ghost" 
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full justify-start text-zinc-400 hover:text-red-400 hover:bg-red-950/30 rounded-md"
+        >
+          <LogOut size={16} className="mr-2" />
+          {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
+        </Button>
       </div>
     </div>
   )
@@ -149,11 +168,15 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
           <Logo size={18} />
         </div>
         
-        <form action={logout}>
-          <Button type="submit" variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-            <LogOut size={18} />
-          </Button>
-        </form>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="text-zinc-400 hover:text-white"
+        >
+          <LogOut size={18} />
+        </Button>
       </header>
     </>
   )
