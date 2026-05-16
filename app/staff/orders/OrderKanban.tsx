@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Package, Truck, CheckCircle, RefreshCcw, Box, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { updateOrderStatus, generateShippingLabel } from './actions'
@@ -17,8 +18,26 @@ const COLUMNS = [
   { id: 'Shipped', label: 'Shipped', icon: Truck, color: 'text-emerald-400', nextStatus: null }
 ]
 
-export default function OrderKanban({ orders }: OrderKanbanProps) {
+export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps) {
+  const [orders, setOrders] = useState(initialOrders)
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const channel = supabase.channel('rt-kanban-orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
+        async () => {
+          const { data } = await supabase
+            .from('orders')
+            .select('*')
+            .in('status', ['Paid', 'Processing', 'Packaging', 'Shipped'])
+            .order('created_at', { ascending: false })
+          if (data) setOrders(data)
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [supabase])
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     setLoadingId(orderId)

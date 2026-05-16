@@ -13,7 +13,6 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 import { Logo } from '@/components/logo';
 
 export default function Home() {
-  const [showExitIntent, setShowExitIntent] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,15 +34,6 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0) {
-        setShowExitIntent(true);
-      }
-    };
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, []);
 
   const featuredWatches = watches.slice(0, 4);
 
@@ -330,45 +320,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* EXIT INTENT POPUP */}
-      <AnimatePresence>
-        {showExitIntent && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-border p-8 max-w-md w-full relative text-center"
-            >
-              <button 
-                onClick={() => setShowExitIntent(false)}
-                className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors"
-              >
-                <X size={24} />
-              </button>
-              <div className="w-12 h-12 border border-primary flex items-center justify-center mx-auto mb-6 text-primary">
-                <Star size={24} />
-              </div>
-              <h3 className="text-2xl font-serif mb-4">Wait. Before you go.</h3>
-              <p className="text-muted-foreground mb-8 font-light text-sm">
-                Join our private collectors list. Get priority access to limited timepieces and off-market allocations before public listing.
-              </p>
-              <input type="email" placeholder="Your email address" className="bg-background border border-border px-4 py-3 w-full text-sm focus:outline-none focus:border-primary mb-4" />
-              <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6">
-                Request Access
-              </Button>
-              <p className="mt-4 text-xs text-muted-foreground uppercase tracking-widest cursor-pointer hover:text-white" onClick={() => setShowExitIntent(false)}>
-                No, thank you
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </main>
   );
 }
