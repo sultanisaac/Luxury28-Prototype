@@ -30,6 +30,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table'
+import UserDetailModal from './UserDetailModal'
 
 interface UserListProps {
   users: any[]
@@ -38,6 +39,8 @@ interface UserListProps {
 export default function UserList({ users: initialUsers }: UserListProps) {
   const [users, setUsers] = useState(initialUsers)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function UserList({ users: initialUsers }: UserListProps) {
         { event: '*', schema: 'public', table: 'users' },
         async () => {
           const { data } = await supabase
-            .from('users')
+            .from('admin_user_view')
             .select('*')
             .order('created_at', { ascending: false })
           if (data) setUsers(data)
@@ -128,6 +131,7 @@ export default function UserList({ users: initialUsers }: UserListProps) {
           <TableHeader className="bg-zinc-950/30">
             <TableRow className="border-zinc-800 hover:bg-transparent">
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">User</TableHead>
+              <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Contact Info</TableHead>
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Role</TableHead>
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Joined Date</TableHead>
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Status</TableHead>
@@ -136,16 +140,41 @@ export default function UserList({ users: initialUsers }: UserListProps) {
           </TableHeader>
           <TableBody>
             {filteredUsers.map((user) => (
-              <TableRow key={user.id} className="border-zinc-800 hover:bg-zinc-800/20 transition-colors">
+              <TableRow 
+                key={user.id} 
+                className="border-zinc-800 hover:bg-zinc-800/20 transition-colors cursor-pointer group"
+                onClick={() => {
+                  setSelectedUser(user)
+                  setIsModalOpen(true)
+                }}
+              >
                 <TableCell className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 font-bold">
-                      {user.first_name?.[0]}{user.last_name?.[0] || 'U'}
+                    <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 font-bold overflow-hidden">
+                      {user.avatar_url ? (
+                        <img src={user.avatar_url} alt={`${user.first_name} ${user.last_name}`} className="w-full h-full object-cover" />
+                      ) : (
+                        <>{user.first_name?.[0]}{user.last_name?.[0] || 'U'}</>
+                      )}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">{user.first_name} {user.last_name}</p>
                       <p className="text-[10px] text-zinc-500 font-mono mt-0.5">{user.id.slice(0, 8)}...</p>
                     </div>
+                  </div>
+                </TableCell>
+                <TableCell className="px-6 py-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-zinc-300 flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-amber-500/50"></span>
+                      {user.email}
+                    </p>
+                    {user.phone && (
+                      <p className="text-[10px] text-zinc-500 flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
+                        {user.phone}
+                      </p>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="px-6 py-4">
@@ -168,7 +197,7 @@ export default function UserList({ users: initialUsers }: UserListProps) {
                     <span className="text-[10px] text-zinc-400 font-medium">Active</span>
                   </div>
                 </TableCell>
-                <TableCell className="px-6 py-4 text-right">
+                <TableCell className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="text-zinc-500 hover:text-white rounded-xl">
@@ -205,6 +234,12 @@ export default function UserList({ users: initialUsers }: UserListProps) {
           </div>
         )}
       </div>
+
+      <UserDetailModal 
+        user={selectedUser}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   )
 }

@@ -13,7 +13,7 @@ export default async function UsersPage() {
   if (userData?.role !== 'admin') notFound()
   
   const { data: users } = await supabase
-    .from('users')
+    .from('admin_user_view')
     .select('*')
     .order('created_at', { ascending: false })
 

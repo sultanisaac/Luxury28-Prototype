@@ -97,9 +97,12 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
         toast.error('Error saving avatar URL')
       }
     } catch (err: any) {
+      console.error('Avatar upload error:', err)
       toast.error('Error uploading avatar: ' + err.message)
     } finally {
       setLoading(false)
+      // Reset input value so onChange fires even for same file
+      e.target.value = ''
     }
   }
 
