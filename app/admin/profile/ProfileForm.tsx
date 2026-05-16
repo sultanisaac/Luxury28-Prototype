@@ -47,7 +47,8 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
   const [profileData, setProfileData] = useState({
     first_name: user.first_name || '',
     last_name: user.last_name || '',
-    phone: user.phone || ''
+    phone: user.phone || '',
+    avatar_url: user.avatar_url || ''
   })
 
   // Sync local state when remote data changes
@@ -55,9 +56,52 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
     setProfileData({
       first_name: user.first_name || '',
       last_name: user.last_name || '',
-      phone: user.phone || ''
+      phone: user.phone || '',
+      avatar_url: user.avatar_url || ''
     })
   }, [user])
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // 1MB Limit
+    if (file.size > 1024 * 1024) {
+      return toast.error('File size must be less than 1MB')
+    }
+
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${user.id}-${Math.random()}.${fileExt}`
+    const filePath = `${user.id}/${fileName}`
+
+    setLoading(true)
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath)
+
+      const result = await updateProfile({
+        ...profileData,
+        avatar_url: publicUrl
+      })
+
+      if (result.success) {
+        toast.success('Avatar updated')
+      } else {
+        toast.error('Error saving avatar URL')
+      }
+    } catch (err: any) {
+      toast.error('Error uploading avatar: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const [passwords, setPasswords] = useState({
     new: '',
@@ -106,12 +150,23 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
         <div className="p-8 bg-zinc-900 border border-zinc-800 rounded-2xl text-center shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-700"></div>
           <div className="relative inline-block group mb-4">
-            <div className="w-24 h-24 rounded-full bg-zinc-950 border-2 border-amber-500/30 flex items-center justify-center text-3xl font-serif text-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
-              {profileData.first_name?.[0]}{profileData.last_name?.[0]}
+            <div className="w-24 h-24 rounded-full bg-zinc-950 border-2 border-amber-500/30 flex items-center justify-center text-3xl font-serif text-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.15)] overflow-hidden">
+              {profileData.avatar_url ? (
+                <img src={profileData.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <>{profileData.first_name?.[0]}{profileData.last_name?.[0]}</>
+              )}
             </div>
-            <button className="absolute bottom-0 right-0 p-2 bg-amber-500 text-zinc-950 rounded-full shadow-xl hover:scale-110 transition-transform">
+            <label className="absolute bottom-0 right-0 p-2 bg-amber-500 text-zinc-950 rounded-full shadow-xl hover:scale-110 transition-transform cursor-pointer">
               <Camera size={14} />
-            </button>
+              <input 
+                type="file" 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={loading}
+              />
+            </label>
           </div>
           <h3 className="text-xl font-bold text-white font-serif">{profileData.first_name} {profileData.last_name}</h3>
           <p className="text-xs text-zinc-500 uppercase tracking-widest mt-1 font-bold">{user.role}</p>
