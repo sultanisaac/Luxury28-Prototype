@@ -21,6 +21,7 @@ export interface CheckoutPayload {
 }
 
 export async function createCheckoutOrder(payload: CheckoutPayload) {
+  console.log('[Checkout Action] Received payload:', payload);
   const supabase = await createClient();
 
   // ── 1. Verify the user is authenticated ────────────────────────────────────
@@ -117,5 +118,6 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
   });
 
   // ── 8. Redirect to Xendit hosted payment page ──────────────────────────────
+  console.log('[Checkout Action] Redirecting to Xendit:', invoiceUrl);
   redirect(invoiceUrl);
 }
