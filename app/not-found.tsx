@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Home, MoveLeft } from 'lucide-react'
+import { Logo } from '@/components/logo'
 
 export default function NotFound() {
   return (
@@ -36,8 +37,8 @@ export default function NotFound() {
           </Button>
         </div>
 
-        <div className="pt-20">
-          <div className="font-serif text-xl font-bold tracking-widest text-zinc-800">LUXURY28</div>
+        <div className="pt-20 flex justify-center opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
+          <Logo className="!gap-4" />
         </div>
       </div>
     </div>

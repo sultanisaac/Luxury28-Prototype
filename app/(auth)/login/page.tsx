@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { Logo } from '@/components/logo'
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -25,6 +26,9 @@ export default async function LoginPage(props: Props) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-zinc-900 p-8 shadow-2xl border border-zinc-800">
+        <div className="flex justify-center">
+          <Logo size={48} className="flex-col !gap-2" />
+        </div>
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back</h1>
           <p className="mt-2 text-sm text-zinc-400">Sign in to your Luxury28 account</p>

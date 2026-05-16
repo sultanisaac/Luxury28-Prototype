@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { logout } from '@/app/auth/actions';
 import { CartSlideOut } from '@/components/cart-slideout';
+import { Logo } from '@/components/logo';
 
 export function GlobalHeader() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -74,7 +75,7 @@ export function GlobalHeader() {
     <>
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${headerBg}`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="font-serif text-2xl font-bold tracking-widest text-primary">LUXURY28</Link>
+          <Logo />
           
           <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
             <Link href={isHome ? "#collection" : "/#collection"} className="hover:text-primary transition-colors">Shop</Link>

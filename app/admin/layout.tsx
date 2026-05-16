@@ -16,7 +16,10 @@ import {
   Tag,
   Settings,
   MessageSquare
-} from 'lucide-react'
+ } from 'lucide-react'
+ 
+ import AdminNotificationIndicator from '@/components/admin/AdminNotificationIndicator'
+ import { Logo } from '@/components/logo'
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -40,11 +43,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 bg-zinc-900 border-r border-zinc-800 flex flex-col hidden md:flex">
         <div className="h-16 flex items-center px-6 border-b border-zinc-800">
-          <Link href="/admin" className="font-serif text-xl tracking-widest font-bold">LUXURY28 <span className="text-amber-500 text-xs tracking-normal ml-1">ADMIN</span></Link>
+          <Logo size={24} className="scale-90 origin-left" />
         </div>
         
         <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
+            if (item.name === 'Notifications') {
+              return <AdminNotificationIndicator key={item.name} />
+            }
             const Icon = item.icon
             return (
               <Link 
@@ -87,7 +93,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
         {/* Mobile Header */}
         <header className="h-16 md:hidden border-b border-zinc-800 bg-zinc-900 flex items-center justify-between px-4">
-          <Link href="/admin" className="font-serif text-lg tracking-widest font-bold">LUXURY28 <span className="text-amber-500 text-[10px] tracking-normal ml-1">ADMIN</span></Link>
+          <Logo size={20} />
           <form action={logout}>
             <Button type="submit" variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
               <LogOut size={18} />

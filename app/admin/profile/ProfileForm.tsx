@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { 
   User, 
   Mail, 
@@ -20,14 +21,44 @@ interface ProfileFormProps {
   user: any
 }
 
-export default function ProfileForm({ user }: ProfileFormProps) {
+export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
   const [loading, setLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
+  const [user, setUser] = useState(initialUser)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-profile')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${user.id}` },
+        (payload) => {
+          setUser(payload.new)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, user.id])
+
   const [profileData, setProfileData] = useState({
     first_name: user.first_name || '',
     last_name: user.last_name || '',
     phone: user.phone || ''
   })
+
+  // Sync local state when remote data changes
+  useEffect(() => {
+    setProfileData({
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      phone: user.phone || ''
+    })
+  }, [user])
+
   const [passwords, setPasswords] = useState({
     new: '',
     confirm: ''
