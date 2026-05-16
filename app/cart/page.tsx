@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { SmartImage } from '@/components/ui/smart-image';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal, subtotal_idr } = useCart();
@@ -46,7 +47,7 @@ export default function CartPage() {
                   className="flex flex-col sm:flex-row gap-6 p-6 bg-[#0a0a0a] border border-border group"
                 >
                   <div className="w-32 h-32 relative bg-[#111] overflow-hidden flex-shrink-0">
-                    <img src={item.image} alt={item.name} className="object-cover w-full h-full opacity-80" />
+                    <SmartImage src={item.image} alt={item.name} width={128} height={128} fallbackType="modern" className="object-cover w-full h-full opacity-80" />
                   </div>
                   
                   <div className="flex-1 flex flex-col justify-between">

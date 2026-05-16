@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { SmartImage } from '@/components/ui/smart-image';
 
 import { useCart } from '@/context/CartContext';
 
@@ -78,7 +79,7 @@ export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                   {items.map((item) => (
                     <div key={item.id} className="flex gap-4 p-4 border border-border bg-card">
                       <div className="w-20 h-20 relative bg-[#111] overflow-hidden flex-shrink-0">
-                        <img src={item.image} alt={item.name} className="object-cover w-full h-full opacity-80" />
+                        <SmartImage src={item.image} alt={item.name} width={80} height={80} fallbackType="modern" className="object-cover w-full h-full opacity-80" />
                       </div>
                       <div className="flex-1 flex flex-col justify-between">
                         <div>

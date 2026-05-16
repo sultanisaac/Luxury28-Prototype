@@ -19,6 +19,11 @@ const FALLBACKS = {
 export function SmartImage({ src, fallbackType = 'luxury', alt, className, ...props }: SmartImageProps) {
   const [error, setError] = useState(false);
   
+  // Reset error state when src changes
+  React.useEffect(() => {
+    setError(false);
+  }, [src]);
+  
   // Handle array of images or single string
   const initialSrc = Array.isArray(src) ? src[0] : src;
   const currentSrc = error || !initialSrc ? FALLBACKS[fallbackType] : initialSrc;
