@@ -6,19 +6,10 @@ import { X, ShoppingBag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  // Mock cart items for now until database integration
-  const [items, setItems] = useState([
-    {
-      id: '1',
-      name: 'Rolex Submariner Date',
-      price: 14500,
-      image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=200&auto=format&fit=crop',
-      quantity: 1,
-    }
-  ]);
+import { useCart } from '@/context/CartContext';
 
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { items, removeItem, subtotal, subtotal_idr } = useCart();
 
   // Close on Escape key
   useEffect(() => {
@@ -39,9 +30,7 @@ export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: ()
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-  const removeItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
-  };
+
 
   return (
     <AnimatePresence>
@@ -94,7 +83,14 @@ export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
                           <h3 className="font-serif text-sm truncate pr-6">{item.name}</h3>
-                          <p className="text-primary font-medium tracking-wider text-sm mt-1">${item.price.toLocaleString()}</p>
+                          <div className="flex flex-col gap-0.5 mt-1">
+                            <span className="text-primary font-medium tracking-wider text-sm">${item.price.toLocaleString()}</span>
+                            {item.price_idr && (
+                              <span className="text-[10px] text-muted-foreground font-light tracking-widest uppercase">
+                                Rp {item.price_idr.toLocaleString('id-ID')}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-xs text-muted-foreground uppercase tracking-widest">Qty: {item.quantity}</span>
@@ -112,9 +108,17 @@ export function CartSlideOut({ isOpen, onClose }: { isOpen: boolean; onClose: ()
             {/* Footer */}
             {items.length > 0 && (
               <div className="p-6 border-t border-border bg-[#050505]">
-                <div className="flex justify-between mb-6">
-                  <span className="text-muted-foreground uppercase tracking-widest text-sm">Subtotal</span>
-                  <span className="font-serif text-xl text-primary">${subtotal.toLocaleString()}</span>
+                <div className="space-y-1 mb-6">
+                  <div className="flex justify-between items-end">
+                    <span className="text-muted-foreground uppercase tracking-widest text-[10px]">Subtotal USD</span>
+                    <span className="font-serif text-xl text-primary">${subtotal.toLocaleString()}</span>
+                  </div>
+                  {subtotal_idr > 0 && (
+                    <div className="flex justify-between items-end">
+                      <span className="text-muted-foreground uppercase tracking-widest text-[10px]">Subtotal IDR</span>
+                      <span className="font-sans text-xs text-muted-foreground tracking-widest">Rp {subtotal_idr.toLocaleString('id-ID')}</span>
+                    </div>
+                  )}
                 </div>
                 <Button className="w-full bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest py-6" asChild>
                   <Link href="/cart" onClick={onClose}>

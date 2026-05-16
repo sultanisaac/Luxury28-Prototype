@@ -11,7 +11,10 @@ import { logout } from '@/app/auth/actions';
 import { CartSlideOut } from '@/components/cart-slideout';
 import { Logo } from '@/components/logo';
 
+import { useCart } from '@/context/CartContext';
+
 export function GlobalHeader() {
+  const { itemCount } = useCart();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +81,7 @@ export function GlobalHeader() {
           <Logo />
           
           <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
-            <Link href={isHome ? "#collection" : "/#collection"} className="hover:text-primary transition-colors">Shop</Link>
+            <Link href="/products" className="hover:text-primary transition-colors">Products</Link>
             <Link href={isHome ? "#trust" : "/#trust"} className="hover:text-primary transition-colors">About</Link>
             <Link href={isHome ? "#faq" : "/#faq"} className="hover:text-primary transition-colors">FAQ</Link>
           </div>
@@ -89,7 +92,15 @@ export function GlobalHeader() {
                 <div className="flex items-center gap-2 sm:gap-6">
                   {showCart && (
                     <Button variant="ghost" onClick={() => setIsCartOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 uppercase tracking-widest text-xs px-2 sm:px-4">
-                      <ShoppingCart size={16} /> <span className="hidden sm:inline">Cart</span>
+                      <div className="relative">
+                        <ShoppingCart size={16} />
+                        {itemCount > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-primary text-background text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                            {itemCount}
+                          </span>
+                        )}
+                      </div>
+                      <span className="hidden sm:inline">Cart</span>
                     </Button>
                   )}
                   
@@ -109,10 +120,16 @@ export function GlobalHeader() {
               ) : (
                 <div className="flex items-center gap-2 sm:gap-4">
                   {showCart && (
-                    <Button variant="ghost" className="text-muted-foreground hover:text-white uppercase tracking-widest text-xs px-2 sm:px-4" asChild>
-                      <Link href="/login" className="flex items-center gap-2">
-                        <ShoppingCart size={16} /> <span className="hidden sm:inline">Cart</span>
-                      </Link>
+                    <Button variant="ghost" onClick={() => setIsCartOpen(true)} className="text-muted-foreground hover:text-white flex items-center gap-2 uppercase tracking-widest text-xs px-2 sm:px-4">
+                      <div className="relative">
+                        <ShoppingCart size={16} />
+                        {itemCount > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-primary text-background text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                            {itemCount}
+                          </span>
+                        )}
+                      </div>
+                      <span className="hidden sm:inline">Cart</span>
                     </Button>
                   )}
                   <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-6 h-9" asChild>
@@ -125,7 +142,7 @@ export function GlobalHeader() {
         </div>
       </nav>
 
-      {showCart && user && <CartSlideOut isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
+      {showCart && <CartSlideOut isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
     </>
   );
 }
