@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Bell } from 'lucide-react'
 import Link from 'next/link'
 
-export default function AdminNotificationIndicator() {
+export default function NotificationIndicator({ href }: { href: string }) {
   const [unreadCount, setUnreadCount] = useState(0)
   const supabase = createClient()
 
@@ -14,7 +14,7 @@ export default function AdminNotificationIndicator() {
       const { count } = await supabase
         .from('notifications')
         .select('*', { count: 'exact', head: true })
-        .eq('read', false)
+        .eq('is_read', false)
       setUnreadCount(count || 0)
     }
 
@@ -38,7 +38,7 @@ export default function AdminNotificationIndicator() {
 
   return (
     <Link 
-      href="/admin/notifications"
+      href={href}
       className="flex items-center gap-3 px-3 py-2.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors group relative"
     >
       <Bell size={18} className="group-hover:text-amber-500 transition-colors" />

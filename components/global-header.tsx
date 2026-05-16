@@ -138,7 +138,7 @@ export function GlobalHeader() {
                   </div>
                 ) : (
                   <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 sm:px-6 h-9 text-xs uppercase tracking-widest" asChild>
-                    <Link href="/login">Portal</Link>
+                    <Link href="/login">Join Us</Link>
                   </Button>
                 )}
               </div>
@@ -198,7 +198,7 @@ export function GlobalHeader() {
                   href="/login"
                   className="text-sm uppercase tracking-widest text-primary font-semibold"
                 >
-                  Client Login
+                  Join Us
                 </Link>
               )}
             </motion.div>
