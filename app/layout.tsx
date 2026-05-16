@@ -28,6 +28,7 @@ export const metadata: Metadata = {
 }
 
 import { CartProvider } from '@/context/CartContext'
+import { GlobalFooter } from '@/components/global-footer'
 
 export default function RootLayout({
   children,
@@ -40,6 +41,7 @@ export default function RootLayout({
         <CartProvider>
           <GlobalHeader />
           {children}
+          <GlobalFooter />
           {process.env.NODE_ENV === 'production' && <Analytics />}
         </CartProvider>
       </body>

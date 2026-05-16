@@ -253,6 +253,8 @@ export default function Home() {
 
           <div className="space-y-6">
             {[
+              { q: "How do I place an order?", a: "You can securely order any available timepiece directly through our platform. If you encounter payment issues or have specific questions about a piece, please reach out to our staff for immediate assistance." },
+              { q: "How can I contact the staff for help?", a: "Our dedicated team is ready to assist you. You can use our Contact page, email us directly at luxury28@luxury28.com, or call our direct line at +1 234 567 89." },
               { q: "Are these watches authentic?", a: "100% certified authentic. Every timepiece undergoes rigorous inspection by our master watchmakers before listing." },
               { q: "Do you offer a warranty?", a: "Yes, we provide a 2-year comprehensive international warranty for all our timepieces." },
               { q: "What is the shipping process?", a: "All shipments are fully insured and trackable. We use express priority services for domestic and expedited for international." },
@@ -268,42 +270,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-[#050505] pt-24 pb-12 border-t border-border">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="col-span-1 md:col-span-2">
-              <Logo size={48} className="mb-6 !gap-4" />
-              <p className="text-muted-foreground max-w-sm font-light">
-                Curated luxury watches for the modern collector. We only deal in excellence.
-              </p>
-            </div>
-            <div>
-              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Navigation</h5>
-              <ul className="space-y-4 text-muted-foreground text-sm font-light">
-                <li><Link href="/products" className="hover:text-primary transition-colors">Products</Link></li>
-                <li><Link href="#trust" className="hover:text-primary transition-colors">Our Standard</Link></li>
-                <li><Link href="#faq" className="hover:text-primary transition-colors">Before Investing</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Newsletter</h5>
-              <p className="text-muted-foreground text-sm mb-4 font-light">Get priority access to rare and limited timepieces.</p>
-              <div className="flex">
-                <input type="email" placeholder="Your email address" className="bg-transparent border border-border px-4 py-2 w-full text-sm focus:outline-none focus:border-primary" />
-                <Button className="rounded-none bg-primary text-background hover:bg-primary/90 px-6">JOIN</Button>
-              </div>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-border/50 text-center text-xs text-muted-foreground uppercase tracking-widest flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>&copy; {new Date().getFullYear()} Luxury28. All Rights Reserved.</p>
-            <div className="flex gap-6">
-              <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
 
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur border-t border-border p-4 z-40 flex gap-4">
         {user ? (

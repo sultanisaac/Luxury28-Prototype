@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/server'
- import { Sidebar } from '@/components/dashboard/Sidebar'
+import NotificationIndicator from '@/components/admin/NotificationIndicator'
+import { Sidebar } from '@/components/dashboard/Sidebar'
 
 export default async function StaffLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -21,6 +22,7 @@ export default async function StaffLayout({ children }: { children: ReactNode })
         navItems={navItems} 
         userEmail={user?.email} 
         role="staff" 
+        notificationComponent={<NotificationIndicator href="/staff/support" />}
       />
 
       {/* Main Content */}

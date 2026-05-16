@@ -148,11 +148,6 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
-
-      {/* FOOTER MINI */}
-      <footer className="mt-32 pt-16 border-t border-border text-center text-[10px] text-muted-foreground uppercase tracking-[0.3em]">
-        Luxury28 &copy; {new Date().getFullYear()} — Authorized Collection
-      </footer>
     </main>
   );
 }

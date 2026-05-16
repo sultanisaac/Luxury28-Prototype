@@ -36,8 +36,9 @@ Similar to the Admin profile, staff members need a dedicated space to manage the
 - **Inventory Management:** Quick access to adjust stock levels, update pricing, and modify product details or images.
 
 ### 3.4 Customer Support Inbox (`/staff/support`) — ✅ Real-time
-- **Inquiry Management:** Read and reply to customer messages from the storefront contact form.
-- **Live Updates:** The inquiry list subscribes to the `contact_inquiries` table. New messages appear and status changes (read, replied, archived) update instantly.
+- **Inquiry Management:** Read and reply to customer messages submitted via the public Contact form.
+- **Global Notifications:** Staff receive instant, high-priority notification alerts (via the `NotificationIndicator`) whenever a new customer inquiry is submitted.
+- **Live Updates:** The inquiry list subscribes to the `contact_inquiries` table. New messages appear and status changes update instantly.
 - **Contextual View:** When viewing a message from a logged-in customer, see their recent order history alongside the message.
 
 ### 3.5 Customer Directory (`/staff/customers`) — ✅ New Module (Real-time)
