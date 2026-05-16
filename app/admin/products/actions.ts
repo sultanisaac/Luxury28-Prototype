@@ -8,6 +8,7 @@ export async function upsertProduct(data: {
   name: string
   description?: string
   price: number
+  price_idr?: number
   stock_quantity: number
   category_id?: string
   status?: string

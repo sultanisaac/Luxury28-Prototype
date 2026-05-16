@@ -149,9 +149,16 @@ export default function ProductTable({ products: initialProducts, categories }: 
                     {categories.find(c => c.id === product.category_id)?.name || 'Uncategorized'}
                   </p>
                 </div>
-                <p className="text-xl font-bold text-white font-mono">
-                  ${Number(product.price).toLocaleString()}
-                </p>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-white font-mono">
+                    ${Number(product.price).toLocaleString()}
+                  </p>
+                  {product.price_idr && (
+                    <p className="text-[10px] text-zinc-500 font-mono mt-1">
+                      Rp {Number(product.price_idr).toLocaleString('id-ID')}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-800/50">
