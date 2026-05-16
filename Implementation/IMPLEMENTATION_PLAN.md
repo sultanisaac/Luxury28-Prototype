@@ -97,7 +97,7 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 ### Phase 7: Staff Dashboard — Operations & Fulfillment
 - [x] **Order Fulfillment Queue:** Real-time Kanban board for orders (Paid → Processing → Packaging → Shipped).
 - [x] **Product Catalog Manager:** Real-time full CRUD interface for products and stock levels.
-- [x] **Customer Support Inbox:** Real-time inquiry management.
+- [x] **Customer Support Inbox:** Real-time inquiry management with global `NotificationIndicator` alerts triggered by the new public `/contact` page.
 - [x] **Customer Directory:** Read-only, customer-scoped view with order history modal.
 - [ ] **Biteship Shipping Integration:** 
   - [ ] On "Request Pickup," send order weight/dimensions to Biteship API and receive a Waybill ID (Resi).
