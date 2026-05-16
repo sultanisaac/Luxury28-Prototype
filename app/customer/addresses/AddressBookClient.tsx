@@ -1,0 +1,151 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Plus, Edit2, Trash2, MapPin, X, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
+
+export default function AddressBookClient({ initialAddresses, userId }: { initialAddresses: any[], userId: string }) {
+  const supabase = createClient()
+  const [addresses, setAddresses] = useState(initialAddresses)
+  const [showForm, setShowForm] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({
+    label: '', recipient_name: '', street_address: '', city: '', province: '', postal_code: '', phone: '', is_default: false
+  })
+
+  // Real-time sync
+  useEffect(() => {
+    const channel = supabase.channel('rt-customer-addresses')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'shipping_addresses', filter: `user_id=eq.${userId}` },
+        async () => {
+          const { data } = await supabase
+            .from('shipping_addresses')
+            .select('*')
+            .eq('user_id', userId)
+            .order('is_default', { ascending: false })
+          if (data) setAddresses(data)
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [supabase, userId])
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      const { error } = await supabase.from('shipping_addresses').insert({ ...form, user_id: userId })
+      if (error) throw error
+      toast.success('Address saved')
+      setShowForm(false)
+      setForm({ label: '', recipient_name: '', street_address: '', city: '', province: '', postal_code: '', phone: '', is_default: false })
+    } catch (err: any) {
+      toast.error('Error: ' + err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Remove this address?')) return
+    const { error } = await supabase.from('shipping_addresses').delete().eq('id', id)
+    if (error) toast.error('Could not delete address')
+    else toast.success('Address removed')
+  }
+
+  const inputClass = "w-full bg-background border border-border p-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
+        <h1 className="font-serif text-3xl">Address Book</h1>
+        <Button onClick={() => setShowForm(true)} className="bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest text-xs flex items-center gap-2">
+          <Plus size={16} /> Add New
+        </Button>
+      </div>
+
+      {/* Add Form */}
+      {showForm && (
+        <div className="mb-8 border border-primary/30 p-6 bg-background/50 relative">
+          <button onClick={() => setShowForm(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-white">
+            <X size={18} />
+          </button>
+          <h2 className="font-serif text-xl mb-6">New Address</h2>
+          <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2 space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">Label (e.g. Home, Office)</label>
+              <input required value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} className={inputClass} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">Recipient Name</label>
+              <input required value={form.recipient_name} onChange={e => setForm({ ...form, recipient_name: e.target.value })} className={inputClass} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">Phone</label>
+              <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className={inputClass} />
+            </div>
+            <div className="sm:col-span-2 space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">Street Address</label>
+              <input required value={form.street_address} onChange={e => setForm({ ...form, street_address: e.target.value })} className={inputClass} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">City</label>
+              <input required value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className={inputClass} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">Province / State</label>
+              <input value={form.province} onChange={e => setForm({ ...form, province: e.target.value })} className={inputClass} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">Postal Code</label>
+              <input required value={form.postal_code} onChange={e => setForm({ ...form, postal_code: e.target.value })} className={inputClass} />
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <input type="checkbox" id="is_default" checked={form.is_default} onChange={e => setForm({ ...form, is_default: e.target.checked })} className="accent-primary" />
+              <label htmlFor="is_default" className="text-xs uppercase tracking-widest text-muted-foreground">Set as default</label>
+            </div>
+            <div className="sm:col-span-2 flex gap-4 pt-2">
+              <Button disabled={saving} type="submit" className="bg-primary text-background hover:bg-primary/90 rounded-none uppercase tracking-widest text-xs px-8">
+                {saving ? <Loader2 size={14} className="animate-spin mr-2" /> : null} Save Address
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="rounded-none text-xs">Cancel</Button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {addresses.length === 0 ? (
+        <div className="text-center py-16 border border-dashed border-border bg-background/30">
+          <MapPin size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+          <h3 className="font-serif text-xl mb-2">No addresses saved</h3>
+          <p className="text-muted-foreground text-sm">Add a shipping address to speed up checkout.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {addresses.map((address) => (
+            <div key={address.id} className="border border-border p-6 relative bg-background/50 hover:border-primary/50 transition-colors">
+              {address.is_default && (
+                <span className="absolute top-0 right-0 bg-primary text-background text-[10px] uppercase tracking-widest px-2 py-1">Default</span>
+              )}
+              <h3 className="font-medium mb-1 text-primary">{address.label || 'Address'}</h3>
+              <p className="text-sm text-white mb-4">{address.recipient_name}</p>
+              <div className="text-sm text-zinc-400 space-y-1 font-light">
+                <p>{address.street_address}</p>
+                <p>{address.city}, {address.province} {address.postal_code}</p>
+                <p>{address.phone}</p>
+              </div>
+              <div className="flex gap-4 mt-6 pt-4 border-t border-border">
+                <button onClick={() => handleDelete(address.id)} className="text-xs uppercase tracking-widest text-muted-foreground hover:text-red-400 flex items-center gap-1 transition-colors">
+                  <Trash2 size={12} /> Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

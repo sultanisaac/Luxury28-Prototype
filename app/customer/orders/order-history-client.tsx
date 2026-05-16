@@ -1,33 +1,72 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Package, Truck } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X, Package, Truck, RefreshCw } from 'lucide-react'
 
-export default function OrderHistoryClient({ initialOrders }: { initialOrders: any[] }) {
-  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+export default function OrderHistoryClient({ initialOrders, userId }: { initialOrders: any[], userId: string }) {
+  const supabase = createClient()
+  const [orders, setOrders] = useState(initialOrders)
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
+
+  // Real-time sync
+  useEffect(() => {
+    const channel = supabase.channel('rt-customer-orders')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${userId}` },
+        async () => {
+          const { data } = await supabase
+            .from('orders')
+            .select('*, order_items(*, products(name, images))')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+          if (data) setOrders(data)
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [supabase, userId])
+
+  // Keep selected order in sync when orders update
+  useEffect(() => {
+    if (selectedOrder) {
+      const updated = orders.find(o => o.id === selectedOrder.id)
+      if (updated) setSelectedOrder(updated)
+    }
+  }, [orders])
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Delivered': return 'text-green-400 border-green-400/20 bg-green-400/10';
-      case 'Shipped': return 'text-blue-400 border-blue-400/20 bg-blue-400/10';
-      case 'Processing': return 'text-amber-400 border-amber-400/20 bg-amber-400/10';
-      case 'Paid': return 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10';
-      default: return 'text-zinc-400 border-zinc-800 bg-zinc-900';
+      case 'Delivered': return 'text-green-400 border-green-400/20 bg-green-400/10'
+      case 'Shipped': return 'text-blue-400 border-blue-400/20 bg-blue-400/10'
+      case 'Processing': return 'text-amber-400 border-amber-400/20 bg-amber-400/10'
+      case 'Paid': return 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10'
+      default: return 'text-zinc-400 border-zinc-800 bg-zinc-900'
     }
-  };
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="text-center py-16 border border-dashed border-border bg-background/30">
+        <Package size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+        <h3 className="font-serif text-xl mb-2">No orders yet</h3>
+        <p className="text-muted-foreground text-sm">Your purchase history will appear here.</p>
+      </div>
+    )
+  }
 
   return (
     <>
       <div className="space-y-4">
-        {initialOrders.map((order) => (
-          <div 
-            key={order.id} 
+        {orders.map((order) => (
+          <div
+            key={order.id}
             onClick={() => setSelectedOrder(order)}
             className="border border-border p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:border-primary/50 transition-colors bg-background/30 hover:bg-background/80"
           >
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-[#111] flex items-center justify-center border border-border">
+              <div className="w-16 h-16 bg-[#111] flex items-center justify-center border border-border flex-shrink-0">
                 <Package className="text-muted-foreground" />
               </div>
               <div>
@@ -50,17 +89,11 @@ export default function OrderHistoryClient({ initialOrders }: { initialOrders: a
       <AnimatePresence>
         {selectedOrder && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setSelectedOrder(null)}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
             />
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-background border-l border-border z-[101] shadow-2xl flex flex-col"
             >
@@ -78,13 +111,13 @@ export default function OrderHistoryClient({ initialOrders }: { initialOrders: a
                 {/* Status & Tracking */}
                 <div className="bg-card border border-border p-5">
                   <h4 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Fulfillment Status</h4>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
                     <span className={`text-xs uppercase tracking-widest px-3 py-1 border ${getStatusColor(selectedOrder.status)}`}>
                       {selectedOrder.status}
                     </span>
                     {selectedOrder.tracking_number && (
                       <div className="flex items-center gap-2 text-sm text-primary">
-                        <Truck size={16} /> 
+                        <Truck size={16} />
                         <span className="underline cursor-pointer">{selectedOrder.tracking_number}</span>
                       </div>
                     )}
@@ -97,7 +130,7 @@ export default function OrderHistoryClient({ initialOrders }: { initialOrders: a
                   <div className="space-y-4">
                     {selectedOrder.order_items?.map((item: any, i: number) => (
                       <div key={i} className="flex gap-4 border-b border-border/50 pb-4 last:border-0 last:pb-0">
-                        <div className="w-20 h-20 bg-[#111] overflow-hidden flex-shrink-0 relative border border-border">
+                        <div className="w-20 h-20 bg-[#111] overflow-hidden flex-shrink-0 border border-border">
                           {item.products?.images?.[0] ? (
                             <img src={item.products.images[0]} alt={item.products.name} className="object-cover w-full h-full opacity-80" />
                           ) : (
@@ -135,5 +168,5 @@ export default function OrderHistoryClient({ initialOrders }: { initialOrders: a
         )}
       </AnimatePresence>
     </>
-  );
+  )
 }
