@@ -27,6 +27,8 @@ export const metadata: Metadata = {
   },
 }
 
+import { CartProvider } from '@/context/CartContext'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,9 +37,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-background">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground selection:bg-primary/30`}>
-        <GlobalHeader />
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <CartProvider>
+          <GlobalHeader />
+          {children}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </CartProvider>
       </body>
     </html>
   )

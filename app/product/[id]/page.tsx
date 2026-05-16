@@ -9,14 +9,63 @@ import { watches } from '@/lib/watches';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 
+import { useCart } from '@/context/CartContext';
+
+import { Watch } from '@/lib/watches';
+
 export default function ProductPage() {
   const router = useRouter();
+  const { addItem } = useCart();
   const { id } = useParams();
-  const watch = watches.find(w => w.id === id);
+  const [watch, setWatch] = useState<Watch | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const fetchWatch = async () => {
+      if (!id) return;
+
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          categories (
+            name
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (!error && data) {
+        setWatch({
+          id: data.id,
+          name: data.name,
+          price: Number(data.price),
+          price_idr: Number(data.price_idr),
+          tier: data.categories?.name || 'Luxury',
+          image: data.images?.[0] || '/featured-watch.png',
+          stock: data.stock_quantity,
+          description: data.description
+        });
+      }
+      setLoading(false);
+    };
+
+    fetchWatch();
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center font-serif text-2xl animate-pulse text-muted-foreground tracking-widest">LOADING...</div>;
+  }
 
   if (!watch) {
     return <div className="min-h-screen flex items-center justify-center font-serif text-2xl">Watch not found.</div>;
   }
+
+  const handleAddToCart = () => {
+    addItem(watch);
+    alert(`${watch.name} added to cart!`);
+  };
 
   return (
     <main className="min-h-screen bg-background text-foreground font-sans">
@@ -76,9 +125,14 @@ export default function ProductPage() {
               "Worn by collectors who value precision and presence."
             </p>
 
-            <div className="text-4xl font-light tracking-wider mb-8">
+            <div className="text-4xl font-light tracking-wider mb-2">
               ${watch.price.toLocaleString()}
             </div>
+            {watch.price_idr && (
+              <div className="text-xl text-muted-foreground font-light tracking-widest mb-8 uppercase">
+                Rp {watch.price_idr.toLocaleString('id-ID')}
+              </div>
+            )}
 
             <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-3 text-sm font-medium inline-block mb-10">
               Only {watch.stock} left — Limited collector's edition
@@ -94,7 +148,7 @@ export default function ProductPage() {
               <Button
                 variant="outline"
                 className="w-full rounded-none h-16 text-lg uppercase tracking-widest border-border hover:bg-white hover:text-background"
-                onClick={() => alert('Cart coming soon!')}
+                onClick={handleAddToCart}
               >
                 Add to Cart
               </Button>

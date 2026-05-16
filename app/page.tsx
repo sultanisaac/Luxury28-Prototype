@@ -12,20 +12,50 @@ import { logout } from '@/app/auth/actions';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { Logo } from '@/components/logo';
 
+import { Watch } from '@/lib/watches';
+
 export default function Home() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [products, setProducts] = useState<Watch[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
     
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+    const fetchData = async () => {
+      // Fetch User
+      const { data: { user: userData } } = await supabase.auth.getUser();
+      setUser(userData);
+      
+      // Fetch Products with Categories
+      const { data: productData, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          categories (
+            name
+          )
+        `)
+        .eq('status', 'active');
+
+      if (!error && productData) {
+        const formattedProducts: Watch[] = productData.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          price: Number(p.price),
+          price_idr: Number(p.price_idr),
+          tier: p.categories?.name || 'Luxury',
+          image: p.images?.[0] || '/featured-watch.png',
+          stock: p.stock_quantity,
+          description: p.description
+        }));
+        setProducts(formattedProducts);
+      }
+      
       setLoading(false);
     };
 
-    getUser();
+    fetchData();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
@@ -34,8 +64,7 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-
-  const featuredWatches = watches.slice(0, 4);
+  const featuredWatches = products.slice(0, 4);
 
   return (
     <main className="min-h-screen bg-background text-foreground font-sans">
@@ -106,7 +135,7 @@ export default function Home() {
             <div className="w-16 h-1 bg-primary mx-auto"></div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {featuredWatches.map((watch) => (
               <Link href={`/product/${watch.id}`} key={watch.id} className="group cursor-pointer">
                 <div className="bg-card p-6 border border-border transition-all duration-500 hover:border-primary/50 relative overflow-hidden h-[400px] flex flex-col justify-end">
@@ -124,6 +153,12 @@ export default function Home() {
                 </div>
               </Link>
             ))}
+          </div>
+
+          <div className="text-center">
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-12 py-6 text-sm uppercase tracking-[0.3em] transition-all duration-500" asChild>
+              <Link href="/products">Explore Full Collection</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -153,44 +188,6 @@ export default function Home() {
               <p className="text-muted-foreground text-sm">Dedicated concierge service from acquisition to ownership.</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* PRODUCT GRID */}
-      <section id="collection" className="py-32 bg-background">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">Full Inventory</h2>
-            <div className="w-16 h-1 bg-primary mx-auto mb-8"></div>
-            <p className="text-muted-foreground tracking-widest uppercase text-sm">Available Timepieces</p>
-          </div>
-
-          {['Ultra Luxury', 'High-End Luxury', 'Mid-Tier Luxury', 'Affordable Luxury'].map((tier) => (
-            <div key={tier} className="mb-20">
-              <h3 className="text-2xl font-serif mb-8 border-b border-border pb-4">{tier}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                {watches.filter(w => w.tier === tier).map((watch) => (
-                  <Link href={`/product/${watch.id}`} key={watch.id} className="group">
-                    <div className="bg-card p-4 border border-border transition-colors hover:border-primary/50 text-center">
-                      <div className="aspect-square relative mb-4 overflow-hidden bg-[#111]">
-                        <Image 
-                          src={watch.image} 
-                          alt={watch.name} 
-                          fill
-                          className="object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
-                        />
-                      </div>
-                      <h4 className="font-serif text-sm mb-2 truncate">{watch.name}</h4>
-                      <p className="text-primary text-sm tracking-wider mb-4">${watch.price.toLocaleString()}</p>
-                      <Button variant="outline" className="w-full rounded-none border-border group-hover:border-primary group-hover:bg-primary group-hover:text-background transition-all text-xs uppercase tracking-widest">
-                        View Details
-                      </Button>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -277,7 +274,7 @@ export default function Home() {
             <div>
               <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Navigation</h5>
               <ul className="space-y-4 text-muted-foreground text-sm font-light">
-                <li><Link href="#collection" className="hover:text-primary transition-colors">Shop Collection</Link></li>
+                <li><Link href="/products" className="hover:text-primary transition-colors">Products</Link></li>
                 <li><Link href="#trust" className="hover:text-primary transition-colors">Our Standard</Link></li>
                 <li><Link href="#faq" className="hover:text-primary transition-colors">Before Investing</Link></li>
               </ul>
