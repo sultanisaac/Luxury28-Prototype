@@ -55,8 +55,9 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (findError || !order) {
-    console.error('[Xendit Webhook] Order not found for invoice:', xenditInvoiceId);
-    return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    console.warn(`[Xendit Webhook] Order not found for invoice ${xenditInvoiceId}. This is expected for dashboard test requests.`);
+    // Return 200 to satisfy Xendit's "Test and Save" check
+    return NextResponse.json({ message: 'Webhook received (Order not found, likely a test)' }, { status: 200 });
   }
 
   // ── 4. Idempotency — skip if already processed ─────────────────────────────
