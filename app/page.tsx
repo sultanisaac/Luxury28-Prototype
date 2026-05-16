@@ -88,7 +88,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif text-white mb-6 tracking-wide"
+            className="text-4xl sm:text-5xl md:text-7xl font-serif text-white mb-6 tracking-wide leading-tight"
           >
             Time Is Status.<br />Wear It.
           </motion.h1>
@@ -96,7 +96,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light"
+            className="text-base sm:text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light px-4"
           >
             Curated luxury watches. Certified authenticity. Limited availability.
           </motion.p>
