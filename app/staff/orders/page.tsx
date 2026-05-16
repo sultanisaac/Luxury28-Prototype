@@ -6,7 +6,18 @@ export default async function StaffOrdersPage() {
   
   const { data: orders } = await supabase
     .from('orders')
-    .select('*')
+    .select(`
+      *,
+      customer:users!customer_id(first_name, last_name, email),
+      address:shipping_addresses!shipping_address_id(*),
+      order_items (
+        *,
+        products (
+          name,
+          ref_number
+        )
+      )
+    `)
     .order('created_at', { ascending: false })
 
   return (
