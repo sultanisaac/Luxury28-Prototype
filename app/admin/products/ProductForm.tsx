@@ -27,6 +27,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
     name: '',
     description: '',
     price: 0,
+    price_idr: 0,
     stock_quantity: 0,
     category_id: '',
     status: 'active',
@@ -39,6 +40,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
         name: product.name || '',
         description: product.description || '',
         price: Number(product.price) || 0,
+        price_idr: Number(product.price_idr) || 0,
         stock_quantity: product.stock_quantity || 0,
         category_id: product.category_id || '',
         status: product.status || 'active',
@@ -63,6 +65,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
             name: '',
             description: '',
             price: 0,
+            price_idr: 0,
             stock_quantity: 0,
             category_id: '',
             status: 'active',
@@ -146,7 +149,19 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
                 placeholder="0.00"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-500/50 transition-all"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-400/50 transition-all"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Price (IDR)</label>
+              <input 
+                required
+                type="number" 
+                placeholder="0"
+                value={formData.price_idr}
+                onChange={(e) => setFormData({ ...formData, price_idr: Number(e.target.value) })}
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-400/50 transition-all"
               />
             </div>
 
@@ -158,7 +173,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
                 placeholder="0"
                 value={formData.stock_quantity}
                 onChange={(e) => setFormData({ ...formData, stock_quantity: Number(e.target.value) })}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-500/50 transition-all"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-400/50 transition-all"
               />
             </div>
           </div>

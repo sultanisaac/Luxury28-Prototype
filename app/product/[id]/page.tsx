@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,6 +8,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Truck, ArrowLeft, Lock } from 'lucide-react';
 import { watches } from '@/lib/watches';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase/client';
 import { Logo } from '@/components/logo';
 
 import { useCart } from '@/context/CartContext';
