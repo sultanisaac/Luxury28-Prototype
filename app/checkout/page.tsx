@@ -13,7 +13,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
   // ── Guard: must be authenticated ──────────────────────────────────────────
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/auth/login?redirectTo=/checkout');
+  if (!user) redirect('/login?redirectTo=/checkout');
 
   // ── Guard: product must exist ─────────────────────────────────────────────
   const { data: product } = await supabase

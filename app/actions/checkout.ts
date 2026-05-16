@@ -26,7 +26,7 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
   // ── 1. Verify the user is authenticated ────────────────────────────────────
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
-    redirect('/auth/login');
+    redirect('/login');
   }
 
   // ── 2. Get user details for the invoice ───────────────────────────────────
