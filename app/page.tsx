@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client';
 import { logout } from '@/app/auth/actions';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { Logo } from '@/components/logo';
+import { SmartImage } from '@/components/ui/smart-image';
 
 import { Watch } from '@/lib/watches';
 
@@ -140,7 +141,14 @@ export default function Home() {
               <Link href={`/product/${watch.id}`} key={watch.id} className="group cursor-pointer">
                 <div className="bg-card p-6 border border-border transition-all duration-500 hover:border-primary/50 relative overflow-hidden h-[400px] flex flex-col justify-end">
                   <div className="absolute inset-0 p-8 flex items-center justify-center">
-                    <Image src={watch.image} alt={watch.name} width={250} height={250} className="object-contain group-hover:scale-110 transition-transform duration-700" />
+                    <SmartImage 
+                      src={watch.image} 
+                      alt={watch.name} 
+                      width={250} 
+                      height={250} 
+                      fallbackType="luxury"
+                      className="object-contain group-hover:scale-110 transition-transform duration-700" 
+                    />
                   </div>
                   <div className="relative z-10 bg-background/90 backdrop-blur p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                     <h3 className="font-serif text-lg mb-1 truncate">{watch.name}</h3>

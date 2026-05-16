@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { SmartImage } from '@/components/ui/smart-image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Truck, ArrowLeft, Lock } from 'lucide-react';
@@ -93,19 +94,20 @@ export default function ProductPage() {
             className="space-y-6"
           >
             <div className="bg-[#111] border border-border aspect-square relative group overflow-hidden flex items-center justify-center p-12">
-              <Image 
+              <SmartImage 
                 src={watch.image} 
                 alt={watch.name} 
                 fill
-                className="object-contain p-12 group-hover:scale-110 transition-transform duration-700"
+                fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'vintage'}
+                className="object-contain p-12 group-hover:scale-110 transition-transform duration-700" 
               />
             </div>
             <div className="grid grid-cols-3 gap-4">
                <div className="bg-[#111] border border-border aspect-square relative cursor-pointer hover:border-primary/50 transition-colors">
-                  <Image src={watch.image} alt={watch.name} fill className="object-contain p-4" />
+                  <SmartImage src={watch.image} alt={watch.name} fill fallbackType="luxury" className="object-contain p-4" />
                </div>
                <div className="bg-[#111] border border-border aspect-square relative cursor-pointer hover:border-primary/50 transition-colors">
-                  <Image src="/wrist-shot.png" alt="On Wrist" fill className="object-cover" />
+                  <Image src="/wrist-shot.png" alt="On Wrist" fill className="object-cover opacity-50 hover:opacity-100 transition-opacity" />
                </div>
                <div className="bg-[#111] border border-border aspect-square relative cursor-pointer hover:border-primary/50 transition-colors flex items-center justify-center group">
                  <div className="text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Play Video</div>
