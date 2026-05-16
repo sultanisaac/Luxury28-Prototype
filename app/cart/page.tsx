@@ -46,15 +46,20 @@ export default function CartPage() {
                   key={item.id} 
                   className="flex flex-col sm:flex-row gap-6 p-6 bg-[#0a0a0a] border border-border group"
                 >
-                  <div className="w-32 h-32 relative bg-[#111] overflow-hidden flex-shrink-0">
-                    <SmartImage src={item.image} alt={item.name} width={128} height={128} fallbackType="modern" className="object-cover w-full h-full opacity-80" />
-                  </div>
+                  <Link 
+                    href={`/product/${item.id}`}
+                    className="w-32 h-32 relative bg-[#111] overflow-hidden flex-shrink-0 cursor-pointer"
+                  >
+                    <SmartImage src={item.image} alt={item.name} width={128} height={128} fallbackType="modern" className="object-cover w-full h-full opacity-80 group-hover:scale-110 transition-transform duration-700" />
+                  </Link>
                   
                   <div className="flex-1 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="text-[10px] uppercase tracking-[0.2em] text-primary mb-1">{item.category}</div>
-                        <h3 className="font-serif text-xl">{item.name}</h3>
+                        <Link href={`/product/${item.id}`} className="hover:text-primary transition-colors cursor-pointer">
+                          <h3 className="font-serif text-xl">{item.name}</h3>
+                        </Link>
                       </div>
                       <div className="text-right">
                         <div className="text-xl font-light">${item.price.toLocaleString()}</div>
