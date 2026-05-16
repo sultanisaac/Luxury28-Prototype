@@ -168,7 +168,8 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
               />
             </label>
           </div>
-          <h3 className="text-xl font-bold text-white font-serif">{profileData.first_name} {profileData.last_name}</h3>
+          <p className="text-[10px] text-zinc-500 uppercase tracking-tighter mt-2 italic">Max file size: 1MB</p>
+          <h3 className="text-xl font-bold text-white font-serif mt-4">{profileData.first_name} {profileData.last_name}</h3>
           <p className="text-xs text-zinc-500 uppercase tracking-widest mt-1 font-bold">{user.role}</p>
           
           <div className="mt-8 space-y-3 pt-6 border-t border-zinc-800/50">
