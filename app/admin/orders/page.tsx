@@ -21,7 +21,15 @@ export default async function OrdersPage() {
         first_name,
         last_name,
         email
-      )
+      ),
+      order_items (
+        *,
+        products (
+          name,
+          images
+        )
+      ),
+      shipping_addresses (*)
     `)
     .order('created_at', { ascending: false })
 
