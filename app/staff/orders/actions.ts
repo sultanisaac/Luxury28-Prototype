@@ -87,7 +87,6 @@ export async function generateShippingLabel(orderId: string) {
     const { error } = await supabase
       .from('orders')
       .update({ 
-        status: 'Shipped',
         tracking_number: trackingNumber,
         biteship_order_id: biteshipOrderId
       })

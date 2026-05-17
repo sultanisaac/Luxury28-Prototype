@@ -40,6 +40,7 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
     switch (status) {
       case 'Delivered': return 'text-green-400 border-green-400/20 bg-green-400/10'
       case 'Shipped': return 'text-blue-400 border-blue-400/20 bg-blue-400/10'
+      case 'Packaging': return 'text-purple-400 border-purple-400/20 bg-purple-400/10'
       case 'Processing': return 'text-amber-400 border-amber-400/20 bg-amber-400/10'
       case 'Paid': return 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10'
       default: return 'text-zinc-400 border-zinc-800 bg-zinc-900'
@@ -76,9 +77,18 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <span className={`text-xs uppercase tracking-widest px-3 py-1 border ${getStatusColor(order.status)}`}>
-                {order.status}
-              </span>
+              <div className="flex flex-col items-end gap-2">
+                <span className={`text-xs uppercase tracking-widest px-3 py-1 border ${getStatusColor(order.status)}`}>
+                  {order.status}
+                </span>
+                {order.tracking_number && (
+                  <span className="text-xs text-primary font-mono bg-primary/10 px-2 py-1 rounded flex items-center gap-1.5 border border-primary/20">
+                    <Truck size={12} />
+                    {order.courier_name ? <span className="font-bold font-sans uppercase tracking-widest">{order.courier_name.split(' ')[0]}</span> : null}
+                    {order.tracking_number}
+                  </span>
+                )}
+              </div>
               <span className="text-xs uppercase tracking-widest text-primary hover:underline hidden sm:inline-block">View Details →</span>
             </div>
           </div>
@@ -118,7 +128,12 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
                     {selectedOrder.tracking_number && (
                       <div className="flex items-center gap-2 text-sm text-primary">
                         <Truck size={16} />
-                        <span className="underline cursor-pointer">{selectedOrder.tracking_number}</span>
+                        {selectedOrder.courier_name && (
+                           <span className="font-bold uppercase tracking-widest text-xs text-foreground mr-1">
+                             {selectedOrder.courier_name.split(' ')[0]}
+                           </span>
+                        )}
+                        <span className="underline cursor-pointer font-mono">{selectedOrder.tracking_number}</span>
                       </div>
                     )}
                   </div>

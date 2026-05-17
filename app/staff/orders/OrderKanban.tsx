@@ -195,7 +195,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                     )}
                   </div>
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex flex-col gap-2">
                     {col.nextStatus && (
                       <Button 
                         disabled={loadingId === order.id}
@@ -208,7 +208,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                         {loadingId === order.id ? 'Updating...' : `Move to ${col.nextStatus}`} <ArrowRight size={14} className="ml-1" />
                       </Button>
                     )}
-                    {col.nextAction === 'ship' && (
+                    {col.id === 'Packaging' && !order.tracking_number && (
                       <Button 
                         disabled={loadingId === order.id}
                         onClick={(e) => {
@@ -217,7 +217,19 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                         }}
                         className="w-full text-xs bg-purple-500/20 hover:bg-purple-600 border border-purple-500/30 text-purple-300 hover:text-white font-bold py-1.5"
                       >
-                        {loadingId === order.id ? 'Generating...' : 'Generate Label & Ship'}
+                        {loadingId === order.id ? 'Generating...' : 'Generate Label'}
+                      </Button>
+                    )}
+                    {col.id === 'Packaging' && order.tracking_number && (
+                      <Button 
+                        disabled={loadingId === order.id}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleStatusChange(order.id, 'Shipped')
+                        }}
+                        className="w-full text-xs bg-zinc-800 hover:bg-emerald-600 text-white font-bold py-1.5"
+                      >
+                        {loadingId === order.id ? 'Updating...' : 'Move to Shipped'} <ArrowRight size={14} className="ml-1" />
                       </Button>
                     )}
                   </div>
