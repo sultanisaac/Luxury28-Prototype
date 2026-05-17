@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface InquiryListProps {
   initialInquiries: any[]
@@ -33,6 +34,7 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
   const [inquiries, setInquiries] = useState(initialInquiries)
   const [filter, setFilter] = useState('')
   const [activeStatus, setActiveStatus] = useState('All')
+  const [selectedInquiry, setSelectedInquiry] = useState<any | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -46,7 +48,14 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
             .from('contact_inquiries')
             .select('*')
             .order('created_at', { ascending: false })
-          if (data) setInquiries(data)
+          if (data) {
+            setInquiries(data)
+            // Keep selected inquiry in sync in real-time
+            if (selectedInquiry) {
+              const updated = data.find(i => i.id === selectedInquiry.id)
+              if (updated) setSelectedInquiry(updated)
+            }
+          }
         }
       )
       .subscribe()
@@ -54,7 +63,7 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [supabase])
+  }, [supabase, selectedInquiry])
 
   const filteredInquiries = inquiries.filter(iq => {
     const matchesSearch = iq.name.toLowerCase().includes(filter.toLowerCase()) || 
@@ -77,6 +86,13 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
     const result = await deleteInquiry(id)
     if (result.success) toast.success('Inquiry deleted')
     else toast.error('Error: ' + result.error)
+  }
+
+  const handleOpenInquiry = async (inquiry: any) => {
+    setSelectedInquiry(inquiry)
+    if (inquiry.status === 'unread') {
+      await handleStatusUpdate(inquiry.id, 'read')
+    }
   }
 
   const stats = [
@@ -132,8 +148,9 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
             filteredInquiries.map((inquiry) => (
               <div 
                 key={inquiry.id} 
-                className={`p-5 bg-zinc-900 border transition-all group flex items-start justify-between rounded-2xl hover:shadow-2xl hover:shadow-amber-500/5 ${
-                  inquiry.status === 'unread' ? 'border-amber-500/20 bg-amber-500/[0.02]' : 'border-zinc-800'
+                onClick={() => handleOpenInquiry(inquiry)}
+                className={`p-5 bg-zinc-900 border transition-all group flex items-start justify-between rounded-2xl hover:shadow-2xl hover:shadow-amber-500/5 cursor-pointer ${
+                  inquiry.status === 'unread' ? 'border-amber-500/20 bg-amber-500/[0.02]' : 'border-zinc-800 hover:border-zinc-700'
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -173,7 +190,7 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button 
                     variant="ghost" 
                     size="icon" 
@@ -220,6 +237,133 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
           )}
         </div>
       </div>
+
+      {/* Detail Modal */}
+      <Dialog open={!!selectedInquiry} onOpenChange={(open) => !open && setSelectedInquiry(null)}>
+        <DialogContent className="sm:max-w-xl lg:max-w-2xl w-[95vw] bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 gap-0">
+          {selectedInquiry && (
+            <>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-600 to-amber-400" />
+              
+              <DialogHeader className="p-8 border-b border-zinc-900 bg-zinc-900/30">
+                <DialogTitle className="text-2xl font-serif flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-amber-500">
+                    <MessageSquare size={20} />
+                  </div>
+                  <div>
+                    <span className="block text-xl font-bold">{selectedInquiry.subject || 'No Subject'}</span>
+                    <span className="text-xs text-zinc-500 font-mono tracking-widest uppercase font-bold">Support Inquiry</span>
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="p-8 space-y-6">
+                {/* Contact Profile Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold block">Customer Name</span>
+                    <span className="text-sm font-medium text-white block">{selectedInquiry.name}</span>
+                  </div>
+                  <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold block">Email Address</span>
+                    <a 
+                      href={`mailto:${selectedInquiry.email}`}
+                      className="text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors block truncate"
+                    >
+                      {selectedInquiry.email}
+                    </a>
+                  </div>
+                </div>
+
+                {/* Inquiry Message */}
+                <div className="space-y-2">
+                  <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold block">Message</span>
+                  <div className="bg-zinc-900 border border-zinc-800/80 rounded-xl p-5 text-sm text-zinc-300 leading-relaxed font-light whitespace-pre-line max-h-[30vh] overflow-y-auto">
+                    {selectedInquiry.message}
+                  </div>
+                </div>
+
+                {/* Metadata Row */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold block">Current Status</span>
+                    <span className={`inline-block text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded mt-1 ${
+                      selectedInquiry.status === 'unread' ? 'text-amber-500 bg-amber-500/10' :
+                      selectedInquiry.status === 'replied' ? 'text-emerald-500 bg-emerald-500/10' :
+                      selectedInquiry.status === 'archived' ? 'text-blue-400 bg-blue-400/10' :
+                      'text-zinc-400 bg-zinc-800'
+                    }`}>
+                      {selectedInquiry.status}
+                    </span>
+                  </div>
+                  <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold block">Submitted At</span>
+                    <span className="text-xs text-zinc-300 font-medium block mt-1">
+                      {new Date(selectedInquiry.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Controls */}
+                <div className="flex flex-wrap items-center justify-between pt-6 border-t border-zinc-900 gap-4">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const nextStatus = selectedInquiry.status === 'unread' ? 'read' : 'unread'
+                        handleStatusUpdate(selectedInquiry.id, nextStatus)
+                        setSelectedInquiry({ ...selectedInquiry, status: nextStatus })
+                      }}
+                      className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-900"
+                    >
+                      {selectedInquiry.status === 'unread' ? 'Mark as Read' : 'Mark as Unread'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleStatusUpdate(selectedInquiry.id, 'archived')
+                        setSelectedInquiry({ ...selectedInquiry, status: 'archived' })
+                      }}
+                      className="border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-900"
+                    >
+                      Archive Inquiry
+                    </Button>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      variant="destructive"
+                      onClick={async () => {
+                        if (confirm('Are you sure you want to delete this inquiry permanently?')) {
+                          const result = await deleteInquiry(selectedInquiry.id)
+                          if (result.success) {
+                            toast.success('Inquiry deleted')
+                            setSelectedInquiry(null)
+                          } else {
+                            toast.error('Error: ' + result.error)
+                          }
+                        }
+                      }}
+                      className="bg-red-950/40 hover:bg-red-900/60 border border-red-900/50 text-red-200"
+                    >
+                      Delete Inquiry
+                    </Button>
+                    
+                    <Button
+                      asChild
+                      className="bg-amber-500 text-zinc-950 hover:bg-amber-400"
+                    >
+                      <a href={`mailto:${selectedInquiry.email}?subject=Re: ${encodeURIComponent(selectedInquiry.subject || '')}`}>
+                        Reply via Email
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
