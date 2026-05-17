@@ -67,14 +67,14 @@ export function GlobalHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  if (isAdminOrStaffRoute) return null;
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  if (isAdminOrStaffRoute) return null;
 
   const isHome = pathname === '/';
   const headerBg = (isHome && !isScrolled) ? 'bg-transparent border-transparent' : 'bg-background/95 backdrop-blur-md border-b border-border shadow-sm';
@@ -124,14 +124,14 @@ export function GlobalHeader() {
                 )}
                 
                 {user ? (
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <Button variant="ghost" className="text-muted-foreground hover:text-white uppercase tracking-widest text-xs hidden md:flex items-center gap-2" asChild>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 sm:px-6 h-9 text-xs uppercase tracking-widest flex items-center gap-2" asChild>
                       <Link href="/dashboard-redirect">
-                        <User size={16} /> My Account
+                        <User size={16} /> Profile
                       </Link>
                     </Button>
                     <form action={logout}>
-                      <Button variant="ghost" type="submit" className="text-muted-foreground hover:text-red-400 p-2 md:px-4 md:border md:border-border md:rounded-none">
+                      <Button variant="ghost" type="submit" className="text-muted-foreground hover:text-red-400 h-9 p-2 md:px-4 md:border md:border-border md:rounded-none flex items-center justify-center">
                         <LogOut size={18} /> <span className="hidden lg:inline text-xs uppercase tracking-widest ml-2">Sign Out</span>
                       </Button>
                     </form>
@@ -187,16 +187,23 @@ export function GlobalHeader() {
               ))}
               <div className="w-full h-px bg-border my-2" />
               {user ? (
-                <Link 
-                  href="/dashboard-redirect"
-                  className="text-sm uppercase tracking-widest text-primary font-semibold"
-                >
-                  Customer Dashboard
-                </Link>
+                <div className="flex flex-col items-center gap-6 w-full">
+                  <Link 
+                    href="/dashboard-redirect"
+                    className="text-lg uppercase tracking-[0.3em] text-primary font-semibold flex items-center gap-2 transition-colors hover:text-primary/80"
+                  >
+                    <User size={18} /> Profile
+                  </Link>
+                  <form action={logout} className="w-full flex justify-center">
+                    <button type="submit" className="text-sm uppercase tracking-widest text-muted-foreground hover:text-red-400 font-semibold flex items-center gap-2 py-2">
+                      <LogOut size={16} /> Sign Out
+                    </button>
+                  </form>
+                </div>
               ) : (
                 <Link 
                   href="/login"
-                  className="text-sm uppercase tracking-widest text-primary font-semibold"
+                  className="text-lg uppercase tracking-[0.3em] text-primary font-semibold transition-colors hover:text-primary/80"
                 >
                   Join Us
                 </Link>
