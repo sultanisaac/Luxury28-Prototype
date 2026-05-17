@@ -13,7 +13,7 @@ export default function AuthenticityClient({ initialRecords, userId }: { initial
     const channel = supabase.channel('rt-customer-authenticity')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'authenticity_records' },
         async () => {
-          const { data: orders } = await supabase.from('orders').select('id').eq('user_id', userId)
+          const { data: orders } = await supabase.from('orders').select('id').eq('customer_id', userId)
           if (!orders?.length) return
           const orderIds = orders.map(o => o.id)
           const { data } = await supabase.from('authenticity_records').select('*, products(name)').in('order_id', orderIds)
