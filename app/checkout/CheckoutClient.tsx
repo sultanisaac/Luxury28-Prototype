@@ -3,9 +3,10 @@
 import { useState, useTransition } from 'react';
 import { SmartImage } from '@/components/ui/smart-image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Truck, CreditCard, ShieldCheck, Loader2, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { MapPin, Truck, CreditCard, ShieldCheck, Loader2, ChevronRight, CheckCircle2, AlertCircle, Tag, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createCheckoutOrder, CheckoutPayload } from '@/app/actions/checkout';
+import { validateCoupon } from '@/app/actions/coupon';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -66,6 +67,12 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
   const [submitError, setSubmitError] = useState('');
   const [isPending, startTransition] = useTransition();
 
+  // Coupon State
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+
   const priceIDR = watch.price_idr;
 
   // ── Fetch shipping rates ────────────────────────────────────────────────────
@@ -97,6 +104,31 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
     }
   };
 
+  // ── Coupon Logic ────────────────────────────────────────────────────────────
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setApplyingCoupon(true);
+    setCouponError('');
+    try {
+      const res = await validateCoupon(couponCode.trim(), priceIDR);
+      if (res.success) {
+        setAppliedCoupon(res.coupon);
+        setCouponCode('');
+      } else {
+        setCouponError(res.error || 'Invalid coupon');
+      }
+    } catch (e) {
+      setCouponError('Error applying coupon');
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError('');
+  };
+
   // ── Step: Address → Shipping ───────────────────────────────────────────────
   const handleContinueToShipping = () => {
     if (!selectedAddress) return;
@@ -111,6 +143,9 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
   };
 
   // ── Final: Submit to Xendit ────────────────────────────────────────────────
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const total = Math.max(0, priceIDR - discountAmount) + (selectedRate?.price || 0);
+
   const handlePay = () => {
     if (!selectedAddress || !selectedRate) return;
 
@@ -127,6 +162,8 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
       courierServiceCode: selectedRate.serviceCode,
       courierServiceName: selectedRate.serviceName,
       shippingCost: selectedRate.price,
+      couponId: appliedCoupon?.id,
+      discountAmount: discountAmount
     };
 
     setSubmitError('');
@@ -143,7 +180,6 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
     });
   };
 
-  const total = priceIDR + (selectedRate?.price || 0);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
@@ -385,11 +421,52 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
                 </div>
               </div>
 
+              {/* Coupon Section */}
+              <div className="border-t border-border pt-4 mb-4">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Promo Code</p>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between bg-primary/10 border border-primary/20 p-3 rounded">
+                    <div className="flex items-center gap-2 text-primary">
+                      <Tag size={16} />
+                      <span className="font-bold text-sm tracking-wide">{appliedCoupon.code}</span>
+                    </div>
+                    <button onClick={handleRemoveCoupon} className="text-primary hover:text-white transition-colors">
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Enter code" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-white uppercase placeholder:normal-case placeholder:text-zinc-600"
+                    />
+                    <Button 
+                      variant="outline" 
+                      className="border-zinc-800 hover:bg-zinc-800"
+                      onClick={handleApplyCoupon}
+                      disabled={applyingCoupon || !couponCode.trim()}
+                    >
+                      {applyingCoupon ? <Loader2 size={16} className="animate-spin" /> : 'Apply'}
+                    </Button>
+                  </div>
+                )}
+                {couponError && <p className="text-red-400 text-xs mt-2">{couponError}</p>}
+              </div>
+
               <div className="space-y-2 text-sm border-t border-border pt-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Item price</span>
                   <span>{formatIDR(priceIDR)}</span>
                 </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-primary">
+                    <span>Discount ({appliedCoupon.code})</span>
+                    <span>-{formatIDR(appliedCoupon.discountAmount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>{selectedRate ? formatIDR(selectedRate.price) : '—'}</span>
