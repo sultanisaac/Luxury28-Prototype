@@ -62,6 +62,7 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
       toast.error('Error deleting order: ' + error.message)
     } else {
       toast.success('Order history deleted successfully')
+      setOrders(prev => prev.filter(o => o.id !== orderId))
       setSelectedOrder(null)
     }
   }
