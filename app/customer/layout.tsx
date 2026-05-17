@@ -114,7 +114,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 bg-card border border-border p-5 md:p-8 min-h-[600px] shadow-sm">
+        <main className="flex-1 bg-card border border-border p-5 md:p-8 h-[calc(100vh-12rem)] overflow-y-auto shadow-sm rounded-xl">
           {children}
         </main>
 

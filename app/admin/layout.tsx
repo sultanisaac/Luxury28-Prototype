@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   ]
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col md:flex-row text-white font-sans">
+    <div className="h-screen bg-zinc-950 flex flex-col md:flex-row text-white font-sans overflow-hidden">
       <Sidebar 
         navItems={navItems} 
         userEmail={user?.email} 
@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           {children}
