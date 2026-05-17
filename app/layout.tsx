@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 
 import { CartProvider } from '@/context/CartContext'
 import { GlobalFooter } from '@/components/global-footer'
+import { PrototypeOverlay } from '@/components/prototype-overlay'
 
 export default function RootLayout({
   children,
@@ -40,6 +41,7 @@ export default function RootLayout({
     <html lang="en" className="dark bg-background">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased text-foreground selection:bg-primary/30`}>
         <CartProvider>
+          <PrototypeOverlay />
           <GlobalHeader />
           {children}
           <GlobalFooter />

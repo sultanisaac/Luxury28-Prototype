@@ -24,6 +24,8 @@ export interface CheckoutPayload {
   courierServiceCode: string;
   courierServiceName: string;
   shippingCost: number;   // IDR
+  couponId?: string;
+  discountAmount?: number;
 }
 
 export async function createCheckoutOrder(payload: CheckoutPayload) {
@@ -47,7 +49,7 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
     ? `${userRecord.first_name} ${userRecord.last_name}`.trim()
     : user.email!;
 
-  const totalAmount = payload.unitPrice * payload.quantity + payload.shippingCost;
+  const totalAmount = (payload.unitPrice * payload.quantity) - (payload.discountAmount || 0) + payload.shippingCost;
 
   // ── 3. Create order in Supabase (status = Pending) ─────────────────────────
   const { data: order, error: orderError } = await supabase
@@ -60,6 +62,8 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
       shipping_cost: payload.shippingCost,
       destination_area_id: payload.destinationAreaId,
       courier_name: `${payload.courierName} ${payload.courierServiceName}`,
+      coupon_id: payload.couponId,
+      discount_amount: payload.discountAmount || 0,
     })
     .select()
     .single();
