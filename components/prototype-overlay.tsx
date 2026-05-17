@@ -2,26 +2,46 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, X, Users } from 'lucide-react';
+import { Info, X, Users, Copy, Check, Key } from 'lucide-react';
 
 export function PrototypeOverlay() {
   const [isOpen, setIsOpen] = useState(true);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // Show in development by default, or if explicitly enabled via environment variable
   const isPrototype = process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development';
 
-  // Do not render anything if not strictly set to prototype mode
   if (!isPrototype) return null;
 
   // Retrieve credentials from environment variables (safe for public repos!)
-  const adminEmail = process.env.NEXT_PUBLIC_TEST_ADMIN_EMAIL || 'admin1@gmail.com';
-  const adminPass = process.env.NEXT_PUBLIC_TEST_ADMIN_PASS || 'admin123';
+  const credentials = {
+    admin: {
+      role: 'Admin Panel',
+      email: process.env.NEXT_PUBLIC_TEST_ADMIN_EMAIL || 'admin1@gmail.com',
+      pass: process.env.NEXT_PUBLIC_TEST_ADMIN_PASS || 'admin123',
+      color: 'border-amber-500/20 text-amber-500',
+    },
+    staff: {
+      role: 'Staff Dashboard',
+      email: process.env.NEXT_PUBLIC_TEST_STAFF_EMAIL || 'staff1@gmail.com',
+      pass: process.env.NEXT_PUBLIC_TEST_STAFF_PASS || 'staff123',
+      color: 'border-blue-500/20 text-blue-400',
+    },
+    customer: {
+      role: 'Customer Portal',
+      email: process.env.NEXT_PUBLIC_TEST_CUSTOMER_EMAIL || 'customer1@gmail.com',
+      pass: process.env.NEXT_PUBLIC_TEST_CUSTOMER_PASS || 'customer123',
+      color: 'border-emerald-500/20 text-emerald-400',
+    },
+  };
 
-  const staffEmail = process.env.NEXT_PUBLIC_TEST_STAFF_EMAIL || 'staff1@gmail.com';
-  const staffPass = process.env.NEXT_PUBLIC_TEST_STAFF_PASS || 'staff123';
-
-  const customerEmail = process.env.NEXT_PUBLIC_TEST_CUSTOMER_EMAIL || 'customer1@gmail.com';
-  const customerPass = process.env.NEXT_PUBLIC_TEST_CUSTOMER_PASS || 'customer123';
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => {
+      setCopiedKey(null);
+    }, 2000);
+  };
 
   return (
     <>
@@ -34,7 +54,7 @@ export function PrototypeOverlay() {
       </div>
 
       {/* Floating Accounts Widget */}
-      <div className="fixed bottom-4 left-4 z-[100]">
+      <div className="fixed bottom-4 left-4 z-[100] font-sans">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -42,45 +62,81 @@ export function PrototypeOverlay() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="bg-zinc-950/90 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl p-4 w-72 mb-4"
+              className="bg-zinc-950/95 backdrop-blur-md border border-zinc-800 rounded-xl shadow-[0_10px_50px_rgba(0,0,0,0.8)] p-4 w-80 mb-4"
             >
-              <div className="flex items-center justify-between mb-4 border-b border-zinc-800 pb-2">
-                <div className="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold">
-                  <Users size={14} />
-                  Test Accounts
+              <div className="flex items-center justify-between mb-3 border-b border-zinc-900 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                  </span>
+                  <div className="flex items-center gap-1.5 text-amber-500 text-xs uppercase tracking-widest font-bold">
+                    <Key size={14} />
+                    Demo Test Accounts
+                  </div>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-white transition-colors">
+                <button 
+                  onClick={() => setIsOpen(false)} 
+                  className="text-zinc-500 hover:text-white transition-colors p-1 hover:bg-zinc-900 rounded-lg"
+                  title="Minimize Panel"
+                >
                   <X size={14} />
                 </button>
               </div>
 
-              <div className="space-y-4">
-                {/* Admin */}
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Admin Panel</p>
-                  <div className="bg-zinc-900 border border-zinc-800 p-2 rounded text-xs font-mono text-zinc-300">
-                    <div>email: <span className="text-white">{adminEmail}</span></div>
-                    <div>pass: <span className="text-white">{adminPass}</span></div>
-                  </div>
-                </div>
+              <p className="text-[10px] text-zinc-500 mb-3 leading-relaxed">
+                Click any credential field below to copy it instantly.
+              </p>
 
-                {/* Staff */}
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Staff Dashboard</p>
-                  <div className="bg-zinc-900 border border-zinc-800 p-2 rounded text-xs font-mono text-zinc-300">
-                    <div>email: <span className="text-white">{staffEmail}</span></div>
-                    <div>pass: <span className="text-white">{staffPass}</span></div>
-                  </div>
-                </div>
+              <div className="space-y-3">
+                {Object.entries(credentials).map(([key, data]) => (
+                  <div key={key} className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-2.5 hover:border-zinc-700 transition-colors">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
+                        {data.role}
+                      </span>
+                      <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded border bg-zinc-950 ${data.color.split(' ')[0]} ${data.color.split(' ')[1]}`}>
+                        Active
+                      </span>
+                    </div>
 
-                {/* Customer */}
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Customer Portal</p>
-                  <div className="bg-zinc-900 border border-zinc-800 p-2 rounded text-xs font-mono text-zinc-300">
-                    <div>email: <span className="text-white">{customerEmail}</span></div>
-                    <div>pass: <span className="text-white">{customerPass}</span></div>
+                    <div className="space-y-1">
+                      {/* Email Box */}
+                      <button
+                        onClick={() => handleCopy(data.email, `${key}-email`)}
+                        className="w-full flex items-center justify-between bg-zinc-950 border border-zinc-900 hover:border-zinc-700 p-1.5 px-2 rounded text-xs font-mono transition-all text-left text-zinc-300 group"
+                      >
+                        <span className="truncate pr-2">
+                          email: <span className="text-white group-hover:text-amber-200">{data.email}</span>
+                        </span>
+                        {copiedKey === `${key}-email` ? (
+                          <span className="text-emerald-500 text-[10px] flex items-center gap-1 shrink-0 font-sans font-semibold">
+                            <Check size={12} /> Copied!
+                          </span>
+                        ) : (
+                          <Copy size={12} className="text-zinc-500 group-hover:text-zinc-300 transition-colors shrink-0" />
+                        )}
+                      </button>
+
+                      {/* Password Box */}
+                      <button
+                        onClick={() => handleCopy(data.pass, `${key}-pass`)}
+                        className="w-full flex items-center justify-between bg-zinc-950 border border-zinc-900 hover:border-zinc-700 p-1.5 px-2 rounded text-xs font-mono transition-all text-left text-zinc-300 group"
+                      >
+                        <span className="truncate pr-2">
+                          pass: <span className="text-white group-hover:text-amber-200">{data.pass}</span>
+                        </span>
+                        {copiedKey === `${key}-pass` ? (
+                          <span className="text-emerald-500 text-[10px] flex items-center gap-1 shrink-0 font-sans font-semibold">
+                            <Check size={12} /> Copied!
+                          </span>
+                        ) : (
+                          <Copy size={12} className="text-zinc-500 group-hover:text-zinc-300 transition-colors shrink-0" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </motion.div>
           )}
@@ -88,12 +144,18 @@ export function PrototypeOverlay() {
 
         {!isOpen && (
           <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
             onClick={() => setIsOpen(true)}
-            className="bg-zinc-950/90 backdrop-blur-md border border-zinc-800 hover:border-primary/50 text-primary p-3 rounded-full shadow-2xl transition-all"
+            className="flex items-center gap-2.5 bg-zinc-950/95 backdrop-blur-md border border-amber-500/50 hover:border-amber-400 text-amber-500 px-4 py-2.5 rounded-full shadow-[0_0_25px_rgba(245,158,11,0.25)] hover:shadow-[0_0_35px_rgba(245,158,11,0.45)] transition-all font-semibold text-xs tracking-widest uppercase group font-sans"
           >
-            <Users size={20} />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            <Users size={16} className="group-hover:rotate-12 transition-transform duration-300" />
+            <span className="font-bold">Test Accounts</span>
           </motion.button>
         )}
       </div>
