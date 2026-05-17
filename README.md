@@ -1,35 +1,98 @@
-# BodyMind28-Prototype
+# Luxury28 — Premium E-Commerce Platform
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+Luxury28 is a sophisticated, high-end e-commerce platform built specifically for the luxury timepiece market in Indonesia. The platform is designed to provide a seamless, premium user experience while ensuring robust operational control for staff and administrators.
 
-## Built with v0
+## 🌟 Key Features
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+*   **Triple-Tier Architecture**:
+    *   **Customer Portal**: Browse the curated catalog, manage carts, apply coupons, select dynamic shipping rates, and track orders. Features an "Authenticity Vault" for digital provenance.
+    *   **Staff Dashboard**: Secure operational suite with a Kanban-style order fulfillment pipeline, inventory management, and customer support ticket handling.
+    *   **Admin Console**: Comprehensive dashboard to manage global store settings (Identity, SEO, Security, Notifications), view audit logs, and oversee all operations.
+*   **Secure & Seamless Checkout**: 3-step dynamic checkout integrating real-time courier rate calculation and secure payment processing.
+*   **Marketing & Promotions**: Built-in robust coupon validation engine supporting percentage-based and fixed discounts with dynamic constraints (expiry, minimum purchase).
+*   **Enterprise-Grade Security**: Full Row-Level Security (RLS) implementation across all tables, separating access between customers, staff, and administrators. 
+*   **Premium UX/UI**: Designed with Tailwind CSS and Framer Motion for smooth, high-fidelity micro-interactions and a luxury aesthetic (Dark Mode native).
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_36XuAJK4grfCHaoskcwSm5BN0p2D)
+## 🛠 Tech Stack
 
-## Getting Started
+*   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+*   **Language**: TypeScript
+*   **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+*   **Styling**: Tailwind CSS & [shadcn/ui](https://ui.shadcn.com/)
+*   **Animations**: Framer Motion
+*   **Payments API**: [Xendit](https://www.xendit.co/)
+*   **Logistics API**: [Biteship](https://biteship.com/)
 
-First, run the development server:
+## 🚀 Getting Started
+
+### Prerequisites
+
+Ensure you have the following installed:
+*   [Node.js](https://nodejs.org/) (v18 or higher)
+*   A Supabase project instance
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/Luxury28-Prototype.git
+cd Luxury28-Prototype
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Environment Variables
+
+Create a `.env.local` file in the root directory and configure your environment variables:
+
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+
+# External APIs
+XENDIT_SECRET_KEY=your-xendit-secret-key
+BITESHIP_API_KEY=your-biteship-api-key
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧪 Testing the Prototype
 
-## Learn More
+This repository features an environment-guarded prototype overlay designed for easy client testing without sacrificing safety when the code is public:
 
-To learn more, take a look at the following resources:
+1. **Enable Prototype Mode:** Set `NEXT_PUBLIC_IS_PROTOTYPE=true` in your `.env.local` file.
+2. **Accessing Test Accounts:** The floating widget at the bottom-left of the application will automatically populate and display the test accounts. By default, it uses private environment variables:
+   * `NEXT_PUBLIC_TEST_ADMIN_EMAIL` / `NEXT_PUBLIC_TEST_ADMIN_PASS`
+   * `NEXT_PUBLIC_TEST_STAFF_EMAIL` / `NEXT_PUBLIC_TEST_STAFF_PASS`
+   * `NEXT_PUBLIC_TEST_CUSTOMER_EMAIL` / `NEXT_PUBLIC_TEST_CUSTOMER_PASS`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+These default to standard demo accounts but are fully customizable and never hardcoded into files committed to public Git.
 
-<a href="https://v0.app/chat/api/kiro/clone/sultanisaac26-create/BodyMind28-Prototype" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>
+## 📦 Database Schema Notes
+
+The project relies heavily on Supabase PostgreSQL. Key tables include:
+*   `users`: Extended profiles linked to Supabase Auth (`role` enum: `admin`, `staff`, `customer`).
+*   `products` & `categories`: Catalog management.
+*   `orders` & `order_items`: Transaction and fulfillment tracking.
+*   `coupons`: Marketing and discount codes.
+*   `store_settings`: Global configuration flags.
+*   `audit_logs`: Immutable ledger of administrative and staff actions.
+
+---
+*Built with precision for the discerning collector.*

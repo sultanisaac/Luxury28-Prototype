@@ -90,7 +90,7 @@ export function GlobalHeader() {
 
   return (
     <>
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${headerBg}`}>
+      <nav className={`fixed top-8 w-full z-50 transition-all duration-300 ${headerBg}`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Logo />
           
