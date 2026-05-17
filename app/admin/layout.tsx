@@ -12,6 +12,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     { name: 'Overview', href: '/admin', icon: 'LayoutDashboard' },
     { name: 'Users & Roles', href: '/admin/users', icon: 'Users' },
     { name: 'Products', href: '/admin/products', icon: 'Package' },
+    { name: 'Authenticity Vault', href: '/admin/authenticity', icon: 'ShieldCheck' },
     { name: 'Orders', href: '/admin/orders', icon: 'ShoppingCart' },
     { name: 'Marketing', href: '/admin/marketing', icon: 'Tag' },
     { name: 'Customer Support', href: '/admin/support', icon: 'MessageSquare' },
