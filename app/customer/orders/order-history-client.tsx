@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Package, Truck, RefreshCw } from 'lucide-react'
+import { X, Package, Truck, RefreshCw, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function OrderHistoryClient({ initialOrders, userId }: { initialOrders: any[], userId: string }) {
   const supabase = createClient()
@@ -47,6 +48,24 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
     }
   }
 
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!confirm('Are you sure you want to delete this order from your history? This action cannot be undone.')) {
+      return
+    }
+
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', orderId)
+
+    if (error) {
+      toast.error('Error deleting order: ' + error.message)
+    } else {
+      toast.success('Order history deleted successfully')
+      setSelectedOrder(null)
+    }
+  }
+
   if (orders.length === 0) {
     return (
       <div className="text-center py-16 border border-dashed border-border bg-background/30">
@@ -67,13 +86,27 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
             className="border border-border p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:border-primary/50 transition-colors bg-background/30 hover:bg-background/80"
           >
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-[#111] flex items-center justify-center border border-border flex-shrink-0">
-                <Package className="text-muted-foreground" />
+              <div className="w-16 h-16 bg-[#111] overflow-hidden flex items-center justify-center border border-border flex-shrink-0">
+                {order.order_items?.[0]?.products?.images?.[0] ? (
+                  <img 
+                    src={order.order_items[0].products.images[0]} 
+                    alt={order.order_items[0].products.name} 
+                    className="object-cover w-full h-full opacity-80"
+                  />
+                ) : (
+                  <Package className="text-muted-foreground" />
+                )}
               </div>
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Order #{order.id.split('-')[0]}</p>
-                <h3 className="font-serif text-lg">{new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</h3>
-                <p className="text-primary font-medium mt-1">${order.total_amount?.toLocaleString()}</p>
+                <h3 className="font-serif text-base text-white">
+                  {order.order_items?.[0]?.products?.name || 'Luxury Timepiece'}
+                  {order.order_items && order.order_items.length > 1 ? ` (+${order.order_items.length - 1} more)` : ''}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Placed on {new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+                <p className="text-primary font-medium text-sm mt-1">${order.total_amount?.toLocaleString()}</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
@@ -153,7 +186,12 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
                           )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-serif text-sm">{item.products?.name || 'Unknown Product'}</h3>
+                          <div className="flex justify-between items-start gap-2 flex-wrap">
+                            <h3 className="font-serif text-sm text-white">{item.products?.name || 'Unknown Product'}</h3>
+                            <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border ${getStatusColor(selectedOrder.status)}`}>
+                              {selectedOrder.status}
+                            </span>
+                          </div>
                           <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest">Qty: {item.quantity}</p>
                           <p className="text-primary font-medium tracking-wider text-sm mt-2">${item.unit_price?.toLocaleString()}</p>
                         </div>
@@ -176,6 +214,17 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
                     <span className="font-serif">Total</span>
                     <span className="text-primary">${selectedOrder.total_amount?.toLocaleString()}</span>
                   </div>
+                </div>
+
+                {/* Delete Button */}
+                <div className="pt-6">
+                  <button
+                    onClick={() => handleDeleteOrder(selectedOrder.id)}
+                    className="w-full flex items-center justify-center gap-2 border border-red-500/30 bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 py-3 uppercase tracking-widest text-xs font-bold transition-all duration-300"
+                  >
+                    <Trash2 size={14} />
+                    Delete Order History
+                  </button>
                 </div>
               </div>
             </motion.div>
