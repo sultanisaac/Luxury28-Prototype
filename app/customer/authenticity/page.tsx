@@ -8,7 +8,7 @@ export default async function AuthenticityVaultPage() {
   if (!user) redirect('/login')
 
   // Fetch user's order IDs then get related authenticity records
-  const { data: orders } = await supabase.from('orders').select('id').eq('user_id', user.id)
+  const { data: orders } = await supabase.from('orders').select('id').eq('customer_id', user.id)
   const orderIds = (orders || []).map(o => o.id)
 
   let records: any[] = []

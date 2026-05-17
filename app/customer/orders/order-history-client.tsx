@@ -14,12 +14,12 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
   useEffect(() => {
     const channel = supabase.channel('rt-customer-orders')
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${userId}` },
+        { event: '*', schema: 'public', table: 'orders', filter: `customer_id=eq.${userId}` },
         async () => {
           const { data } = await supabase
             .from('orders')
             .select('*, order_items(*, products(name, images))')
-            .eq('user_id', userId)
+            .eq('customer_id', userId)
             .order('created_at', { ascending: false })
           if (data) setOrders(data)
         }
