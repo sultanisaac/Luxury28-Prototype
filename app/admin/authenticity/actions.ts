@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export async function issueSerialNumber(productId: string, serialNumber: string) {
+export async function issueSerialNumber(productId: string, orderId: string, serialNumber: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
@@ -23,6 +23,7 @@ export async function issueSerialNumber(productId: string, serialNumber: string)
     .from('authenticity_records')
     .insert([{
       product_id: productId,
+      order_id: orderId,
       serial_number: serialNumber,
       status: 'active'
     }])
@@ -33,7 +34,7 @@ export async function issueSerialNumber(productId: string, serialNumber: string)
     user_id: user.id,
     role: 'admin',
     action_type: 'ISSUE_SERIAL_NUMBER',
-    resource: `Issued S/N ${serialNumber} for product ${productId}`
+    resource: `Issued S/N ${serialNumber} for product ${productId} on order ${orderId}`
   }])
 
   revalidatePath('/admin/authenticity')

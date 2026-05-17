@@ -29,6 +29,15 @@ export default async function AuthenticityPage() {
       products (
         name,
         images
+      ),
+      orders (
+        id,
+        created_at,
+        users (
+          first_name,
+          last_name,
+          email
+        )
       )
     `)
     .order('created_at', { ascending: false })
@@ -38,6 +47,28 @@ export default async function AuthenticityPage() {
     .select('id, name')
     .eq('status', 'active')
     .order('name')
+
+  // Fetch paid/processing/delivered orders to link with serial numbers
+  const { data: orders } = await supabase
+    .from('orders')
+    .select(`
+      id,
+      created_at,
+      total_amount,
+      users (
+        first_name,
+        last_name,
+        email
+      ),
+      order_items (
+        product_id,
+        products (
+          name
+        )
+      )
+    `)
+    .in('status', ['Paid', 'Processing', 'Packaging', 'Shipped', 'Delivered'])
+    .order('created_at', { ascending: false })
 
   return (
     <div className="space-y-8 pb-12">
@@ -53,6 +84,7 @@ export default async function AuthenticityPage() {
       <AuthenticityManager 
         initialRecords={records || []} 
         products={products || []} 
+        orders={orders || []}
       />
     </div>
   )

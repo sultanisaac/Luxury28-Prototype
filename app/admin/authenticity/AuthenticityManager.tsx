@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Search, Shield, Ban, CheckCircle } from 'lucide-react'
+import { Search, Shield, Ban, CheckCircle, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { issueSerialNumber, revokeSerialNumber } from './actions'
 import {
@@ -32,33 +32,65 @@ import {
 interface AuthenticityManagerProps {
   initialRecords: any[]
   products: any[]
+  orders: any[]
 }
 
-export default function AuthenticityManager({ initialRecords, products }: AuthenticityManagerProps) {
+export default function AuthenticityManager({ initialRecords, products, orders }: AuthenticityManagerProps) {
   const [records, setRecords] = useState(initialRecords)
   const [searchTerm, setSearchTerm] = useState('')
   
   // Issue Modal State
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false)
+  const [selectedOrderId, setSelectedOrderId] = useState<string>('')
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [serialNumber, setSerialNumber] = useState('')
   const [isIssuing, setIsIssuing] = useState(false)
   const [isRevoking, setIsRevoking] = useState<string | null>(null)
 
+  // Find the selected order to filter products in it
+  const selectedOrder = orders.find(o => o.id === selectedOrderId)
+  
+  // Filter products based on selected order
+  const filteredProductsForIssue = selectedOrder
+    ? selectedOrder.order_items.map((item: any) => ({
+        id: item.product_id,
+        name: item.products?.name || 'Unknown Product'
+      }))
+    : products
+
+  const handleOrderChange = (orderId: string) => {
+    setSelectedOrderId(orderId)
+    // Auto-select product if there's only one in the order
+    const order = orders.find(o => o.id === orderId)
+    if (order && order.order_items.length === 1) {
+      setSelectedProductId(order.order_items[0].product_id)
+    } else {
+      setSelectedProductId('')
+    }
+  }
+
   const handleIssue = async () => {
-    if (!selectedProductId || !serialNumber.trim()) {
-      toast.error('Please select a product and enter a serial number')
+    if (!selectedOrderId) {
+      toast.error('Please select an order to link the authenticity certificate')
+      return
+    }
+    if (!selectedProductId) {
+      toast.error('Please select a product')
+      return
+    }
+    if (!serialNumber.trim()) {
+      toast.error('Please enter a serial number')
       return
     }
 
     setIsIssuing(true)
-    const res = await issueSerialNumber(selectedProductId, serialNumber)
+    const res = await issueSerialNumber(selectedProductId, selectedOrderId, serialNumber)
     if (res.success) {
       toast.success('Serial number issued successfully')
       setIsIssueModalOpen(false)
       setSerialNumber('')
       setSelectedProductId('')
-      // In a real app we'd rely on Supabase Realtime here, but we can do a hard refresh or optimistic update
+      setSelectedOrderId('')
       window.location.reload()
     } else {
       toast.error('Failed to issue: ' + res.error)
@@ -82,7 +114,8 @@ export default function AuthenticityManager({ initialRecords, products }: Authen
 
   const filteredRecords = records.filter(record => 
     record.serial_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.products?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    record.products?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (record.orders?.users?.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -92,7 +125,7 @@ export default function AuthenticityManager({ initialRecords, products }: Authen
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
           <input 
             type="text" 
-            placeholder="Search Serial Number or Product..." 
+            placeholder="Search Serial Number, Product, or Customer..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-all shadow-lg"
@@ -112,13 +145,39 @@ export default function AuthenticityManager({ initialRecords, products }: Authen
             </DialogHeader>
             <div className="space-y-6 pt-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Product</label>
-                <Select value={selectedProductId} onValueChange={setSelectedProductId}>
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Select Paid Order</label>
+                <Select value={selectedOrderId} onValueChange={handleOrderChange}>
                   <SelectTrigger className="w-full bg-zinc-900 border-zinc-800 focus:ring-emerald-500/50">
-                    <SelectValue placeholder="Select a product" />
+                    <SelectValue placeholder="Select an order" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800 text-white max-h-60">
-                    {products.map(p => (
+                    {orders.map(o => {
+                      const userStr = o.users
+                        ? `${o.users.first_name || ''} ${o.users.last_name || ''} (${o.users.email})`
+                        : `Order #${o.id.substring(0, 8)}`;
+                      const dateStr = new Date(o.created_at).toLocaleDateString();
+                      return (
+                        <SelectItem key={o.id} value={o.id} className="hover:bg-zinc-800 focus:bg-zinc-800 text-xs">
+                          {userStr} - ${parseFloat(o.total_amount).toLocaleString()} ({dateStr})
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Product</label>
+                <Select 
+                  value={selectedProductId} 
+                  onValueChange={setSelectedProductId}
+                  disabled={!selectedOrderId}
+                >
+                  <SelectTrigger className="w-full bg-zinc-900 border-zinc-800 focus:ring-emerald-500/50 disabled:opacity-50">
+                    <SelectValue placeholder={selectedOrderId ? "Select product in this order" : "First, select an order"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-800 text-white max-h-60">
+                    {filteredProductsForIssue.map((p: any) => (
                       <SelectItem key={p.id} value={p.id} className="hover:bg-zinc-800 focus:bg-zinc-800">
                         {p.name}
                       </SelectItem>
@@ -155,49 +214,67 @@ export default function AuthenticityManager({ initialRecords, products }: Authen
             <TableRow className="border-zinc-800 hover:bg-transparent">
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Serial Number</TableHead>
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Product</TableHead>
+              <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Customer / Owner</TableHead>
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Status</TableHead>
               <TableHead className="px-6 py-4 text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Issued On</TableHead>
               <TableHead className="px-6 py-4 text-right text-zinc-500 font-bold uppercase tracking-tighter text-[10px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRecords.map((record) => (
-              <TableRow key={record.id} className="border-zinc-800 hover:bg-zinc-800/20 transition-colors">
-                <TableCell className="px-6 py-4 font-mono font-bold text-sm text-white">
-                  {record.serial_number}
-                </TableCell>
-                <TableCell className="px-6 py-4 text-sm text-zinc-300">
-                  {record.products?.name}
-                </TableCell>
-                <TableCell className="px-6 py-4">
-                  {record.status === 'active' ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      <CheckCircle size={10} /> Active
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-500/10 text-red-400 border border-red-500/20">
-                      <Ban size={10} /> Revoked
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="px-6 py-4 text-xs text-zinc-500">
-                  {new Date(record.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="px-6 py-4 text-right">
-                  {record.status === 'active' && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleRevoke(record.id)}
-                      disabled={isRevoking === record.id}
-                      className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 text-[10px] uppercase font-bold tracking-widest"
-                    >
-                      {isRevoking === record.id ? 'Revoking...' : 'Revoke'}
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+            {filteredRecords.map((record) => {
+              const customerName = record.orders?.users
+                ? `${record.orders.users.first_name || ''} ${record.orders.users.last_name || ''}`.trim() || record.orders.users.email
+                : 'Inventory / Standalone';
+              const customerEmail = record.orders?.users?.email;
+
+              return (
+                <TableRow key={record.id} className="border-zinc-800 hover:bg-zinc-800/20 transition-colors">
+                  <TableCell className="px-6 py-4 font-mono font-bold text-sm text-white">
+                    {record.serial_number}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-sm text-zinc-300">
+                    {record.products?.name}
+                  </TableCell>
+                  <TableCell className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-white flex items-center gap-1.5">
+                        <User size={13} className="text-zinc-500" /> {customerName}
+                      </span>
+                      {customerEmail && (
+                        <span className="text-xs text-zinc-500 pl-5">{customerEmail}</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-4">
+                    {record.status === 'active' ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <CheckCircle size={10} /> Active
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-500/10 text-red-400 border border-red-500/20">
+                        <Ban size={10} /> Revoked
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-xs text-zinc-500">
+                    {new Date(record.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-right">
+                    {record.status === 'active' && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleRevoke(record.id)}
+                        disabled={isRevoking === record.id}
+                        className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 text-[10px] uppercase font-bold tracking-widest"
+                      >
+                        {isRevoking === record.id ? 'Revoking...' : 'Revoke'}
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
         {filteredRecords.length === 0 && (
