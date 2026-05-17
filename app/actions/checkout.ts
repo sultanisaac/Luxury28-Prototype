@@ -4,6 +4,12 @@ import { createClient } from '@/lib/supabase/server';
 import { createXenditInvoice } from '@/lib/xendit';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+
+const supabaseAdmin = createSupabaseClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export interface CheckoutPayload {
   productId: string;
@@ -72,7 +78,7 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
 
   if (itemError) {
     // Rollback order if item creation fails
-    await supabase.from('orders').delete().eq('id', order.id);
+    await supabaseAdmin.from('orders').delete().eq('id', order.id);
     throw new Error(`Failed to create order item: ${itemError.message}`);
   }
 
@@ -96,7 +102,7 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
     });
 
     // ── 6. Update order with Xendit invoice ID ────────────────────────────
-    await supabase
+    await supabaseAdmin
       .from('orders')
       .update({ xendit_invoice_id: invoice.id })
       .eq('id', order.id);
@@ -104,8 +110,8 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
     invoiceUrl = invoice.invoice_url;
   } catch (xenditError) {
     // Rollback both order and item if Xendit fails
-    await supabase.from('order_items').delete().eq('order_id', order.id);
-    await supabase.from('orders').delete().eq('id', order.id);
+    await supabaseAdmin.from('order_items').delete().eq('order_id', order.id);
+    await supabaseAdmin.from('orders').delete().eq('id', order.id);
     throw xenditError;
   }
 
