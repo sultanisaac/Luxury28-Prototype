@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { CheckCircle2, Package, ArrowRight } from 'lucide-react';
+import { getXenditInvoice } from '@/lib/xendit';
+import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js';
 
 interface SuccessPageProps {
   searchParams: Promise<{ orderId?: string }>;
@@ -10,13 +12,45 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   const { orderId } = await searchParams;
 
   const supabase = await createClient();
-  const { data: order } = orderId
+  let { data: order } = orderId
     ? await supabase
         .from('orders')
-        .select('id, status, total_amount, courier_name, created_at')
+        .select('id, status, total_amount, courier_name, created_at, xendit_invoice_id, customer_id')
         .eq('id', orderId)
         .single()
     : { data: null };
+
+  // Fallback for local development or if webhook is delayed
+  if (order && order.status === 'Pending' && order.xendit_invoice_id) {
+    try {
+      const invoice = await getXenditInvoice(order.xendit_invoice_id);
+      if (invoice.status === 'PAID' || invoice.status === 'SETTLED') {
+        const supabaseAdmin = createSupabaseAdminClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+        
+        await supabaseAdmin
+          .from('orders')
+          .update({
+            status: 'Paid',
+            paid_amount: invoice.amount,
+          })
+          .eq('id', order.id);
+          
+        await supabaseAdmin.from('audit_logs').insert({
+          user_id: order.customer_id,
+          role: 'system',
+          action_type: 'PAYMENT_CONFIRMED',
+          resource: `orders/${order.id}`,
+        });
+
+        order.status = 'Paid';
+      }
+    } catch (err) {
+      console.error('Failed to verify Xendit invoice on success page:', err);
+    }
+  }
 
   const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
