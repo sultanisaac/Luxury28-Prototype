@@ -58,7 +58,7 @@ export async function generateShippingLabel(orderId: string) {
   const shippingItems = order.order_items.map((item: any) => ({
     name: item.products?.name || 'Luxury Watch',
     description: item.products?.description || 'Luxury Timepiece',
-    value: item.unit_price || 0,
+    value: Math.min(item.unit_price || 0, 5000000), // Cap at 5M IDR for sandbox rate/insurance success
     length: item.products?.dimensions?.l || 20,
     width: item.products?.dimensions?.w || 15,
     height: item.products?.dimensions?.h || 12,

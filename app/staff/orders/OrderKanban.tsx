@@ -68,8 +68,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
               order_items (
                 *,
                 products (
-                  name,
-                  ref_number
+                  name
                 )
               )
             `)
@@ -200,7 +199,10 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                     {col.nextStatus && (
                       <Button 
                         disabled={loadingId === order.id}
-                        onClick={() => handleStatusChange(order.id, col.nextStatus!)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleStatusChange(order.id, col.nextStatus!)
+                        }}
                         className="w-full text-xs bg-zinc-800 hover:bg-blue-600 text-white font-bold py-1.5"
                       >
                         {loadingId === order.id ? 'Updating...' : `Move to ${col.nextStatus}`} <ArrowRight size={14} className="ml-1" />
@@ -209,7 +211,10 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                     {col.nextAction === 'ship' && (
                       <Button 
                         disabled={loadingId === order.id}
-                        onClick={() => handleShipping(order.id)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleShipping(order.id)
+                        }}
                         className="w-full text-xs bg-purple-500/20 hover:bg-purple-600 border border-purple-500/30 text-purple-300 hover:text-white font-bold py-1.5"
                       >
                         {loadingId === order.id ? 'Generating...' : 'Generate Label & Ship'}
@@ -291,7 +296,6 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                       </div>
                       <div>
                         <p className="text-sm font-bold text-white">{item.products?.name}</p>
-                        <p className="text-[10px] text-zinc-500 font-mono">{item.products?.ref_number}</p>
                         <p className="text-xs text-primary mt-1">Quantity: {item.quantity}</p>
                       </div>
                     </div>

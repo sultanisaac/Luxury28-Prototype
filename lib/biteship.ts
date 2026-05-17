@@ -135,36 +135,28 @@ export async function createBiteshipOrder(params: {
     },
     body: JSON.stringify({
       reference_id: params.referenceId,
-      shipper: {
-        name: 'Luxury28',
-        phone: process.env.WAREHOUSE_PHONE || '+622112345678',
-        email: 'operations@luxury28.com',
-        organization: 'Luxury28 Timepieces',
-      },
-      origin: {
-        contact_name: 'Luxury28 Warehouse',
-        contact_phone: process.env.WAREHOUSE_PHONE || '+622112345678',
-        address: process.env.WAREHOUSE_ADDRESS || 'Jl. Sudirman No. 1, Jakarta Pusat',
-        area_id: process.env.WAREHOUSE_AREA_ID || 'IDNP1CGKOTA1800JKT000ORD',
-      },
-      destination: {
-        contact_name: params.destinationContactName,
-        contact_phone: params.destinationContactPhone,
-        address: params.destinationAddress,
-        area_id: params.destinationAreaId,
-      },
-      courier: {
-        company: params.courierCode,
-        type: params.courierService,
-        insurance: {
-          amount: params.itemValue,
-          apply: true, // Always insure luxury watches
-        },
-      },
+      delivery_type: 'now',
+      shipper_contact_name: 'Luxury28 Warehouse',
+      shipper_contact_phone: process.env.WAREHOUSE_PHONE || '+628211715945',
+      shipper_contact_email: 'operations@luxury28.com',
+      shipper_organization: 'Luxury28 Timepieces',
+      
+      origin_contact_name: 'Luxury28 Warehouse',
+      origin_contact_phone: process.env.WAREHOUSE_PHONE || '+628211715945',
+      origin_address: process.env.WAREHOUSE_ADDRESS || 'jln.Syech Ibrahim No.68E, Bukittinggi',
+      origin_area_id: process.env.WAREHOUSE_AREA_ID || 'IDNP32IDNC88IDND6981IDZ26111',
+      origin_postal_code: 26111,
+      
+      destination_contact_name: params.destinationContactName,
+      destination_contact_phone: params.destinationContactPhone,
+      destination_address: params.destinationAddress,
+      destination_area_id: params.destinationAreaId,
+      destination_postal_code: 26111, // Standard fallback
+      
+      courier_company: params.courierCode,
+      courier_type: params.courierService,
+      
       items: params.items,
-      delivery: {
-        note: 'FRAGILE - Luxury timepiece. Handle with extreme care.',
-      },
     }),
   });
 
@@ -173,5 +165,9 @@ export async function createBiteshipOrder(params: {
     throw new Error(`[Biteship] Order creation failed: ${JSON.stringify(err)}`);
   }
 
-  return res.json();
+  const data = await res.json();
+  return {
+    id: data.id,
+    waybill_id: data.courier?.waybill_id
+  };
 }

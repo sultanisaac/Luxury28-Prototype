@@ -13,8 +13,7 @@ export default async function StaffOrdersPage() {
       order_items (
         *,
         products (
-          name,
-          ref_number
+          name
         )
       )
     `)
