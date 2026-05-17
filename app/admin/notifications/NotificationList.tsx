@@ -50,7 +50,7 @@ export default function NotificationList({ initialNotifications }: NotificationL
   const markAsRead = async (id: string) => {
     const { error } = await supabase
       .from('notifications')
-      .update({ read: true })
+      .update({ is_read: true })
       .eq('id', id)
     
     if (error) toast.error('Failed to update notification')
@@ -59,8 +59,8 @@ export default function NotificationList({ initialNotifications }: NotificationL
   const markAllAsRead = async () => {
     const { error } = await supabase
       .from('notifications')
-      .update({ read: true })
-      .eq('read', false)
+      .update({ is_read: true })
+      .eq('is_read', false)
     
     if (error) toast.error('Failed to update notifications')
     else toast.success('All marked as read')
@@ -120,10 +120,10 @@ export default function NotificationList({ initialNotifications }: NotificationL
           filteredNotifications.map((notif) => (
             <div 
               key={notif.id} 
-              onClick={() => !notif.read && markAsRead(notif.id)}
-              className={`p-6 bg-zinc-900 border ${notif.read ? 'border-zinc-800/50' : 'border-amber-500/30 bg-amber-500/[0.01]'} rounded-xl shadow-sm hover:border-amber-500/50 transition-all duration-300 relative group cursor-pointer`}
+              onClick={() => !notif.is_read && markAsRead(notif.id)}
+              className={`p-6 bg-zinc-900 border ${notif.is_read ? 'border-zinc-800/50' : 'border-amber-500/30 bg-amber-500/[0.01]'} rounded-xl shadow-sm hover:border-amber-500/50 transition-all duration-300 relative group cursor-pointer`}
             >
-              {!notif.read && (
+              {!notif.is_read && (
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500 rounded-l-xl"></div>
               )}
               
@@ -134,7 +134,7 @@ export default function NotificationList({ initialNotifications }: NotificationL
                 
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
-                    <h3 className={`font-bold tracking-wide ${notif.read ? 'text-zinc-300' : 'text-white'}`}>
+                    <h3 className={`font-bold tracking-wide ${notif.is_read ? 'text-zinc-300' : 'text-white'}`}>
                       {notif.title}
                     </h3>
                     <div className="flex items-center gap-1 text-xs text-zinc-500">
