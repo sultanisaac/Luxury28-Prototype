@@ -7,8 +7,8 @@ import { Info, X, Users } from 'lucide-react';
 export function PrototypeOverlay() {
   const [isOpen, setIsOpen] = useState(true);
 
-  // Read prototype settings safely from public env vars
-  const isPrototype = process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true';
+  // Show in development by default, or if explicitly enabled via environment variable
+  const isPrototype = process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development';
 
   // Do not render anything if not strictly set to prototype mode
   if (!isPrototype) return null;
