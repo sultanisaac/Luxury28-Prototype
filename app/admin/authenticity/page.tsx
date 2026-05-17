@@ -33,10 +33,16 @@ export default async function AuthenticityPage() {
       orders (
         id,
         created_at,
+        total_amount,
+        status,
+        payment_method,
+        courier_name,
+        tracking_number,
         users (
           first_name,
           last_name,
-          email
+          email,
+          phone
         )
       )
     `)

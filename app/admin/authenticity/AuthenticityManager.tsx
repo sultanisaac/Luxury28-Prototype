@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Search, Shield, Ban, CheckCircle, User } from 'lucide-react'
+import { Search, Shield, Ban, CheckCircle, User, Eye, Package } from 'lucide-react'
 import { toast } from 'sonner'
 import { issueSerialNumber, revokeSerialNumber } from './actions'
 import {
@@ -259,7 +259,71 @@ export default function AuthenticityManager({ initialRecords, products, orders }
                   <TableCell className="px-6 py-4 text-xs text-zinc-500">
                     {new Date(record.created_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
+                  <TableCell className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                    {record.orders && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white hover:bg-zinc-800 h-8 text-[10px] uppercase font-bold tracking-widest">
+                            <Eye size={14} className="mr-1.5" /> Order
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-lg">
+                          <DialogHeader>
+                            <DialogTitle className="font-serif text-xl tracking-wide flex items-center gap-2">
+                              <Package size={20} className="text-primary" /> Order Details
+                            </DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-6 pt-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Order ID</p>
+                                <p className="font-mono text-sm text-zinc-300">{record.orders.id.substring(0, 8).toUpperCase()}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Status</p>
+                                <p className="text-sm text-emerald-400 font-semibold">{record.orders.status}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Total Amount</p>
+                                <p className="text-sm font-semibold text-white">
+                                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(parseFloat(record.orders.total_amount))}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Date</p>
+                                <p className="text-sm text-zinc-300">{new Date(record.orders.created_at).toLocaleString()}</p>
+                              </div>
+                            </div>
+
+                            <div className="border-t border-zinc-800 pt-4 space-y-3">
+                              <h4 className="text-sm font-bold text-zinc-300 uppercase tracking-widest">Customer Information</h4>
+                              <div className="space-y-1">
+                                <p className="text-sm text-zinc-400"><span className="text-zinc-500 w-20 inline-block">Name:</span> {record.orders.users.first_name} {record.orders.users.last_name}</p>
+                                <p className="text-sm text-zinc-400"><span className="text-zinc-500 w-20 inline-block">Email:</span> {record.orders.users.email}</p>
+                                {record.orders.users.phone && (
+                                  <p className="text-sm text-zinc-400"><span className="text-zinc-500 w-20 inline-block">Phone:</span> {record.orders.users.phone}</p>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {(record.orders.courier_name || record.orders.tracking_number) && (
+                              <div className="border-t border-zinc-800 pt-4 space-y-3">
+                                <h4 className="text-sm font-bold text-zinc-300 uppercase tracking-widest">Shipping</h4>
+                                <div className="space-y-1">
+                                  {record.orders.courier_name && (
+                                    <p className="text-sm text-zinc-400"><span className="text-zinc-500 w-20 inline-block">Courier:</span> {record.orders.courier_name}</p>
+                                  )}
+                                  {record.orders.tracking_number && (
+                                    <p className="text-sm text-zinc-400"><span className="text-zinc-500 w-20 inline-block">Tracking:</span> <span className="font-mono text-emerald-400">{record.orders.tracking_number}</span></p>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )}
+
                     {record.status === 'active' && (
                       <Button 
                         variant="ghost" 
