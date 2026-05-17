@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Package, Truck, RefreshCw, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { deleteCustomerOrder } from './actions'
 
 export default function OrderHistoryClient({ initialOrders, userId }: { initialOrders: any[], userId: string }) {
   const supabase = createClient()
@@ -53,13 +54,10 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
       return
     }
 
-    const { error } = await supabase
-      .from('orders')
-      .delete()
-      .eq('id', orderId)
+    const result = await deleteCustomerOrder(orderId, userId)
 
-    if (error) {
-      toast.error('Error deleting order: ' + error.message)
+    if (!result.success) {
+      toast.error('Error deleting order: ' + result.error)
     } else {
       toast.success('Order history deleted successfully')
       setOrders(prev => prev.filter(o => o.id !== orderId))
