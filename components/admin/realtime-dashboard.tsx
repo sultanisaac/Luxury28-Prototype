@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { 
   TrendingUp, 
@@ -11,6 +11,7 @@ import {
   Bell
 } from 'lucide-react'
 import Link from 'next/link'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface DashboardStatsProps {
   initialOrders: any[]
@@ -37,7 +38,7 @@ export default function RealtimeDashboard({
         { event: '*', schema: 'public', table: 'orders' },
         async (payload) => {
           // Re-fetch orders for simplicity and accuracy in totals
-          const { data } = await supabase.from('orders').select('total_amount, status')
+          const { data } = await supabase.from('orders').select('total_amount, status, created_at')
           if (data) setOrders(data)
         }
       )
@@ -78,20 +79,40 @@ export default function RealtimeDashboard({
     }
   }, [supabase])
 
-  const totalRevenue = orders
-    .filter(o => o.status !== 'Cancelled')
-    .reduce((acc, curr) => acc + Number(curr.total_amount), 0)
-
+  const validOrders = orders.filter(o => o.status !== 'Cancelled')
+  const totalRevenue = validOrders.reduce((acc, curr) => acc + Number(curr.total_amount), 0)
+  
   const activeOrdersCount = orders
     .filter(o => ['Pending', 'Processing', 'Packaging', 'Shipped'].includes(o.status))
     .length
+
+  const aov = validOrders.length > 0 ? totalRevenue / validOrders.length : 0
 
   const stats = [
     { name: 'Total Revenue', value: `$${totalRevenue.toLocaleString()}`, change: '+12.5%', icon: DollarSign, color: 'text-emerald-500' },
     { name: 'Active Orders', value: activeOrdersCount.toString(), change: '+5', icon: Package, color: 'text-amber-500' },
     { name: 'Total Customers', value: customerCount.toLocaleString(), change: '+18%', icon: Users, color: 'text-blue-500' },
-    { name: 'Conversion Rate', value: '3.2%', change: '+0.4%', icon: TrendingUp, color: 'text-purple-500' },
+    { name: 'Avg Order Value', value: `$${aov.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, change: '+4.1%', icon: TrendingUp, color: 'text-purple-500' },
   ]
+
+  const chartData = useMemo(() => {
+    const data = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      const dateStr = d.toISOString().split('T')[0]
+      
+      const dayOrders = validOrders.filter(o => o.created_at && o.created_at.startsWith(dateStr))
+      const revenue = dayOrders.reduce((sum, o) => sum + Number(o.total_amount), 0)
+      
+      data.push({
+        name: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        revenue,
+        orders: dayOrders.length
+      })
+    }
+    return data
+  }, [validOrders])
 
   return (
     <div className="space-y-8">
@@ -136,17 +157,46 @@ export default function RealtimeDashboard({
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center text-center relative z-10">
-              <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-                <DollarSign size={300} />
-              </div>
-              <div className="p-5 bg-zinc-950 rounded-full mb-6 border border-zinc-800 shadow-[0_0_50px_rgba(245,158,11,0.1)] group-hover:scale-105 transition-transform duration-700">
-                <TrendingUp size={40} className="text-amber-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3 font-serif tracking-wide">Financial Intelligence</h3>
-              <p className="text-zinc-400 max-w-sm mx-auto text-sm leading-relaxed">
-                Real-time tracking is active. Charts will update automatically as new transactions occur.
-              </p>
+            <div className="flex-1 flex flex-col w-full h-full relative z-10 pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#52525b" 
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    dy={10}
+                  />
+                  <YAxis 
+                    stroke="#52525b" 
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${value}`}
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', color: '#fff', borderRadius: '8px' }}
+                    itemStyle={{ color: '#f59e0b' }}
+                    formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#f59e0b" 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorRevenue)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-amber-500/[0.03] to-transparent pointer-events-none"></div>
           </div>

@@ -20,7 +20,7 @@ export default async function AdminDashboard() {
   }
 
   // Initial Fetch for Stats (Hydration)
-  const { data: orders } = await supabase.from('orders').select('total_amount, status')
+  const { data: orders } = await supabase.from('orders').select('total_amount, status, created_at')
   const { count: customerCount } = await supabase
     .from('users')
     .select('*', { count: 'exact', head: true })

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Package, Truck, CheckCircle, RefreshCcw, Box, ArrowRight, MapPin, Watch } from 'lucide-react'
+import { Package, Truck, CheckCircle, RefreshCcw, Box, ArrowRight, MapPin, Watch, Printer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { updateOrderStatus, generateShippingLabel } from './actions'
+import { updateOrderStatus, generateShippingLabel, addOrderNote } from './actions'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -33,7 +33,26 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
   const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'shipped'>('active')
+  const [noteText, setNoteText] = useState('')
+  const [isSubmittingNote, setIsSubmittingNote] = useState(false)
   const supabase = createClient()
+
+  const handleAddNote = async (orderId: string) => {
+    if (!noteText.trim()) return
+    setIsSubmittingNote(true)
+    const result = await addOrderNote(orderId, noteText)
+    if (result.success) {
+      toast.success('Note added')
+      setSelectedOrder((prev: any) => ({
+         ...prev,
+         order_notes: [...(prev.order_notes || []), { note_text: noteText, created_at: new Date().toISOString(), author: { first_name: 'You', last_name: '' } }]
+      }))
+      setNoteText('')
+    } else {
+      toast.error('Error adding note')
+    }
+    setIsSubmittingNote(false)
+  }
 
   useEffect(() => {
     const channel = supabase.channel('rt-kanban-orders')
@@ -45,6 +64,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
               *,
               customer:users!customer_id(first_name, last_name, email),
               address:shipping_addresses!shipping_address_id(*),
+              order_notes (*, author:users!author_id(first_name, last_name)),
               order_items (
                 *,
                 products (
@@ -289,16 +309,61 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                       <p className="text-[10px] text-zinc-500">Expedition Partner</p>
                     </div>
                   </div>
-                  {selectedOrder?.tracking_number && (
-                    <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 text-primary hover:text-primary hover:bg-primary/10">
-                      Track <ExternalLink size={10} />
-                    </Button>
-                  )}
+                  <div className="flex gap-2">
+                    {selectedOrder?.biteship_order_id && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 text-[10px] gap-1 text-purple-400 hover:text-purple-300 hover:bg-purple-400/10"
+                        onClick={() => window.open(`https://dashboard.biteship.com/orders/${selectedOrder.biteship_order_id}`, '_blank')}
+                      >
+                        <Printer size={10} /> Print Label
+                      </Button>
+                    )}
+                    {selectedOrder?.tracking_number && (
+                      <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 text-primary hover:text-primary hover:bg-primary/10">
+                        Track <ExternalLink size={10} />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </section>
             </div>
           </div>
           
+            {/* Notes Section */}
+            <div className="mt-8 pt-6 border-t border-zinc-800">
+              <h4 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-3">Internal Operational Notes</h4>
+              <div className="space-y-3 mb-4 max-h-40 overflow-y-auto pr-2">
+                {selectedOrder?.order_notes?.length > 0 ? selectedOrder.order_notes.map((note: any, idx: number) => (
+                  <div key={idx} className="bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/50">
+                    <p className="text-xs text-zinc-300">{note.note_text}</p>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-[9px] text-zinc-500 font-bold uppercase">{note.author?.first_name} {note.author?.last_name}</span>
+                      <span className="text-[9px] text-zinc-600">{new Date(note.created_at).toLocaleString()}</span>
+                    </div>
+                  </div>
+                )) : <p className="text-xs text-zinc-600 italic">No notes yet.</p>}
+              </div>
+              <div className="flex gap-2">
+                <input 
+                  type="text"
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="Add a note..."
+                  className="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-3 text-sm focus:outline-none focus:border-primary transition-colors text-white"
+                  onKeyDown={(e) => { if(e.key === 'Enter') handleAddNote(selectedOrder.id) }}
+                />
+                <Button 
+                  disabled={isSubmittingNote || !noteText.trim()} 
+                  onClick={() => handleAddNote(selectedOrder.id)}
+                  className="bg-primary text-background hover:bg-primary/90 text-xs font-bold"
+                >
+                  {isSubmittingNote ? 'Saving...' : 'Add Note'}
+                </Button>
+              </div>
+            </div>
+
           <div className="mt-8 pt-4 border-t border-zinc-800 flex justify-end">
              <Button 
                variant="outline" 
