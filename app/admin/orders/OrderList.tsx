@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Eye, PackageSearch, Search } from 'lucide-react'
+import { Eye, PackageSearch, Search, Undo2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { 
   Table, 
   TableBody, 
@@ -20,7 +21,23 @@ interface OrderListProps {
 export default function OrderList({ initialOrders }: OrderListProps) {
   const [orders, setOrders] = useState(initialOrders)
   const [searchTerm, setSearchTerm] = useState('')
+  const [loadingRefund, setLoadingRefund] = useState<string | null>(null)
   const supabase = createClient()
+
+  const handleRefund = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to refund this order? This action cannot be undone.')) return
+    
+    setLoadingRefund(orderId)
+    const { processRefund } = await import('./actions')
+    const result = await processRefund(orderId, 'Requested by Admin')
+    
+    if (result.success) {
+      toast.success('Order refunded successfully')
+    } else {
+      toast.error('Refund failed: ' + result.error)
+    }
+    setLoadingRefund(null)
+  }
 
   useEffect(() => {
     const channel = supabase
@@ -123,9 +140,23 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                   {new Date(order.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="px-6 py-4 text-right">
-                  <Button variant="ghost" size="icon" className="text-zinc-500 hover:text-white rounded-xl">
-                    <Eye size={16} />
-                  </Button>
+                  <div className="flex items-center justify-end gap-2">
+                    {order.status !== 'Refunded' && order.xendit_invoice_id && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-xl"
+                        onClick={() => handleRefund(order.id)}
+                        disabled={loadingRefund === order.id}
+                        title="Refund Order"
+                      >
+                        <Undo2 size={16} className={loadingRefund === order.id ? 'animate-spin' : ''} />
+                      </Button>
+                    )}
+                    <Button variant="ghost" size="icon" className="text-zinc-500 hover:text-white rounded-xl" title="View Details">
+                      <Eye size={16} />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

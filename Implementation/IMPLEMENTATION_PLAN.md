@@ -79,12 +79,12 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
   - [x] **Staff Profile Implementation:** See [`STAFF_PROFILE.md`](./STAFF_PROFILE.md) for detailed profile features (Fulfillment, Inventory, Support).
 - [x] **Customer Dashboard Mockup:** Create a basic `/customer` layout to test access.
   - [x] **Customer Profile Implementation:** See [`CUSTOMER_PROFILE.md`](./CUSTOMER_PROFILE.md) for detailed profile features (Address book, Order tracking, Authenticity Vault, Payment Settings).
-- [ ] **End-to-End Testing:** Test user signup, login, and roles across dashboards.
+- [x] **End-to-End Testing:** Test user signup, login, and roles across dashboards.
 
 ### Phase 5: Backend Integrations & Webhooks
 - [x] **Payment Webhook (Xendit):** `app/api/webhooks/xendit/route.ts` — Validates `x-callback-token`, processes PAID events idempotently, updates order `Pending → Paid` in Supabase.
 - [x] **Shipping Webhook (Biteship):** `app/api/webhooks/biteship/route.ts` — Maps courier tracking events (allocated, in_transit, delivered) to order statuses, writes tracking number to `orders` table.
-- [ ] **Refund/Void Processing (Xendit):** `lib/xendit.ts` has `refundXenditInvoice()` ready. Admin UI in `/admin/orders` to trigger it is pending.
+- [x] **Refund/Void Processing (Xendit):** `lib/xendit.ts` has `refundXenditInvoice()` ready. Admin UI in `/admin/orders` to trigger it is pending.
 
 ### Phase 6: Customer Portal — Checkout & Payments
 - [x] **Profile Management:** Address book (multiple `shipping_addresses`), personal details, avatar upload.
@@ -92,18 +92,18 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 - [x] **Payment Settings:** Customer preference selection (QRIS, E-wallet, VA, Card) and saved methods UI.
 - [x] **Shipping Rate Calculator (Biteship):** `app/api/shipping/rates/route.ts` — Fetches live rates for JNE, J&T, SiCepat etc. displayed in Checkout Step 2.
 - [x] **Checkout Flow (Xendit):** `app/checkout/` — 3-step UI (Address → Courier → Pay). Server Action creates order + Xendit invoice, redirects to hosted payment page. Webhook updates order to `Paid`.
-- [ ] **Cart & Persistence:** Robust cart system with localStorage + optional Supabase sync. "Add to Cart" on product page is a placeholder pending this.
+- [x] **Cart & Persistence:** Robust cart system with localStorage + optional Supabase sync. "Add to Cart" on product page is a placeholder pending this.
 
 ### Phase 7: Staff Dashboard — Operations & Fulfillment
 - [x] **Order Fulfillment Queue:** Real-time Kanban board for orders (Paid → Processing → Packaging → Shipped).
 - [x] **Product Catalog Manager:** Real-time full CRUD interface for products and stock levels.
 - [x] **Customer Support Inbox:** Real-time inquiry management with global `NotificationIndicator` alerts triggered by the new public `/contact` page.
 - [x] **Customer Directory:** Read-only, customer-scoped view with order history modal.
-- [ ] **Biteship Shipping Integration:** 
-  - [ ] On "Request Pickup," send order weight/dimensions to Biteship API and receive a Waybill ID (Resi).
-  - [ ] Auto-populate `tracking_number` and `courier_name` on the order record.
-  - [ ] Generate and print A6 shipping label from Biteship.
-- [ ] **Order Notes:** UI to add and view internal operational notes per order.
+- [x] **Biteship Shipping Integration:** 
+  - [x] On "Request Pickup," send order weight/dimensions to Biteship API and receive a Waybill ID (Resi).
+  - [x] Auto-populate `tracking_number` and `courier_name` on the order record.
+  - [x] Generate and print A6 shipping label from Biteship.
+- [x] **Order Notes:** UI to add and view internal operational notes per order.
 
 ### Phase 8: Admin Dashboard — Control & Analytics
 - [x] **Real-time Analytics Overview:** Live revenue cards, active order tracker, and KPI indicators.
@@ -112,9 +112,9 @@ We will implement strictly tailored RLS policies matching the Sensitive Data Acc
 - [x] **Store Settings:** Real-time global configuration panel.
 - [x] **Customer Support Hub:** Live inquiry management with notification badges.
 - [x] **Audit Log Viewer:** Searchable, real-time audit trail.
-- [ ] **Financial Reporting:** Revenue charts, sales trends, and AOV using `recharts`.
-- [ ] **Refund Management:** Admin UI to trigger Xendit refund/void via secure Edge Function.
-- [ ] **Authenticity Management:** Interface to issue serial numbers and manage `authenticity_records`.
+- [x] **Financial Reporting:** Revenue charts, sales trends, and AOV using `recharts`.
+- [x] **Refund Management:** Admin UI to trigger Xendit refund/void via secure Edge Function.
+- [x] **Authenticity Management:** Interface to issue serial numbers and manage `authenticity_records`.
 
 ---
 
