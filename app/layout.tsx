@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { GlobalHeader } from '@/components/global-header'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
@@ -42,6 +43,7 @@ export default function RootLayout({
           <GlobalHeader />
           {children}
           <GlobalFooter />
+          <Toaster richColors position="top-right" />
           {process.env.NODE_ENV === 'production' && <Analytics />}
         </CartProvider>
       </body>
