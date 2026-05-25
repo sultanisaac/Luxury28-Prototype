@@ -11,12 +11,16 @@ const supabaseAdmin = createSupabaseClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export interface CheckoutPayload {
+export interface CheckoutItem {
   productId: string;
   productName: string;
   productImage: string;
   unitPrice: number;      // IDR
   quantity: number;
+}
+
+export interface CheckoutPayload {
+  items: CheckoutItem[];
   shippingAddressId: string;
   destinationAreaId: string;
   courierCode: string;
@@ -49,7 +53,8 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
     ? `${userRecord.first_name} ${userRecord.last_name}`.trim()
     : user.email!;
 
-  const totalAmount = (payload.unitPrice * payload.quantity) - (payload.discountAmount || 0) + payload.shippingCost;
+  const itemsTotal = payload.items.reduce((acc, item) => acc + (item.unitPrice * item.quantity), 0);
+  const totalAmount = itemsTotal - (payload.discountAmount || 0) + payload.shippingCost;
 
   // ── 3. Create order in Supabase (status = Pending) ─────────────────────────
   const { data: order, error: orderError } = await supabase
@@ -72,18 +77,20 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
     throw new Error(`Failed to create order: ${orderError?.message}`);
   }
 
-  // ── 4. Create order item ───────────────────────────────────────────────────
-  const { error: itemError } = await supabase.from('order_items').insert({
+  // ── 4. Create order items ──────────────────────────────────────────────────
+  const orderItemsData = payload.items.map(item => ({
     order_id: order.id,
-    product_id: payload.productId,
-    quantity: payload.quantity,
-    unit_price: payload.unitPrice,
-  });
+    product_id: item.productId,
+    quantity: item.quantity,
+    unit_price: item.unitPrice,
+  }));
+
+  const { error: itemError } = await supabase.from('order_items').insert(orderItemsData);
 
   if (itemError) {
     // Rollback order if item creation fails
     await supabaseAdmin.from('orders').delete().eq('id', order.id);
-    throw new Error(`Failed to create order item: ${itemError.message}`);
+    throw new Error(`Failed to create order items: ${itemError.message}`);
   }
 
   // ── 5. Build the Xendit invoice ────────────────────────────────────────────
@@ -100,9 +107,9 @@ export async function createCheckoutOrder(payload: CheckoutPayload) {
       externalId,
       amount: totalAmount,
       payerEmail: user.email!,
-      description: `Luxury28 — ${payload.productName} (x${payload.quantity}) + ${payload.courierName} Shipping`,
+      description: `Luxury28 — ${payload.items.length === 1 ? payload.items[0].productName : 'Multiple Watches'} + ${payload.courierName} Shipping`,
       successRedirectUrl: `${baseUrl}/checkout/success?orderId=${order.id}`,
-      failureRedirectUrl: `${baseUrl}/checkout?productId=${payload.productId}&error=payment_failed`,
+      failureRedirectUrl: `${baseUrl}/checkout?error=payment_failed${payload.items.length === 1 ? `&productId=${payload.items[0].productId}` : '&cart=true'}`,
     });
 
     // ── 6. Update order with Xendit invoice ID ────────────────────────────
