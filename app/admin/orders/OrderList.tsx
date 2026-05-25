@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Eye, PackageSearch, Search, Undo2, X, Package, Truck } from 'lucide-react'
+import { Eye, PackageSearch, Search, Undo2, X, Package, Truck, RefreshCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -39,6 +39,21 @@ export default function OrderList({ initialOrders }: OrderListProps) {
       toast.error('Refund failed: ' + result.error)
     }
     setLoadingRefund(null)
+  }
+
+  const [loadingVerify, setLoadingVerify] = useState<string | null>(null)
+  
+  const handleVerifyPayment = async (orderId: string) => {
+    setLoadingVerify(orderId)
+    const { verifyOrderPayment } = await import('@/app/staff/orders/actions')
+    const result = await verifyOrderPayment(orderId)
+    
+    if (result.success) {
+      toast.success(result.message || 'Payment verified!')
+    } else {
+      toast.error('Check failed: ' + result.error)
+    }
+    setLoadingVerify(null)
   }
 
   useEffect(() => {
@@ -151,7 +166,19 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                 </TableCell>
                 <TableCell className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    {order.status !== 'Refunded' && order.xendit_invoice_id && (
+                    {order.status === 'Pending' && order.xendit_invoice_id && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-blue-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-xl"
+                        onClick={() => handleVerifyPayment(order.id)}
+                        disabled={loadingVerify === order.id}
+                        title="Sync Payment Status"
+                      >
+                        <RefreshCcw size={16} className={loadingVerify === order.id ? 'animate-spin' : ''} />
+                      </Button>
+                    )}
+                    {order.status !== 'Refunded' && order.status !== 'Pending' && order.xendit_invoice_id && (
                       <Button 
                         variant="ghost" 
                         size="icon" 
