@@ -62,6 +62,13 @@ export async function updateSession(request: NextRequest) {
 
     const role = userData?.role
 
+    if (!role) {
+      // If they have no role, their session is stale/invalid. Force them to login.
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
+
     if (pathname.startsWith('/admin') && role !== 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/404'

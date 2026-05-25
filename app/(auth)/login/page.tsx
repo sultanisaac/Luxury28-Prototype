@@ -16,7 +16,19 @@ export default async function LoginPage(props: Props) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
-    redirect('/dashboard-redirect')
+    // Verify the user exists in our users table and has a role
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (userData?.role) {
+      redirect('/dashboard-redirect')
+    } else {
+      // Stale session (user in auth but not in users table)
+      await supabase.auth.signOut()
+    }
   }
 
   const searchParams = await props.searchParams;
