@@ -9,6 +9,7 @@ export default function ClearCart() {
 
   useEffect(() => {
     if (!cleared.current) {
+      localStorage.removeItem('luxury28_cart');
       clearCart();
       cleared.current = true;
     }
