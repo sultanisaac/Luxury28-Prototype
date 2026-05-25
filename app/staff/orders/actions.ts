@@ -133,3 +133,55 @@ export async function addOrderNote(orderId: string, noteText: string) {
   revalidatePath('/staff/orders')
   return { success: true }
 }
+
+export async function verifyOrderPayment(orderId: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('id, xendit_invoice_id, status, customer_id')
+    .eq('id', orderId)
+    .single()
+
+  if (orderError || !order) return { success: false, error: 'Order not found' }
+  if (order.status !== 'Pending') return { success: true, message: 'Order is already processed' }
+  if (!order.xendit_invoice_id) return { success: false, error: 'No Xendit invoice associated.' }
+
+  try {
+    const { getXenditInvoice } = await import('@/lib/xendit')
+    const invoice = await getXenditInvoice(order.xendit_invoice_id)
+    
+    if (invoice.status === 'PAID' || invoice.status === 'SETTLED') {
+      const { createClient: createSupabaseAdminClient } = await import('@supabase/supabase-js')
+      const supabaseAdmin = createSupabaseAdminClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+
+      await supabaseAdmin
+        .from('orders')
+        .update({
+          status: 'Paid',
+          paid_amount: invoice.amount,
+        })
+        .eq('id', order.id)
+
+      await supabaseAdmin.from('audit_logs').insert({
+        user_id: order.customer_id,
+        role: 'system',
+        action_type: 'PAYMENT_CONFIRMED_MANUAL_SYNC',
+        resource: `orders/${order.id}`,
+      })
+
+      revalidatePath('/staff/orders')
+      return { success: true, message: 'Payment verified and updated!' }
+    } else {
+      return { success: false, error: `Invoice status is still ${invoice.status}` }
+    }
+  } catch (err: any) {
+    return { success: false, error: 'Failed to verify invoice: ' + err.message }
+  }
+}
