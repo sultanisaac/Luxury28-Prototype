@@ -31,7 +31,7 @@ interface CourierRate {
   price: number;
 }
 
-interface Watch {
+export interface Watch {
   id: string;
   name: string;
   price: number;
@@ -79,14 +79,14 @@ export default function CheckoutClient({ watch, isCart, addresses, userEmail }: 
   const checkoutItems = isCart ? cartItems.map(item => ({
     id: item.id,
     name: item.name,
-    price_idr: item.price_idr,
+    price_idr: item.price_idr || 0,
     image: item.image,
     quantity: item.quantity,
     tier: item.category
   })) : watch ? [{
     id: watch.id,
     name: watch.name,
-    price_idr: watch.price_idr,
+    price_idr: watch.price_idr || 0,
     image: watch.image,
     quantity: 1,
     tier: watch.tier
