@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { CheckCircle2, Package, ArrowRight } from 'lucide-react';
 import { getXenditInvoice } from '@/lib/xendit';
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js';
+import ClearCart from './ClearCart';
 
 interface SuccessPageProps {
   searchParams: Promise<{ orderId?: string }>;
@@ -57,6 +58,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 font-sans">
+      <ClearCart />
       <div className="max-w-lg w-full text-center">
 
         {/* Icon */}

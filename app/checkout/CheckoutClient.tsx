@@ -7,6 +7,7 @@ import { MapPin, Truck, CreditCard, ShieldCheck, Loader2, ChevronRight, CheckCir
 import { Button } from '@/components/ui/button';
 import { createCheckoutOrder, CheckoutPayload } from '@/app/actions/checkout';
 import { validateCoupon } from '@/app/actions/coupon';
+import { useCart } from '@/context/CartContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,7 +41,8 @@ interface Watch {
 }
 
 interface CheckoutClientProps {
-  watch: Watch;
+  watch: Watch | null;
+  isCart?: boolean;
   addresses: ShippingAddress[];
   userEmail: string;
 }
@@ -54,7 +56,8 @@ const formatIDR = (amount: number) =>
 
 const STEPS = ['Address', 'Shipping', 'Review'];
 
-export default function CheckoutClient({ watch, addresses, userEmail }: CheckoutClientProps) {
+export default function CheckoutClient({ watch, isCart, addresses, userEmail }: CheckoutClientProps) {
+  const { items: cartItems, subtotal_idr } = useCart();
   const [step, setStep] = useState(0);
   const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(
     addresses.find((a) => (a as any).is_default) || addresses[0] || null
@@ -73,7 +76,23 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
   const [couponError, setCouponError] = useState('');
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
-  const priceIDR = watch.price_idr;
+  const checkoutItems = isCart ? cartItems.map(item => ({
+    id: item.id,
+    name: item.name,
+    price_idr: item.price_idr,
+    image: item.image,
+    quantity: item.quantity,
+    tier: item.category
+  })) : watch ? [{
+    id: watch.id,
+    name: watch.name,
+    price_idr: watch.price_idr,
+    image: watch.image,
+    quantity: 1,
+    tier: watch.tier
+  }] : [];
+
+  const priceIDR = isCart ? subtotal_idr : (watch?.price_idr || 0);
 
   // ── Fetch shipping rates ────────────────────────────────────────────────────
   const fetchRates = async (address: ShippingAddress) => {
@@ -88,9 +107,9 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
         body: JSON.stringify({
           postalCode: address.postal_code,
           city: address.city,
-          productName: watch.name,
+          productName: isCart ? 'Multiple Luxury Watches' : (watch?.name || 'Watch'),
           productValue: priceIDR,
-          quantity: 1,
+          quantity: checkoutItems.reduce((acc, item) => acc + item.quantity, 0),
         }),
       });
       const data = await res.json();
@@ -150,11 +169,13 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
     if (!selectedAddress || !selectedRate) return;
 
     const payload: CheckoutPayload = {
-      productId: watch.id,
-      productName: watch.name,
-      productImage: watch.image,
-      unitPrice: priceIDR,
-      quantity: 1,
+      items: checkoutItems.map(i => ({
+        productId: i.id,
+        productName: i.name,
+        productImage: i.image,
+        unitPrice: i.price_idr,
+        quantity: i.quantity
+      })),
       shippingAddressId: selectedAddress.id,
       destinationAreaId,
       courierCode: selectedRate.courierCode,
@@ -410,15 +431,19 @@ export default function CheckoutClient({ watch, addresses, userEmail }: Checkout
             <div className="border border-border p-6 sticky top-24">
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Order Summary</p>
 
-              <div className="flex gap-4 mb-6">
-                <div className="w-20 h-20 bg-zinc-900 border border-border relative flex-shrink-0">
-                  <SmartImage src={watch.image} alt={watch.name} fill className="object-contain p-2" fallbackType="luxury" />
-                </div>
-                <div>
-                  <p className="text-xs text-primary uppercase tracking-widest">{watch.tier}</p>
-                  <p className="font-serif text-lg leading-tight">{watch.name}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Qty: 1</p>
-                </div>
+              <div className="max-h-60 overflow-y-auto mb-6 pr-2 space-y-4">
+                {checkoutItems.map((item, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="w-20 h-20 bg-zinc-900 border border-border relative flex-shrink-0">
+                      <SmartImage src={item.image} alt={item.name} fill className="object-contain p-2" fallbackType="luxury" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-primary uppercase tracking-widest">{item.tier}</p>
+                      <p className="font-serif text-lg leading-tight">{item.name}</p>
+                      <p className="text-sm text-muted-foreground mt-1">Qty: {item.quantity}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Coupon Section */}

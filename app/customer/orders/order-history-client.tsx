@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Package, Truck, RefreshCw, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { deleteCustomerOrder } from './actions'
+import { SmartImage } from '@/components/ui/smart-image'
 
 export default function OrderHistoryClient({ initialOrders, userId }: { initialOrders: any[], userId: string }) {
   const supabase = createClient()
@@ -87,11 +88,15 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 bg-[#111] overflow-hidden flex items-center justify-center border border-border flex-shrink-0">
                 {order.order_items?.[0]?.products?.images?.[0] ? (
-                  <img 
-                    src={order.order_items[0].products.images[0]} 
-                    alt={order.order_items[0].products.name} 
-                    className="object-cover w-full h-full opacity-80"
-                  />
+                  <div className="relative w-full h-full">
+                    <SmartImage 
+                      src={order.order_items[0].products.images[0]} 
+                      alt={order.order_items[0].products.name} 
+                      fill
+                      className="object-cover opacity-80"
+                      fallbackType="modern"
+                    />
+                  </div>
                 ) : (
                   <Package className="text-muted-foreground" />
                 )}
@@ -179,7 +184,15 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
                       <div key={i} className="flex gap-4 border-b border-border/50 pb-4 last:border-0 last:pb-0">
                         <div className="w-20 h-20 bg-[#111] overflow-hidden flex-shrink-0 border border-border">
                           {item.products?.images?.[0] ? (
-                            <img src={item.products.images[0]} alt={item.products.name} className="object-cover w-full h-full opacity-80" />
+                            <div className="relative w-full h-full">
+                              <SmartImage 
+                                src={item.products.images[0]} 
+                                alt={item.products.name} 
+                                fill
+                                className="object-cover opacity-80"
+                                fallbackType="modern"
+                              />
+                            </div>
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><Package /></div>
                           )}
