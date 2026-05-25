@@ -145,7 +145,7 @@ export default function CartPage() {
 
               <div className="space-y-4">
                 <Button asChild className="w-full bg-primary text-background hover:bg-primary/90 rounded-none py-8 text-sm uppercase tracking-widest group">
-                  <Link href={`/checkout?productId=${items[0].id}`}>
+                  <Link href="/checkout?cart=true">
                     Proceed to Checkout <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
