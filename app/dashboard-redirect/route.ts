@@ -18,7 +18,12 @@ export async function GET(request: Request) {
     .eq('id', user.id)
     .single()
   
-  const role = userData?.role || 'customer'
+  if (!userData?.role) {
+    await supabase.auth.signOut()
+    return NextResponse.redirect(new URL('/login', requestUrl.origin))
+  }
+
+  const role = userData.role
 
   // Redirect based on role
   if (role === 'admin') {
