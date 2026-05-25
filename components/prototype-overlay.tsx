@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Info, X, Users, Copy, Check, Key } from 'lucide-react';
 
 export function PrototypeOverlay() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // Show in development by default, or if explicitly enabled via environment variable
@@ -54,7 +54,7 @@ export function PrototypeOverlay() {
       </div>
 
       {/* Floating Accounts Widget */}
-      <div className="fixed bottom-4 left-4 z-[100] font-sans">
+      <div className="fixed bottom-4 right-4 z-[100] font-sans">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -146,16 +146,16 @@ export function PrototypeOverlay() {
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.1 }}
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2.5 bg-zinc-950/95 backdrop-blur-md border border-amber-500/50 hover:border-amber-400 text-amber-500 px-4 py-2.5 rounded-full shadow-[0_0_25px_rgba(245,158,11,0.25)] hover:shadow-[0_0_35px_rgba(245,158,11,0.45)] transition-all font-semibold text-xs tracking-widest uppercase group font-sans"
+            title="Open Demo Accounts"
+            className="relative flex items-center justify-center bg-zinc-950/95 backdrop-blur-md border border-amber-500/50 hover:border-amber-400 text-amber-500 w-12 h-12 rounded-full shadow-[0_0_25px_rgba(245,158,11,0.25)] hover:shadow-[0_0_35px_rgba(245,158,11,0.45)] transition-all group"
           >
-            <span className="relative flex h-2 w-2">
+            <span className="absolute top-0 right-0 flex h-3 w-3 -mt-0.5 -mr-0.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
             </span>
-            <Users size={16} className="group-hover:rotate-12 transition-transform duration-300" />
-            <span className="font-bold">Test Accounts</span>
+            <Users size={20} className="group-hover:rotate-12 transition-transform duration-300" />
           </motion.button>
         )}
       </div>
