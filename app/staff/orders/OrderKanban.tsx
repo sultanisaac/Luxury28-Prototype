@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Package, Truck, CheckCircle, RefreshCcw, Box, ArrowRight, MapPin, Watch, Printer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { updateOrderStatus, generateShippingLabel, addOrderNote } from './actions'
+import { updateOrderStatus, generateShippingLabel, addOrderNote, verifyOrderPayment } from './actions'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -21,7 +21,7 @@ interface OrderKanbanProps {
 }
 
 const COLUMNS = [
-  { id: 'Pending', label: 'Awaiting Payment', icon: Package, color: 'text-zinc-500', nextStatus: null },
+  { id: 'Pending', label: 'Awaiting Payment', icon: Package, color: 'text-zinc-500', nextStatus: 'Paid' },
   { id: 'Paid', label: 'New Orders (Paid)', icon: Package, color: 'text-amber-500', nextStatus: 'Processing' },
   { id: 'Processing', label: 'Processing', icon: RefreshCcw, color: 'text-blue-400', nextStatus: 'Packaging' },
   { id: 'Packaging', label: 'Packaging', icon: Box, color: 'text-purple-400', nextAction: 'ship' },
@@ -52,6 +52,14 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
       toast.error('Error adding note')
     }
     setIsSubmittingNote(false)
+  }
+
+  const handleVerifyPayment = async (orderId: string) => {
+    setLoadingId(orderId)
+    const result = await verifyOrderPayment(orderId)
+    if (result.success) toast.success(result.message || 'Payment verified!')
+    else toast.error('Check failed: ' + result.error)
+    setLoadingId(null)
   }
 
   useEffect(() => {
@@ -196,7 +204,18 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                   </div>
 
                   <div className="mt-4 flex flex-col gap-2">
-                    {col.nextStatus && (
+                    {col.id === 'Pending' ? (
+                      <Button 
+                        disabled={loadingId === order.id}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleVerifyPayment(order.id)
+                        }}
+                        className="w-full text-xs bg-amber-500/20 hover:bg-amber-600 border border-amber-500/30 text-amber-300 hover:text-white font-bold py-1.5"
+                      >
+                        {loadingId === order.id ? 'Checking...' : 'Sync Payment Status'} <RefreshCcw size={14} className="ml-1" />
+                      </Button>
+                    ) : col.nextStatus && (
                       <Button 
                         disabled={loadingId === order.id}
                         onClick={(e) => {
