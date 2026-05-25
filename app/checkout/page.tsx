@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import CheckoutClient from './CheckoutClient';
+import CheckoutClient, { Watch } from './CheckoutClient';
 
 interface CheckoutPageProps {
   searchParams: Promise<{ productId?: string; error?: string; cart?: string }>;
@@ -14,7 +14,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login?redirectTo=/checkout');
 
-  let watch = null;
+  let watch: Watch | null = null;
 
   // ── Guard: product must exist (if not cart checkout) ──────────────────────
   if (cart !== 'true') {
@@ -39,9 +39,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
       price: Number(product.price),
       price_idr: Number(product.price_idr),
       tier: product.categories?.name || 'Luxury',
-      image: product.images?.[0] || '/featured-watch.png',
-      stock: product.stock_quantity,
-      description: product.description
+      image: product.images?.[0] || '/featured-watch.png'
     };
   }
 
