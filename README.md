@@ -1,8 +1,11 @@
 # Luxury28 — Premium E-Commerce Platform
 
+## Overview
 Luxury28 is a sophisticated, high-end e-commerce platform built specifically for the luxury timepiece market in Indonesia. The platform is designed to provide a seamless, premium user experience while ensuring robust operational control for staff and administrators.
 
-## 🌟 Key Features
+---
+
+## Features
 
 *   **Triple-Tier Architecture**:
     *   **Customer Portal**: Browse the curated catalog, manage carts, apply coupons, select dynamic shipping rates, and track orders. Features an "Authenticity Vault" for digital provenance.
@@ -13,23 +16,21 @@ Luxury28 is a sophisticated, high-end e-commerce platform built specifically for
 *   **Enterprise-Grade Security**: Full Row-Level Security (RLS) implementation across all tables, separating access between customers, staff, and administrators. 
 *   **Premium UX/UI**: Designed with Tailwind CSS and Framer Motion for smooth, high-fidelity micro-interactions and a luxury aesthetic (Dark Mode native).
 
-## 🛠 Tech Stack
+---
 
-*   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+## Tech Stack
+
+*   **Framework**: Next.js 15 (App Router)
 *   **Language**: TypeScript
-*   **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
-*   **Styling**: Tailwind CSS & [shadcn/ui](https://ui.shadcn.com/)
+*   **Database & Auth**: Supabase (PostgreSQL)
+*   **Styling**: Tailwind CSS & shadcn/ui
 *   **Animations**: Framer Motion
-*   **Payments API**: [Xendit](https://www.xendit.co/)
-*   **Logistics API**: [Biteship](https://biteship.com/)
+*   **Payments API**: Xendit (Indonesia-first gateway)
+*   **Logistics API**: Biteship (Indonesian courier aggregator)
 
-## 🚀 Getting Started
+---
 
-### Prerequisites
-
-Ensure you have the following installed:
-*   [Node.js](https://nodejs.org/) (v18 or higher)
-*   A Supabase project instance
+## Installation
 
 ### 1. Clone the repository
 
@@ -44,55 +45,105 @@ cd Luxury28-Prototype
 npm install
 # or
 yarn install
+# or
+pnpm install
 ```
 
-### 3. Environment Variables
+---
 
-Create a `.env.local` file in the root directory and configure your environment variables:
+## Environment Variables
 
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+The project uses several environment variables for database connectivity and external API integrations. 
 
-# External APIs
-XENDIT_SECRET_KEY=your-xendit-secret-key
-BITESHIP_API_KEY=your-biteship-api-key
-
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+Before running the application, copy the template configuration file:
+```bash
+cp .env.example .env.local
 ```
+Then, open `.env.local` and populate the placeholders with your Supabase, Xendit, and Biteship credentials. Refer to the comments in [.env.example](.env.example) for detailed information on each required variable.
 
-### 4. Run the Development Server
+---
+
+## Running Locally
+
+To start the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🧪 Testing the Prototype
+---
 
-This repository features an environment-guarded prototype overlay designed for easy client testing without sacrificing safety when the code is public:
+## Project Structure
 
-1. **Enable Prototype Mode:** Set `NEXT_PUBLIC_IS_PROTOTYPE=true` in your `.env.local` file.
-2. **Accessing Test Accounts:** The floating widget at the bottom-left of the application will automatically populate and display the test accounts. By default, it uses private environment variables:
-   * `NEXT_PUBLIC_TEST_ADMIN_EMAIL` / `NEXT_PUBLIC_TEST_ADMIN_PASS`
-   * `NEXT_PUBLIC_TEST_STAFF_EMAIL` / `NEXT_PUBLIC_TEST_STAFF_PASS`
-   * `NEXT_PUBLIC_TEST_CUSTOMER_EMAIL` / `NEXT_PUBLIC_TEST_CUSTOMER_PASS`
+Below is a high-level overview of the repository structure:
 
-These default to standard demo accounts but are fully customizable and never hardcoded into files committed to public Git.
-
-## 📦 Database Schema Notes
-
-The project relies heavily on Supabase PostgreSQL. Key tables include:
-*   `users`: Extended profiles linked to Supabase Auth (`role` enum: `admin`, `staff`, `customer`).
-*   `products` & `categories`: Catalog management.
-*   `orders` & `order_items`: Transaction and fulfillment tracking.
-*   `coupons`: Marketing and discount codes.
-*   `store_settings`: Global configuration flags.
-*   `audit_logs`: Immutable ledger of administrative and staff actions.
+```
+├── app/                    # Next.js App Router routes & layouts
+│   ├── (auth)/             # Authentication routes (login, signup, etc.)
+│   ├── actions/            # Server actions (checkout, support, coupons)
+│   ├── admin/              # Admin dashboard pages and management tools
+│   ├── api/                # API routes and webhook handlers (Xendit, Biteship)
+│   ├── checkout/           # Multi-step checkout wizard & success handler
+│   ├── customer/           # Customer account portal
+│   └── staff/              # Staff order queue & operational components
+├── components/             # Reusable UI components
+│   ├── admin/              # Admin-specific interface blocks
+│   ├── ui/                 # shadcn/ui primitive primitives
+│   └── landing/            # Storefront homepage sections
+├── context/                # Global contexts (e.g., CartContext)
+├── hooks/                  # Custom React hooks
+├── lib/                    # Library wrappers & utility scripts
+│   ├── supabase/           # Server/Client SSR initializers & typings
+│   ├── biteship.ts         # Biteship API helper methods
+│   └── xendit.ts           # Xendit API invoice & refund helpers
+├── public/                 # Static assets (images, vectors, payment logos)
+└── styles/                 # Global stylesheet configurations
+```
 
 ---
-*Built with precision for the discerning collector.*
+
+## Deployment
+
+This application is built for deployment on [Vercel](https://vercel.com).
+
+### Deployment Guidelines:
+1. Ensure all environment variables listed in `.env.example` are configured in the Vercel Project Settings.
+2. Setup webhooks on Xendit and Biteship dashboards pointing to your production URL:
+   * **Xendit Webhook:** `https://your-domain.com/api/webhooks/xendit`
+   * **Biteship Webhook:** `https://your-domain.com/api/webhooks/biteship`
+3. Configure the `NEXT_PUBLIC_APP_URL` variable to match your production domain.
+
+---
+
+## License
+
+This project is currently unlicensed. (Add LICENSE file to distribute publicly).
+
+---
+
+## Contributing
+
+We welcome contributions to this repository. To contribute:
+1. Fork the project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+Please follow the guidelines defined in [GITHUB_ISSUES_GUIDE.md](GITHUB_ISSUES_GUIDE.md) for issue tracking and development lifecycle discipline.
+
+---
+
+## Security Notes
+
+> [!WARNING]
+> **Environment Configuration Security**
+> Never commit actual secret keys or credentials (such as `SUPABASE_SERVICE_ROLE_KEY`, `XENDIT_SECRET_KEY`, or `BITESHIP_API_KEY`) to the Git repository. Always keep them restricted to local `.env.local` files or secure production environment variable vaults.
+> 
+> If you suspect any keys have been committed in the Git history, rotate them immediately in the respective dashboards.
