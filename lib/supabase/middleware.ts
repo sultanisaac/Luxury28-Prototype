@@ -37,11 +37,24 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+  // Maintenance mode intercept
+  const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
+  
+  if (isMaintenanceMode) {
+    const isMaintenancePath = pathname === '/maintenance';
+
+    if (!isMaintenancePath) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/maintenance';
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Protected routes require authentication
-  const isProtectedRoute = pathname.startsWith('/admin') || 
-                           pathname.startsWith('/staff') || 
-                           pathname.startsWith('/customer') ||
-                           pathname === '/dashboard-redirect'
+  const isProtectedRoute = pathname.startsWith('/admin') ||
+    pathname.startsWith('/staff') ||
+    pathname.startsWith('/customer') ||
+    pathname === '/dashboard-redirect'
 
   if (isProtectedRoute && !user) {
     // no user, potentially respond by redirecting the user to the login page
