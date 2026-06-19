@@ -245,8 +245,8 @@ No extra environment variables needed beyond what you already have.
 - [x] `app/auth/callback/route.ts` created
 - [x] `signInWithGoogle` server action added to `app/auth/actions.ts`
 - [x] Google Sign-In button added to login page
-- [ ] Flow tested end-to-end locally
-- [ ] Flow tested on Vercel production
+- [x] Flow tested end-to-end locally
+- [x] Flow tested on Vercel production
 
 ---
 
