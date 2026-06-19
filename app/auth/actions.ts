@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -66,4 +67,27 @@ export async function logout() {
   const supabase = await createClient()
   await supabase.auth.signOut({ scope: 'local' })
   return redirect('/')
+}
+
+export async function signInWithGoogle() {
+  const supabase = await createClient()
+  const headersList = await headers()
+  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    },
+  })
+
+  if (error || !data.url) {
+    return redirect('/login?error=Could not authenticate with Google')
+  }
+
+  return redirect(data.url)
 }
