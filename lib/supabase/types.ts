@@ -120,3 +120,26 @@ export interface AuditLog {
   metadata: Record<string, unknown> | null
   created_at: string
 }
+
+export type TicketCategory = 'Refund' | 'Complaint' | 'General' | 'Other'
+export type TicketStatus = 'Open' | 'In Progress' | 'Resolved' | 'Closed'
+
+export interface Ticket {
+  id: string
+  user_id: string
+  subject: string
+  category: TicketCategory
+  status: TicketStatus
+  assigned_to: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface TicketMessage {
+  id: string
+  ticket_id: string
+  sender_id: string
+  message: string
+  is_internal_note: boolean
+  created_at: string
+}
