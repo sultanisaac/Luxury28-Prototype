@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/logo'
+import { Info } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -137,8 +138,14 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
     <>
       {/* Desktop Sidebar */}
       <aside className="w-64 flex-shrink-0 bg-zinc-900 border-r border-zinc-800 flex flex-col hidden md:flex">
-        <div className="h-16 flex items-center px-6 border-b border-zinc-800">
+        <div className="h-16 flex items-center px-6 border-b border-zinc-800 gap-3">
           <Logo size={24} className="scale-90 origin-left" />
+          {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
+            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-500 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border border-amber-500/20">
+              <Info size={10} />
+              Demo
+            </div>
+          )}
         </div>
         <NavLinks />
         <SidebarFooter />
@@ -165,7 +172,15 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
               <SidebarFooter />
             </SheetContent>
           </Sheet>
-          <Logo size={18} />
+          <div className="flex items-center gap-2">
+            <Logo size={18} />
+            {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
+              <div className="flex items-center gap-1 bg-amber-500/10 text-amber-500 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border border-amber-500/20">
+                <Info size={10} />
+                Demo
+              </div>
+            )}
+          </div>
         </div>
         
         <Button 

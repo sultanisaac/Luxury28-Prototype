@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X, LogOut, Home, MessageSquare } from 'lucide-react';
+import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X, LogOut, Home, MessageSquare, Info } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -62,8 +62,16 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
     <div className="min-h-screen bg-background pt-12 md:pt-16 pb-12">
 
       {/* Mobile Header Bar */}
-      <div className="md:hidden sticky top-8 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3 flex items-center justify-between">
-        <span className="font-serif text-lg">My Account</span>
+      <div className="md:hidden sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="font-serif text-lg">My Account</span>
+          {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
+            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-500 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border border-amber-500/20">
+              <Info size={10} />
+              Demo
+            </div>
+          )}
+        </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="text-muted-foreground hover:text-white transition-colors p-1"
@@ -92,7 +100,15 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         {/* Desktop Sidebar Navigation */}
         <aside className="w-full md:w-64 shrink-0 hidden md:block">
           <div className="sticky top-12">
-            <h2 className="font-serif text-2xl mb-8 border-b border-border pb-4">My Account</h2>
+            <div className="flex items-center gap-3 mb-8 border-b border-border pb-4">
+              <h2 className="font-serif text-2xl">My Account</h2>
+              {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
+                <div className="flex items-center gap-1 bg-amber-500/10 text-amber-500 text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border border-amber-500/20">
+                  <Info size={12} />
+                  Demo
+                </div>
+              )}
+            </div>
             <nav className="flex flex-col gap-2">
               <NavLinks />
               <div className="mt-8 pt-6 border-t border-border space-y-2">

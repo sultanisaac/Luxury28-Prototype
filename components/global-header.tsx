@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { User, LogOut, ShoppingCart } from 'lucide-react';
+import { User, LogOut, ShoppingCart, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { logout } from '@/app/auth/actions';
@@ -93,9 +93,17 @@ export function GlobalHeader() {
 
   return (
     <>
-      <nav className={`fixed top-8 w-full z-50 transition-all duration-300 ${headerBg}`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${headerBg}`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Logo />
+          <div className="flex items-center gap-4">
+            <Logo />
+            {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
+              <div className="hidden md:flex items-center gap-1.5 bg-amber-500/10 text-amber-500 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]">
+                <Info size={12} />
+                Prototype
+              </div>
+            )}
+          </div>
           
           <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
             {navLinks.map((link) => (
