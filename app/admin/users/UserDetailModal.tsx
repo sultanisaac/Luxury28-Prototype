@@ -74,12 +74,19 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
       <DialogContent className="sm:max-w-4xl lg:max-w-5xl w-[95vw] bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 gap-0">
         <DialogHeader className="p-8 border-b border-zinc-800 bg-zinc-900/50">
           <DialogTitle className="text-2xl font-serif flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center overflow-hidden">
-              {user.avatar_url ? (
-                <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-amber-500 font-bold">{user.first_name?.[0]}{user.last_name?.[0]}</span>
+            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center overflow-hidden relative">
+              {user.avatar_url && (
+                <img 
+                  src={user.avatar_url} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover absolute inset-0 z-10" 
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               )}
+              <span className="text-amber-500 font-bold z-0">{user.first_name?.[0]}{user.last_name?.[0]}</span>
             </div>
             <div>
               <span className="block">{user.first_name} {user.last_name}</span>

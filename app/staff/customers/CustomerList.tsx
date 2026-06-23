@@ -77,12 +77,21 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
               className="p-5 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-blue-400/30 hover:bg-zinc-800/30 transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-zinc-400 overflow-hidden flex-shrink-0">
-                  {customer.avatar_url ? (
-                    <img src={customer.avatar_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <>{customer.first_name?.[0]}{customer.last_name?.[0] || '?'}</>
+                <div className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-zinc-400 overflow-hidden flex-shrink-0 relative">
+                  {customer.avatar_url && (
+                    <img 
+                      src={customer.avatar_url} 
+                      alt="" 
+                      className="w-full h-full object-cover absolute inset-0 z-10" 
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
                   )}
+                  <span className="z-0">
+                    {customer.first_name?.[0]}{customer.last_name?.[0] || '?'}
+                  </span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors truncate">

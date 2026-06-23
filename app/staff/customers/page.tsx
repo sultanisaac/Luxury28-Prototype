@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import CustomerList from './CustomerList'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StaffCustomersPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
