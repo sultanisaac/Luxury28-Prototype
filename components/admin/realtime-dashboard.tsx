@@ -31,8 +31,9 @@ export default function RealtimeDashboard({
 
   useEffect(() => {
     // 1. Listen for Order changes
+    const ordersChannelName = `admin-orders-${Math.random().toString(36).substring(7)}`
     const ordersChannel = supabase
-      .channel('admin-orders')
+      .channel(ordersChannelName)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
@@ -45,8 +46,9 @@ export default function RealtimeDashboard({
       .subscribe()
 
     // 2. Listen for User changes (specifically customers)
+    const usersChannelName = `admin-users-${Math.random().toString(36).substring(7)}`
     const usersChannel = supabase
-      .channel('admin-users')
+      .channel(usersChannelName)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'users' },
@@ -61,8 +63,9 @@ export default function RealtimeDashboard({
       .subscribe()
 
     // 3. Listen for Notifications
+    const notificationsChannelName = `admin-notifications-${Math.random().toString(36).substring(7)}`
     const notificationsChannel = supabase
-      .channel('admin-notifications')
+      .channel(notificationsChannelName)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'notifications' },

@@ -58,10 +58,10 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   );
 
   return (
-    <div className="min-h-screen bg-background pt-16 md:pt-24 pb-12">
+    <div className="min-h-screen bg-background pt-12 md:pt-16 pb-12">
 
       {/* Mobile Header Bar */}
-      <div className="md:hidden sticky top-16 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden sticky top-8 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3 flex items-center justify-between">
         <span className="font-serif text-lg">My Account</span>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -90,7 +90,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
 
         {/* Desktop Sidebar Navigation */}
         <aside className="w-full md:w-64 shrink-0 hidden md:block">
-          <div className="sticky top-32">
+          <div className="sticky top-12">
             <h2 className="font-serif text-2xl mb-8 border-b border-border pb-4">My Account</h2>
             <nav className="flex flex-col gap-2">
               <NavLinks />

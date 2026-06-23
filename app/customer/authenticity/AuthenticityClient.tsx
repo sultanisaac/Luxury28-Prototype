@@ -10,7 +10,7 @@ export default function AuthenticityClient({ initialRecords, userId }: { initial
   const [records, setRecords] = useState(initialRecords)
 
   useEffect(() => {
-    const channel = supabase.channel('rt-customer-authenticity')
+    const channel = supabase.channel(`rt-customer-authenticity-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'authenticity_records' },
         async () => {
           const { data: orders } = await supabase.from('orders').select('id').eq('customer_id', userId)

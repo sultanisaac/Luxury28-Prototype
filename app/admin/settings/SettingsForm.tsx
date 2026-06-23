@@ -34,7 +34,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-settings')
+      .channel(`realtime-settings-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'store_settings' },

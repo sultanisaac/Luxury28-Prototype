@@ -27,7 +27,7 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
   const supabase = createClient()
 
   useEffect(() => {
-    const channel = supabase.channel('rt-staff-profile')
+    const channel = supabase.channel(`rt-staff-profile-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${user.id}` },
         (payload) => { setUser(payload.new) }

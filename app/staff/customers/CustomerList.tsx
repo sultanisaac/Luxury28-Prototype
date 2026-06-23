@@ -17,7 +17,7 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
   const supabase = createClient()
 
   useEffect(() => {
-    const channel = supabase.channel('rt-staff-customers')
+    const channel = supabase.channel(`rt-staff-customers-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: 'role=eq.customer' },
         async () => {
           const { data } = await supabase

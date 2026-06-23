@@ -23,8 +23,10 @@ export function GlobalHeader() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const pathname = usePathname();
 
-  // Hide header on admin and staff routes to keep their dashboards clean
-  const isAdminOrStaffRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/staff');
+  // Hide header on dashboard routes to keep their layouts clean
+  const isDashboardRoute = pathname?.toLowerCase().startsWith('/admin') || 
+                           pathname?.toLowerCase().startsWith('/staff') ||
+                           pathname?.toLowerCase().startsWith('/customer');
 
   useEffect(() => {
     const supabase = createClient();
@@ -74,7 +76,7 @@ export function GlobalHeader() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  if (isAdminOrStaffRoute) return null;
+  if (isDashboardRoute) return null;
 
   const isHome = pathname === '/';
   const headerBg = (isHome && !isScrolled) ? 'bg-transparent border-transparent' : 'bg-background/95 backdrop-blur-md border-b border-border shadow-sm';

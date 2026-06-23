@@ -40,7 +40,7 @@ export default function ProductTable({ products: initialProducts, categories }: 
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-products')
+      .channel(`realtime-products-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'products' },

@@ -44,8 +44,9 @@ export default function UserList({ users: initialUsers }: UserListProps) {
   const supabase = createClient()
 
   useEffect(() => {
+    const channelName = `realtime-users-${Math.random().toString(36).substring(7)}`
     const channel = supabase
-      .channel('realtime-users')
+      .channel(channelName)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'users' },

@@ -23,7 +23,7 @@ export default function ProfileClient({ initialUser, initialProfile }: {
 
   // Real-time sync
   useEffect(() => {
-    const channel = supabase.channel('rt-customer-profile')
+    const channel = supabase.channel(`rt-customer-profile-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${initialUser.id}` },
         (payload) => {

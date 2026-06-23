@@ -58,7 +58,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-orders')
+      .channel(`realtime-orders-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },

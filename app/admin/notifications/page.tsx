@@ -8,16 +8,18 @@ export default async function NotificationsPage() {
 
   if (!user) notFound()
 
-  // Verify Admin Role
-  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
-  if (userData?.role !== 'admin') notFound()
+  // Parallel Fetch for Role Verification and Hydration
+  const [userDataRes, notificationsRes] = await Promise.all([
+    supabase.from('users').select('role').eq('id', user.id).single(),
+    supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50)
+  ])
 
-  // Fetch Initial Notifications
-  const { data: notifications } = await supabase
-    .from('notifications')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(50)
+  if (userDataRes.data?.role !== 'admin') notFound()
+  const notifications = notificationsRes.data;
 
   return (
     <div className="pb-12">

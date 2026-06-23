@@ -20,7 +20,7 @@ export default function NotificationList({ initialNotifications }: NotificationL
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-notifications-page')
+      .channel(`realtime-notifications-page-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notifications' },
