@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import StaffTicketChat from './StaffTicketChat'
 import { updateTicketStatus } from '../actions'
 
-export default async function StaffTicketPage({ params }: { params: { id: string } }) {
+export default async function StaffTicketPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -16,7 +17,7 @@ export default async function StaffTicketPage({ params }: { params: { id: string
       *,
       users:user_id (email, first_name, last_name)
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (!ticket) {
@@ -26,7 +27,7 @@ export default async function StaffTicketPage({ params }: { params: { id: string
   // Fetch all messages (including internal notes)
   const { data: messages } = await supabase
     .from('ticket_messages')
-    .select('*')
+    .select(`*, users:sender_id (first_name, last_name, email, role)`)
     .eq('ticket_id', ticket.id)
     .order('created_at', { ascending: true })
 

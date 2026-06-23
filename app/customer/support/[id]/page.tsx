@@ -2,7 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import TicketChat from './TicketChat'
 
-export default async function TicketPage({ params }: { params: { id: string } }) {
+export default async function TicketPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -12,7 +13,7 @@ export default async function TicketPage({ params }: { params: { id: string } })
   const { data: ticket } = await supabase
     .from('tickets')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (!ticket || ticket.user_id !== user.id) {
@@ -22,7 +23,7 @@ export default async function TicketPage({ params }: { params: { id: string } })
   // Fetch messages (excluding internal notes for customers via RLS, but we can also filter here just in case)
   const { data: messages } = await supabase
     .from('ticket_messages')
-    .select('*')
+    .select(`*, users:sender_id (first_name, last_name, email, role)`)
     .eq('ticket_id', ticket.id)
     .eq('is_internal_note', false)
     .order('created_at', { ascending: true })
