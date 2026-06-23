@@ -72,12 +72,21 @@ export async function logout() {
 export async function signInWithGoogle() {
   const supabase = await createClient()
   const headersList = await headers()
-  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  
+  // Get the most accurate site URL
+  const siteUrl = 
+    process.env.NEXT_PUBLIC_APP_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) || 
+    headersList.get('origin') || 
+    'http://localhost:3000'
+    
+  // Clean up trailing slash if present
+  const cleanOrigin = siteUrl.replace(/\/$/, '')
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${origin}/auth/callback`,
+      redirectTo: `${cleanOrigin}/auth/callback`,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
