@@ -141,3 +141,33 @@ export async function deleteInquiry(id: string) {
   revalidatePath('/staff/support')
   return { success: true }
 }
+
+export async function deleteTicket(ticketId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
+  if (!userData || !['admin', 'staff'].includes(userData.role)) throw new Error('Unauthorized')
+
+  const { error } = await supabase.from('tickets').delete().eq('id', ticketId)
+  if (error) throw new Error('Failed to delete ticket')
+
+  revalidatePath('/staff/support')
+  revalidatePath('/admin/support')
+}
+
+export async function updateTicketDetails(ticketId: string, subject: string, category: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
+  if (!userData || !['admin', 'staff'].includes(userData.role)) throw new Error('Unauthorized')
+
+  const { error } = await supabase.from('tickets').update({ subject, category }).eq('id', ticketId)
+  if (error) throw new Error('Failed to update ticket')
+
+  revalidatePath(`/staff/support/${ticketId}`)
+  revalidatePath('/staff/support')
+}

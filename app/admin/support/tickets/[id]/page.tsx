@@ -1,11 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import StaffTicketChat from './StaffTicketChat'
-import { updateTicketStatus, deleteTicket } from '../actions'
+import AdminTicketChat from './AdminTicketChat'
+import { updateTicketStatus, deleteTicket } from '../../../../staff/support/actions'
 import EditTicketForm from './EditTicketForm'
 import { redirect } from 'next/navigation'
 
-export default async function StaffTicketPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminTicketPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -70,7 +70,7 @@ export default async function StaffTicketPage({ params }: { params: Promise<{ id
         <form action={async () => {
           'use server'
           await deleteTicket(ticket.id)
-          redirect('/staff/support')
+          redirect('/admin/support/tickets')
         }}>
           <button className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300 transition-colors">
             Delete
@@ -80,7 +80,7 @@ export default async function StaffTicketPage({ params }: { params: Promise<{ id
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <StaffTicketChat 
+        <AdminTicketChat 
           ticket={ticket} 
           initialMessages={messages || []} 
           currentUserId={user.id} 

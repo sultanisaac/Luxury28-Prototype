@@ -133,6 +133,11 @@ export interface Ticket {
   assigned_to: string | null
   created_at: string
   updated_at: string
+  users?: {
+    first_name: string | null
+    last_name: string | null
+    email: string
+  }
 }
 
 export interface TicketMessage {

@@ -33,8 +33,9 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
   }, [supabase])
 
   const filtered = customers.filter(c =>
-    `${c.first_name} ${c.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.role === 'customer' &&
+    (`${c.first_name || ''} ${c.last_name || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.email?.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   return (
@@ -78,17 +79,18 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-zinc-400 overflow-hidden flex-shrink-0 relative">
-                  {customer.avatar_url && (
+                  {customer.avatar_url ? (
                     <img 
                       src={customer.avatar_url} 
-                      alt="" 
+                      alt={`${customer.first_name} ${customer.last_name}`} 
                       className="w-full h-full object-cover absolute inset-0 z-10" 
                       referrerPolicy="no-referrer"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.style.opacity = '0';
+                        e.currentTarget.style.zIndex = '-1';
                       }}
                     />
-                  )}
+                  ) : null}
                   <span className="z-0">
                     {customer.first_name?.[0]}{customer.last_name?.[0] || '?'}
                   </span>

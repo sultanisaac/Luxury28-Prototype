@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Ticket, TicketMessage } from '@/lib/supabase/types'
-import { sendStaffMessage, updateTicketMessage, deleteTicketMessage } from '../actions'
+import { sendStaffMessage, updateTicketMessage, deleteTicketMessage } from '@/app/staff/support/actions'
 import { PencilIcon, TrashIcon, XIcon, CheckIcon } from 'lucide-react'
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   currentUserId: string
 }
 
-export default function StaffTicketChat({ ticket, initialMessages, currentUserId }: Props) {
+export default function AdminTicketChat({ ticket, initialMessages, currentUserId }: Props) {
   const [messages, setMessages] = useState<TicketMessage[]>(initialMessages)
   const [newMessage, setNewMessage] = useState('')
   const [isInternal, setIsInternal] = useState(false)

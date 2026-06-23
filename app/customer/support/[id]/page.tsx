@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import TicketChat from './TicketChat'
+import EditTicketForm from './EditTicketForm'
+import { deleteTicket } from '../actions'
+import { redirect } from 'next/navigation'
 
 export default async function TicketPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,15 +41,27 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
             <span>•</span>
             <span>ID: {ticket.id.slice(0, 8)}</span>
           </div>
+          <EditTicketForm ticket={ticket} />
         </div>
-        <span className={`px-3 py-1 text-xs uppercase tracking-wider rounded border ${
-          ticket.status === 'Open' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-          ticket.status === 'In Progress' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
-          ticket.status === 'Resolved' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
-          'bg-zinc-500/10 border-zinc-500/20 text-zinc-400'
-        }`}>
-          {ticket.status}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className={`px-3 py-1 text-xs uppercase tracking-wider rounded border ${
+            ticket.status === 'Open' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+            ticket.status === 'In Progress' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
+            ticket.status === 'Resolved' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+            'bg-zinc-500/10 border-zinc-500/20 text-zinc-400'
+          }`}>
+            {ticket.status}
+          </span>
+          <form action={async () => {
+            'use server'
+            await deleteTicket(ticket.id)
+            redirect('/customer/support')
+          }}>
+            <button className="text-red-400 text-xs uppercase tracking-wider hover:text-red-300 transition-colors">
+              Delete
+            </button>
+          </form>
+        </div>
       </div>
 
       <div className="flex-1 overflow-hidden">

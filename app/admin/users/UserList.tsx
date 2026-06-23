@@ -152,17 +152,18 @@ export default function UserList({ users: initialUsers }: UserListProps) {
                 <TableCell className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 font-bold overflow-hidden relative">
-                      {user.avatar_url && (
+                      {user.avatar_url ? (
                         <img 
                           src={user.avatar_url} 
-                          alt={`${user.first_name} ${user.last_name}`} 
+                          alt="" 
                           className="w-full h-full object-cover absolute inset-0 z-10" 
                           referrerPolicy="no-referrer"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.style.opacity = '0';
+                            e.currentTarget.style.zIndex = '-1';
                           }}
                         />
-                      )}
+                      ) : null}
                       <span className="z-0">
                         {user.first_name?.[0]}{user.last_name?.[0] || 'U'}
                       </span>

@@ -75,17 +75,18 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
         <DialogHeader className="p-8 border-b border-zinc-800 bg-zinc-900/50">
           <DialogTitle className="text-2xl font-serif flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center overflow-hidden relative">
-              {user.avatar_url && (
+              {user.avatar_url ? (
                 <img 
                   src={user.avatar_url} 
-                  alt="Avatar" 
+                  alt="" 
                   className="w-full h-full object-cover absolute inset-0 z-10" 
                   referrerPolicy="no-referrer"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.style.opacity = '0';
+                    e.currentTarget.style.zIndex = '-1';
                   }}
                 />
-              )}
+              ) : null}
               <span className="text-amber-500 font-bold z-0">{user.first_name?.[0]}{user.last_name?.[0]}</span>
             </div>
             <div>

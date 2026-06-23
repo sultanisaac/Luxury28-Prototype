@@ -95,3 +95,26 @@ export async function deleteTicketMessage(messageId: string, ticketId: string) {
   revalidatePath(`/staff/support/${ticketId}`)
   revalidatePath(`/admin/support/${ticketId}`)
 }
+
+export async function deleteTicket(ticketId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase.from('tickets').delete().eq('id', ticketId)
+  if (error) throw new Error('Failed to delete ticket')
+
+  revalidatePath('/customer/support')
+}
+
+export async function updateTicketDetails(ticketId: string, subject: string, category: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase.from('tickets').update({ subject, category }).eq('id', ticketId)
+  if (error) throw new Error('Failed to update ticket')
+
+  revalidatePath(`/customer/support/${ticketId}`)
+  revalidatePath('/customer/support')
+}
