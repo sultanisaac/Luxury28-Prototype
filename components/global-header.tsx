@@ -26,7 +26,8 @@ export function GlobalHeader() {
   // Hide header on dashboard routes to keep their layouts clean
   const isDashboardRoute = pathname?.toLowerCase().startsWith('/admin') || 
                            pathname?.toLowerCase().startsWith('/staff') ||
-                           pathname?.toLowerCase().startsWith('/customer');
+                           pathname?.toLowerCase().startsWith('/customer') ||
+                           pathname?.toLowerCase().startsWith('/dashboard-redirect');
 
   useEffect(() => {
     const supabase = createClient();

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X, LogOut, Home } from 'lucide-react';
+import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X, LogOut, Home, MessageSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -32,6 +32,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
     { href: '/customer/authenticity', icon: ShieldCheck, label: 'Authenticity Vault' },
     { href: '/customer/wishlist', icon: Heart, label: 'Saved Items' },
     { href: '/customer/payment', icon: CreditCard, label: 'Payment Security' },
+    { href: '/customer/support', icon: MessageSquare, label: 'Support Tickets' },
   ];
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (

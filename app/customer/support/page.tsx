@@ -2,35 +2,39 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Ticket } from '@/lib/supabase/types'
 
-export default async function StaffSupportPage() {
+export default async function SupportTicketsPage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch all tickets with user details
+  if (!user) return null
+
   const { data: tickets } = await supabase
     .from('tickets')
-    .select(`
-      *,
-      users:user_id (email, first_name, last_name)
-    `)
+    .select('*')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-3xl">Support Inbox</h1>
+        <h1 className="font-serif text-2xl">Support Tickets</h1>
+        <Link 
+          href="/customer/support/new" 
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 text-sm uppercase tracking-wider transition-colors"
+        >
+          Open New Ticket
+        </Link>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
         {tickets && tickets.length > 0 ? (
-          <div className="divide-y divide-zinc-800">
-            {tickets.map((ticket: any) => (
-              <div key={ticket.id} className="p-4 hover:bg-zinc-800/50 transition-colors flex items-center justify-between">
+          <div className="divide-y divide-border">
+            {tickets.map((ticket: Ticket) => (
+              <div key={ticket.id} className="p-4 hover:bg-accent/50 transition-colors flex items-center justify-between">
                 <div>
                   <h3 className="font-medium text-lg mb-1">{ticket.subject}</h3>
-                  <div className="flex items-center gap-3 text-sm text-zinc-400">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
                     <span className="uppercase tracking-wider">{ticket.category}</span>
-                    <span>•</span>
-                    <span>{ticket.users?.email || 'Unknown User'}</span>
                     <span>•</span>
                     <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
                   </div>
@@ -45,18 +49,18 @@ export default async function StaffSupportPage() {
                     {ticket.status}
                   </span>
                   <Link 
-                    href={`/staff/support/${ticket.id}`}
-                    className="bg-white text-black hover:bg-zinc-200 px-4 py-2 text-sm uppercase tracking-wider transition-colors rounded"
+                    href={`/customer/support/${ticket.id}`}
+                    className="text-sm underline underline-offset-4 hover:text-primary transition-colors"
                   >
-                    View Ticket
+                    View Chat
                   </Link>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-zinc-500">
-            <p>No support tickets found.</p>
+          <div className="p-8 text-center text-muted-foreground">
+            <p>You haven't opened any support tickets yet.</p>
           </div>
         )}
       </div>
