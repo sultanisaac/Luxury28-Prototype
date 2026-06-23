@@ -8,30 +8,32 @@ export default async function OrdersPage() {
 
   if (!user) notFound()
 
-  // Verify Admin Role
-  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
-  if (userData?.role !== 'admin') notFound()
-
-  // Initial Fetch for Hydration
-  const { data: orders } = await supabase
-    .from('orders')
-    .select(`
-      *,
-      users (
-        first_name,
-        last_name,
-        email
-      ),
-      order_items (
+  // Parallel Fetch for Role Verification and Hydration
+  const [userDataRes, ordersRes] = await Promise.all([
+    supabase.from('users').select('role').eq('id', user.id).single(),
+    supabase
+      .from('orders')
+      .select(`
         *,
-        products (
-          name,
-          images
-        )
-      ),
-      shipping_addresses (*)
-    `)
-    .order('created_at', { ascending: false })
+        users (
+          first_name,
+          last_name,
+          email
+        ),
+        order_items (
+          *,
+          products (
+            name,
+            images
+          )
+        ),
+        shipping_addresses (*)
+      `)
+      .order('created_at', { ascending: false })
+  ])
+
+  if (userDataRes.data?.role !== 'admin') notFound()
+  const orders = ordersRes.data;
 
   return (
     <div className="space-y-8 pb-12">

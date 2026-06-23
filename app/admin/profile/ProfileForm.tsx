@@ -29,7 +29,7 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-profile')
+      .channel(`realtime-profile-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${user.id}` },

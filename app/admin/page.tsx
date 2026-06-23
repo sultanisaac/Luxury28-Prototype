@@ -20,17 +20,15 @@ export default async function AdminDashboard() {
   }
 
   // Initial Fetch for Stats (Hydration)
-  const { data: orders } = await supabase.from('orders').select('total_amount, status, created_at')
-  const { count: customerCount } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true })
-    .eq('role', 'customer')
-  
-  const { data: notifications } = await supabase
-    .from('notifications')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(5)
+  const [
+    { data: orders },
+    { count: customerCount },
+    { data: notifications }
+  ] = await Promise.all([
+    supabase.from('orders').select('total_amount, status, created_at'),
+    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'customer'),
+    supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(5)
+  ])
 
   return (
     <div className="space-y-8 pb-12">

@@ -15,7 +15,7 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
 
   // Real-time sync
   useEffect(() => {
-    const channel = supabase.channel('rt-customer-orders')
+    const channel = supabase.channel(`rt-customer-orders-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'orders', filter: `customer_id=eq.${userId}` },
         async () => {

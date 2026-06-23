@@ -11,7 +11,7 @@ export default function WishlistClient({ initialItems, userId }: { initialItems:
   const [items, setItems] = useState(initialItems)
 
   useEffect(() => {
-    const channel = supabase.channel('rt-customer-wishlist')
+    const channel = supabase.channel(`rt-customer-wishlist-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'wishlists', filter: `user_id=eq.${userId}` },
         async () => {

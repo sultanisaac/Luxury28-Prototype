@@ -18,7 +18,7 @@ export default function AddressBookClient({ initialAddresses, userId }: { initia
 
   // Real-time sync
   useEffect(() => {
-    const channel = supabase.channel('rt-customer-addresses')
+    const channel = supabase.channel(`rt-customer-addresses-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'shipping_addresses', filter: `user_id=eq.${userId}` },
         async () => {

@@ -8,14 +8,14 @@ export default async function UsersPage() {
 
   if (!user) notFound()
 
-  // Verify Admin Role
-  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
-  if (userData?.role !== 'admin') notFound()
-  
-  const { data: users } = await supabase
-    .from('admin_user_view')
-    .select('*')
-    .order('created_at', { ascending: false })
+  // Parallel Fetch for Role Verification and Hydration
+  const [userDataRes, usersRes] = await Promise.all([
+    supabase.from('users').select('role').eq('id', user.id).single(),
+    supabase.from('admin_user_view').select('*').order('created_at', { ascending: false })
+  ])
+
+  if (userDataRes.data?.role !== 'admin') notFound()
+  const users = usersRes.data;
 
   return (
     <div className="space-y-8 pb-12">

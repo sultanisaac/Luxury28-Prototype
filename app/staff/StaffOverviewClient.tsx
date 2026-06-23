@@ -42,19 +42,19 @@ export default function StaffOverviewClient({
   }
 
   useEffect(() => {
-    const ordersChannel = supabase.channel('rt-staff-orders')
+    const ordersChannel = supabase.channel(`rt-staff-orders-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, refetchKPIs)
       .subscribe()
 
-    const productsChannel = supabase.channel('rt-staff-products')
+    const productsChannel = supabase.channel(`rt-staff-products-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, refetchKPIs)
       .subscribe()
 
-    const inquiriesChannel = supabase.channel('rt-staff-inquiries')
+    const inquiriesChannel = supabase.channel(`rt-staff-inquiries-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_inquiries' }, refetchKPIs)
       .subscribe()
 
-    const logsChannel = supabase.channel('rt-staff-logs')
+    const logsChannel = supabase.channel(`rt-staff-logs-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'audit_logs' }, refetchKPIs)
       .subscribe()
 

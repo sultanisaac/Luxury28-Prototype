@@ -63,7 +63,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
   }
 
   useEffect(() => {
-    const channel = supabase.channel('rt-kanban-orders')
+    const channel = supabase.channel(`rt-kanban-orders-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
         async () => {
           const { data } = await supabase

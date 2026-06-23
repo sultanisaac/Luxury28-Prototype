@@ -34,7 +34,7 @@ export default function RealtimeAudit({ initialLogs }: RealtimeAuditProps) {
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-audit')
+      .channel(`realtime-audit-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'audit_logs' },

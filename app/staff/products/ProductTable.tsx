@@ -27,7 +27,7 @@ export default function ProductTable({ products: initialProducts, categories }: 
   const supabase = createClient()
 
   useEffect(() => {
-    const channel = supabase.channel('rt-staff-product-table')
+    const channel = supabase.channel(`rt-staff-product-table-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' },
         async () => {
           const { data } = await supabase

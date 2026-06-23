@@ -45,11 +45,11 @@ export function PrototypeOverlay() {
 
   return (
     <>
-      {/* Top Banner */}
-      <div className="fixed top-0 w-full z-[100] h-8 bg-amber-500/10 text-amber-500 flex items-center justify-center text-[10px] sm:text-xs font-semibold tracking-widest uppercase backdrop-blur-md border-b border-amber-500/20">
+      {/* Bottom Center Pill */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] bg-amber-500/10 text-amber-500 flex items-center justify-center text-[10px] sm:text-xs font-semibold tracking-widest uppercase backdrop-blur-md border border-amber-500/20 px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.15)]">
         <span className="flex items-center gap-2">
           <Info size={14} />
-          Prototype Environment — Not for Production Use
+          Prototype Environment
         </span>
       </div>
 

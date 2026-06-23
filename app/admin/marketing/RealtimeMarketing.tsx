@@ -17,7 +17,7 @@ export default function RealtimeMarketing({ initialCoupons }: RealtimeMarketingP
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-marketing')
+      .channel(`realtime-marketing-${Math.random().toString(36).substring(7)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'coupons' },

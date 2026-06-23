@@ -20,8 +20,11 @@ export default function NotificationIndicator({ href }: { href: string }) {
 
     fetchUnread()
 
+    // Create a unique channel name for this instance
+    const channelName = `realtime-unread-indicator-${Math.random().toString(36).substring(7)}`
+    
     const channel = supabase
-      .channel('realtime-unread-indicator')
+      .channel(channelName)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notifications' },
