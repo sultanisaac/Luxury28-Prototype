@@ -24,6 +24,7 @@ export default function RealtimeDashboard({
   initialCustomerCount,
   initialNotifications
 }: DashboardStatsProps) {
+  const [period, setPeriod] = useState<30 | 90 | 'all'>(30)
   const [orders, setOrders] = useState(initialOrders)
   const [customerCount, setCustomerCount] = useState(initialCustomerCount)
   const [notifications, setNotifications] = useState(initialNotifications)
@@ -82,10 +83,17 @@ export default function RealtimeDashboard({
     }
   }, [supabase])
 
-  const validOrders = orders.filter(o => o.status !== 'Cancelled')
+  const filteredOrders = useMemo(() => {
+    if (period === 'all') return orders;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - period);
+    return orders.filter(o => new Date(o.created_at) >= cutoff);
+  }, [orders, period]);
+
+  const validOrders = filteredOrders.filter(o => o.status !== 'Cancelled')
   const totalRevenue = validOrders.reduce((acc, curr) => acc + Number(curr.total_amount), 0)
   
-  const activeOrdersCount = orders
+  const activeOrdersCount = filteredOrders
     .filter(o => ['Pending', 'Processing', 'Packaging', 'Shipped'].includes(o.status))
     .length
 
@@ -100,25 +108,73 @@ export default function RealtimeDashboard({
 
   const chartData = useMemo(() => {
     const data = []
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date()
-      d.setDate(d.getDate() - i)
-      const dateStr = d.toISOString().split('T')[0]
-      
-      const dayOrders = validOrders.filter(o => o.created_at && o.created_at.startsWith(dateStr))
-      const revenue = dayOrders.reduce((sum, o) => sum + Number(o.total_amount), 0)
-      
-      data.push({
-        name: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        revenue,
-        orders: dayOrders.length
-      })
+    if (period === 'all') {
+      // aggregate by month for the last 12 months
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date()
+        d.setMonth(d.getMonth() - i)
+        const monthStr = d.toISOString().slice(0, 7) // YYYY-MM
+        const monthOrders = validOrders.filter(o => o.created_at && o.created_at.startsWith(monthStr))
+        const revenue = monthOrders.reduce((sum, o) => sum + Number(o.total_amount), 0)
+        data.push({
+          name: d.toLocaleDateString('en-US', { month: 'short' }),
+          revenue,
+          orders: monthOrders.length
+        })
+      }
+    } else {
+      // aggregate by day based on period
+      for (let i = period - 1; i >= 0; i--) {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        const dateStr = d.toISOString().split('T')[0]
+        
+        const dayOrders = validOrders.filter(o => o.created_at && o.created_at.startsWith(dateStr))
+        const revenue = dayOrders.reduce((sum, o) => sum + Number(o.total_amount), 0)
+        
+        data.push({
+          name: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          revenue,
+          orders: dayOrders.length
+        })
+      }
     }
     return data
-  }, [validOrders])
+  }, [validOrders, period])
 
   return (
     <div className="space-y-8">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold font-serif tracking-wide text-white drop-shadow-md">Executive Overview</h1>
+          <p className="text-zinc-400 mt-2 flex items-center gap-2">
+            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+            Real-time business performance for Luxury28.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 p-1 rounded-lg">
+          <button 
+            onClick={() => setPeriod(30)}
+            className={`px-4 py-2 text-sm font-medium rounded-md shadow-sm transition-colors ${period === 30 ? 'bg-zinc-800 text-white border border-zinc-700' : 'text-zinc-400 hover:text-white'}`}
+          >
+            30 Days
+          </button>
+          <button 
+            onClick={() => setPeriod(90)}
+            className={`px-4 py-2 text-sm font-medium rounded-md shadow-sm transition-colors ${period === 90 ? 'bg-zinc-800 text-white border border-zinc-700' : 'text-zinc-400 hover:text-white'}`}
+          >
+            90 Days
+          </button>
+          <button 
+            onClick={() => setPeriod('all')}
+            className={`px-4 py-2 text-sm font-medium rounded-md shadow-sm transition-colors ${period === 'all' ? 'bg-zinc-800 text-white border border-zinc-700' : 'text-zinc-400 hover:text-white'}`}
+          >
+            All Time
+          </button>
+        </div>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => {
