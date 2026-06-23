@@ -99,6 +99,32 @@ export async function deleteTicketMessage(messageId: string, ticketId: string) {
   revalidatePath(`/admin/support/${ticketId}`)
 }
 
+export async function deleteTickets(ticketIds: string[]) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) throw new Error('Not authenticated')
+  if (!ticketIds || ticketIds.length === 0) return
+
+  const { data: userData } = await supabase.from('users').select('role').eq('id', user.id).single()
+  if (!userData || !['admin', 'staff'].includes(userData.role)) {
+    throw new Error('Unauthorized')
+  }
+
+  // Delete messages first (in case no cascade constraint), then the tickets
+  await supabase.from('ticket_messages').delete().in('ticket_id', ticketIds)
+
+  const { error } = await supabase.from('tickets').delete().in('id', ticketIds)
+
+  if (error) {
+    console.error(error)
+    throw new Error('Failed to delete tickets')
+  }
+
+  revalidatePath('/staff/support')
+  revalidatePath('/admin/support')
+}
+
 export async function updateInquiryStatus(id: string, status: 'read' | 'unread' | 'replied' | 'archived') {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
