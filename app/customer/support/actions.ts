@@ -96,25 +96,26 @@ export async function deleteTicketMessage(messageId: string, ticketId: string) {
   revalidatePath(`/admin/support/${ticketId}`)
 }
 
-export async function deleteTicket(ticketId: string) {
+export async function deleteTickets(ticketIds: string[]) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
   if (!user) throw new Error('Not authenticated')
+  if (!ticketIds || ticketIds.length === 0) return
 
-  const { error } = await supabase.from('tickets').delete().eq('id', ticketId)
-  if (error) throw new Error('Failed to delete ticket')
+  // Delete messages first, then the tickets
+  await supabase.from('ticket_messages').delete().in('ticket_id', ticketIds)
 
-  revalidatePath('/customer/support')
-}
+  const { error } = await supabase
+    .from('tickets')
+    .delete()
+    .in('id', ticketIds)
+    .eq('user_id', user.id)
 
-export async function updateTicketDetails(ticketId: string, subject: string, category: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
+  if (error) {
+    console.error(error)
+    throw new Error('Failed to delete tickets')
+  }
 
-  const { error } = await supabase.from('tickets').update({ subject, category }).eq('id', ticketId)
-  if (error) throw new Error('Failed to update ticket')
-
-  revalidatePath(`/customer/support/${ticketId}`)
   revalidatePath('/customer/support')
 }
