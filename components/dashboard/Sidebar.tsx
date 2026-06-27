@@ -17,7 +17,10 @@ import {
   Bell,
   Settings,
   ShieldAlert,
-  UserCircle
+  UserCircle,
+  MapPin,
+  Heart,
+  CreditCard
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/logo'
@@ -41,7 +44,7 @@ interface NavItem {
 interface SidebarProps {
   navItems: NavItem[]
   userEmail?: string
-  role: 'admin' | 'staff'
+  role: 'admin' | 'staff' | 'customer'
   notificationComponent?: React.ReactNode
 }
 
@@ -74,12 +77,15 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
     Bell,
     Settings,
     ShieldAlert,
-    UserCircle
+    UserCircle,
+    MapPin,
+    Heart,
+    CreditCard
   }
 
-  const activeColor = role === 'admin' ? 'text-amber-500' : 'text-blue-400'
-  const activeBg = role === 'admin' ? 'bg-amber-500' : 'bg-blue-400'
-  const activeShadow = role === 'admin' ? 'shadow-[0_0_8px_rgba(245,158,11,0.6)]' : 'shadow-[0_0_8px_rgba(96,165,250,0.6)]'
+  const activeColor = role === 'admin' ? 'text-amber-500' : role === 'staff' ? 'text-blue-400' : 'text-emerald-500'
+  const activeBg = role === 'admin' ? 'bg-amber-500' : role === 'staff' ? 'bg-blue-400' : 'bg-emerald-500'
+  const activeShadow = role === 'admin' ? 'shadow-[0_0_8px_rgba(245,158,11,0.6)]' : role === 'staff' ? 'shadow-[0_0_8px_rgba(96,165,250,0.6)]' : 'shadow-[0_0_8px_rgba(16,185,129,0.6)]'
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
     <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
