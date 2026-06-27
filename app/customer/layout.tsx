@@ -1,141 +1,36 @@
-'use client';
+import { ReactNode } from 'react'
+import { createClient } from '@/lib/supabase/server'
+import { Sidebar } from '@/components/dashboard/Sidebar'
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { User, MapPin, Package, ShieldCheck, Heart, CreditCard, Menu, X, LogOut, Home, MessageSquare, Info } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+export default async function CustomerLayout({ children }: { children: ReactNode }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-export default function CustomerLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const supabase = createClient();
-
-  const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
-      await supabase.auth.signOut({ scope: 'local' });
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Logout error:', error);
-      router.push('/');
-    }
-  };
-
-  const links = [
-    { href: '/customer/profile', icon: User, label: 'Personal Details' },
-    { href: '/customer/orders', icon: Package, label: 'Order History' },
-    { href: '/customer/addresses', icon: MapPin, label: 'ADDRESS' },
-    { href: '/customer/authenticity', icon: ShieldCheck, label: 'Authenticity Vault' },
-    { href: '/customer/wishlist', icon: Heart, label: 'Saved Items' },
-    { href: '/customer/payment', icon: CreditCard, label: 'Payment Security' },
-    { href: '/customer/support', icon: MessageSquare, label: 'Support Tickets' },
-  ];
-
-  const NavLinks = ({ onClick }: { onClick?: () => void }) => (
-    <>
-      {links.map((link) => {
-        const Icon = link.icon;
-        const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            onClick={onClick}
-            className={`flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-widest transition-colors ${
-              isActive
-                ? 'bg-primary text-background'
-                : 'text-muted-foreground hover:text-white hover:bg-card'
-            }`}
-          >
-            <Icon size={16} /> {link.label}
-          </Link>
-        );
-      })}
-    </>
-  );
+  const navItems = [
+    { name: 'Personal Details', href: '/customer/profile', icon: 'UserCircle' },
+    { name: 'Order History', href: '/customer/orders', icon: 'Package' },
+    { name: 'Address Book', href: '/customer/addresses', icon: 'MapPin' },
+    { name: 'Authenticity Vault', href: '/customer/authenticity', icon: 'ShieldCheck' },
+    { name: 'Saved Items', href: '/customer/wishlist', icon: 'Heart' },
+    { name: 'Payment Security', href: '/customer/payment', icon: 'CreditCard' },
+    { name: 'Support Tickets', href: '/customer/support', icon: 'MessageSquare' },
+  ]
 
   return (
-    <div className="min-h-screen bg-background pt-12 md:pt-16 pb-12">
+    <div className="h-screen bg-zinc-950 flex flex-col md:flex-row text-white font-sans overflow-hidden">
+      <Sidebar 
+        navItems={navItems} 
+        userEmail={user?.email} 
+        role="customer" 
+      />
 
-      {/* Mobile Header Bar */}
-      <div className="md:hidden sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="font-serif text-lg">My Account</span>
-          {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-500 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border border-amber-500/20">
-              <Info size={10} />
-              Demo
-            </div>
-          )}
-        </div>
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="text-muted-foreground hover:text-white transition-colors p-1"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-
-      {/* Mobile Slide-down Nav */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-card border-b border-border flex flex-col shadow-xl z-30">
-          <NavLinks onClick={() => setMobileMenuOpen(false)} />
-          <button
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-widest text-red-400 hover:bg-red-950/20 transition-colors border-t border-border"
-          >
-            <LogOut size={16} /> {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
-          </button>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8 md:gap-12 mt-6 md:mt-0">
-
-        {/* Desktop Sidebar Navigation */}
-        <aside className="w-full md:w-64 shrink-0 hidden md:block">
-          <div className="sticky top-12">
-            <div className="flex items-center gap-3 mb-8 border-b border-border pb-4">
-              <h2 className="font-serif text-2xl">My Account</h2>
-              {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
-                <div className="flex items-center gap-1 bg-amber-500/10 text-amber-500 text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border border-amber-500/20">
-                  <Info size={12} />
-                  Demo
-                </div>
-              )}
-            </div>
-            <nav className="flex flex-col gap-2">
-              <NavLinks />
-              <div className="mt-8 pt-6 border-t border-border space-y-2">
-                <Link
-                  href="/"
-                  className="flex items-center gap-3 px-4 py-2 text-sm uppercase tracking-widest text-muted-foreground hover:text-white transition-colors"
-                >
-                  <Home size={16} /> Back to Site
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="flex items-center gap-3 px-4 py-2 text-sm uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors w-full text-left"
-                >
-                  <LogOut size={16} /> {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
-                </button>
-              </div>
-            </nav>
-          </div>
-        </aside>
-
-        {/* Main Content Area */}
-        <main className="flex-1 bg-card border border-border p-5 md:p-8 h-[calc(100vh-12rem)] overflow-y-auto shadow-sm rounded-xl">
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
           {children}
-        </main>
-
-      </div>
+        </div>
+      </main>
     </div>
-  );
+  )
 }
