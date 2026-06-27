@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     .single()
   
   if (!userData?.role) {
-    await supabase.auth.signOut()
+    await supabase.auth.signOut({ scope: 'local' })
     return NextResponse.redirect(new URL('/login', requestUrl.origin))
   }
 

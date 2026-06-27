@@ -27,7 +27,7 @@ export default async function LoginPage(props: Props) {
       redirect('/dashboard-redirect')
     } else {
       // Stale session (user in auth but not in users table)
-      await supabase.auth.signOut()
+      await supabase.auth.signOut({ scope: 'local' })
     }
   }
 
