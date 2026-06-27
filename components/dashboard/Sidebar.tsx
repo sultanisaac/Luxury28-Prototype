@@ -34,6 +34,8 @@ import {
 } from "@/components/ui/sheet"
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { CartSlideOut } from '@/components/cart-slideout'
+import { useCart } from '@/context/CartContext'
 
 interface NavItem {
   name: string
@@ -54,6 +56,8 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
   const [open, setOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const supabase = createClient()
+  const { itemCount } = useCart()
+  const [isCartOpen, setIsCartOpen] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -189,16 +193,57 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
           </div>
         </div>
         
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          className="text-zinc-400 hover:text-white"
-        >
-          <LogOut size={18} />
-        </Button>
+        <div className="flex items-center gap-1">
+          {role === 'customer' ? (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsCartOpen(true)}
+              className="text-zinc-400 hover:text-white relative"
+            >
+              <ShoppingCart size={20} />
+              {itemCount > 0 && (
+                <span className="absolute top-1 right-1 bg-white text-zinc-950 text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  {itemCount}
+                </span>
+              )}
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="text-zinc-400 hover:text-white"
+            >
+              <LogOut size={20} />
+            </Button>
+          )}
+        </div>
       </header>
+
+      {/* Desktop Floating Cart Button for Customers */}
+      {role === 'customer' && (
+        <div className="hidden md:block fixed top-6 right-8 z-40">
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => setIsCartOpen(true)}
+            className="bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full w-12 h-12 relative shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all hover:scale-105"
+          >
+            <ShoppingCart size={20} />
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-white text-zinc-950 text-[11px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md">
+                {itemCount}
+              </span>
+            )}
+          </Button>
+        </div>
+      )}
+
+      {role === 'customer' && (
+        <CartSlideOut isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      )}
     </>
   )
 }
