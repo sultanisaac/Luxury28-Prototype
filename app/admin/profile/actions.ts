@@ -28,9 +28,21 @@ export async function updateProfile(data: {
 export async function updatePassword(password: string) {
   const supabase = await createClient()
   
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Not authenticated' }
+
+  // Only apply global sign-out for email/password accounts, not OAuth (Google)
+  const provider = user.app_metadata?.provider
+  const isEmailAccount = provider === 'email'
+
   const { error } = await supabase.auth.updateUser({ password })
 
   if (error) return { success: false, error: error.message }
-  
-  return { success: true }
+
+  // Sign out ALL devices globally so the new password takes effect everywhere
+  if (isEmailAccount) {
+    await supabase.auth.signOut({ scope: 'global' })
+  }
+
+  return { success: true, requiresRelogin: isEmailAccount }
 }

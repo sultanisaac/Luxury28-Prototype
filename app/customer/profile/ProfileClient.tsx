@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Camera, Save, Loader2, User, Lock } from 'lucide-react'
@@ -11,6 +12,7 @@ export default function ProfileClient({ initialUser, initialProfile }: {
   initialProfile: any
 }) {
   const supabase = createClient()
+  const router = useRouter()
   const [profile, setProfile] = useState(initialProfile)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
@@ -84,10 +86,22 @@ export default function ProfileClient({ initialUser, initialProfile }: {
     if (passwords.new !== passwords.confirm) return toast.error('Passwords do not match')
     setPwLoading(true)
     try {
+      // Check if this is an email/password account (not Google)
+      const { data: { user } } = await supabase.auth.getUser()
+      const isEmailAccount = user?.app_metadata?.provider === 'email'
+
       const { error } = await supabase.auth.updateUser({ password: passwords.new })
       if (error) throw error
-      toast.success('Password updated')
-      setPasswords({ new: '', confirm: '' })
+
+      if (isEmailAccount) {
+        // Sign out all devices globally for security
+        await supabase.auth.signOut({ scope: 'global' })
+        toast.success('Password updated. Signing you out of all devices...')
+        setTimeout(() => router.push('/login'), 2000)
+      } else {
+        toast.success('Password updated')
+        setPasswords({ new: '', confirm: '' })
+      }
     } catch (err: any) {
       toast.error('Error: ' + err.message)
     } finally {

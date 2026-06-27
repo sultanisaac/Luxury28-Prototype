@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { 
   User, 
   Phone, 
@@ -21,6 +22,7 @@ interface ProfileFormProps {
 }
 
 export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [user, setUser] = useState(initialUser)
@@ -126,8 +128,13 @@ export default function ProfileForm({ user: initialUser }: ProfileFormProps) {
     try {
       const result = await updatePassword(passwords.new)
       if (result.success) {
-        toast.success('Password updated')
-        setPasswords({ new: '', confirm: '' })
+        if (result.requiresRelogin) {
+          toast.success('Password updated. Signing you out of all devices...')
+          setTimeout(() => router.push('/login'), 2000)
+        } else {
+          toast.success('Password updated')
+          setPasswords({ new: '', confirm: '' })
+        }
       } else {
         toast.error('Error: ' + result.error)
       }
