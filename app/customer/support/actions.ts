@@ -120,10 +120,12 @@ export async function deleteTickets(ticketIds: string[]) {
   revalidatePath('/customer/support')
 }
 
+// Delete a single ticket and its messages
 export async function deleteTicket(ticketId: string) {
   return deleteTickets([ticketId]);
 }
 
+// Update ticket subject and category
 export async function updateTicketDetails(ticketId: string, subject: string, category: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
