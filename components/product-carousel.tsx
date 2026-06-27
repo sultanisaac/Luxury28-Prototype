@@ -2,9 +2,11 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 import { SmartImage } from '@/components/ui/smart-image';
 import { createClient } from '@/lib/supabase/client';
+import { useCart } from '@/context/CartContext';
 
 interface RecommendedProduct {
   id: string;
@@ -18,7 +20,7 @@ interface RecommendedProduct {
 interface ProductCarouselProps {
   excludeId?: string;
   title?: string;
-  /** Number of cards visible on desktop (default 5) */
+  /** Number of cards visible on desktop (default 4) */
   desktopVisible?: number;
   /** Number of cards visible on mobile (default 2) */
   mobileVisible?: number;
@@ -28,15 +30,17 @@ interface ProductCarouselProps {
 export function ProductCarousel({
   excludeId,
   title = 'You Might Also Like',
-  desktopVisible = 5,
+  desktopVisible = 4,
   mobileVisible = 2,
   onProductClick,
 }: ProductCarouselProps) {
   const [products, setProducts] = useState<RecommendedProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addedId, setAddedId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const { addItem } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -53,7 +57,6 @@ export function ProductCarousel({
       const { data, error } = await query;
 
       if (!error && data) {
-        // Shuffle for variety
         const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 12);
         setProducts(
           shuffled.map((p: any) => ({
@@ -94,8 +97,24 @@ export function ProductCarousel({
   const scroll = (direction: 'left' | 'right') => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector('a')?.offsetWidth || 180;
+    const cardWidth = el.querySelector('[data-card]')?.clientWidth || 180;
     el.scrollBy({ left: direction === 'left' ? -cardWidth * 2 : cardWidth * 2, behavior: 'smooth' });
+  };
+
+  const handleAddToCart = (e: React.MouseEvent, product: RecommendedProduct) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      price_idr: product.price_idr,
+      image: product.image,
+      tier: product.category,
+      stock: 99,
+    });
+    setAddedId(product.id);
+    setTimeout(() => setAddedId(null), 1500);
   };
 
   if (loading) {
@@ -145,40 +164,57 @@ export function ProductCarousel({
         style={{ scrollSnapType: 'x mandatory' }}
       >
         {products.map((product) => (
-          <Link
+          <div
             key={product.id}
-            href={`/product/${product.id}`}
-            onClick={onProductClick}
-            className="group flex-shrink-0 border border-border bg-card hover:border-primary/40 transition-all duration-300"
+            data-card
+            className="group flex-shrink-0 border border-border bg-card hover:border-primary/40 transition-all duration-300 flex flex-col"
             style={{
               width: `calc((100% - (${desktopVisible - 1} * 0.75rem)) / ${desktopVisible})`,
               minWidth: `calc((100% - (${mobileVisible - 1} * 0.75rem)) / ${mobileVisible})`,
               scrollSnapAlign: 'start',
             }}
           >
-            {/* Image */}
-            <div className="aspect-square bg-[#111] relative overflow-hidden">
-              <SmartImage
-                src={product.image}
-                alt={product.name}
-                fill
-                fallbackType="luxury"
-                className="object-contain p-3 group-hover:scale-110 transition-transform duration-500"
-              />
-            </div>
+            {/* Image — clickable */}
+            <Link href={`/product/${product.id}`} onClick={onProductClick} className="block">
+              <div className="aspect-square bg-[#111] relative overflow-hidden">
+                <SmartImage
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  fallbackType="luxury"
+                  className="object-contain p-3 group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+            </Link>
+
             {/* Info */}
-            <div className="p-2.5">
+            <div className="p-2.5 flex flex-col flex-1">
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-0.5 truncate">
                 {product.category}
               </p>
-              <p className="text-xs font-serif leading-tight line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-                {product.name}
-              </p>
-              <p className="text-xs text-primary font-medium tracking-wider">
+              <Link href={`/product/${product.id}`} onClick={onProductClick}>
+                <p className="text-xs font-serif leading-tight line-clamp-2 mb-1 group-hover:text-primary transition-colors">
+                  {product.name}
+                </p>
+              </Link>
+              <p className="text-xs text-primary font-medium tracking-wider mb-2">
                 ${product.price.toLocaleString()}
               </p>
+
+              {/* Add to Cart button */}
+              <button
+                onClick={(e) => handleAddToCart(e, product)}
+                className={`mt-auto w-full flex items-center justify-center gap-1.5 py-1.5 text-[10px] uppercase tracking-widest font-medium border transition-all duration-200 ${
+                  addedId === product.id
+                    ? 'border-primary bg-primary text-background'
+                    : 'border-border text-muted-foreground hover:border-primary/60 hover:text-white hover:bg-zinc-800/60'
+                }`}
+              >
+                <ShoppingCart size={10} />
+                {addedId === product.id ? 'Added!' : 'Add to Cart'}
+              </button>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

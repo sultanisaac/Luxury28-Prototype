@@ -194,7 +194,7 @@ export default function ProductPage() {
           <ProductCarousel
             excludeId={watch.id}
             title="You Might Also Like"
-            desktopVisible={5}
+            desktopVisible={4}
             mobileVisible={2}
           />
         </div>
