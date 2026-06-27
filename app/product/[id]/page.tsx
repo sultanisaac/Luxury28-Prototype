@@ -13,6 +13,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Logo } from '@/components/logo';
 
 import { useCart } from '@/context/CartContext';
+import { ProductCarousel } from '@/components/product-carousel';
 
 import { Watch } from '@/lib/watches';
 
@@ -184,6 +185,18 @@ export default function ProductPage() {
             </div>
 
           </motion.div>
+        </div>
+      </div>
+
+      {/* Recommended Products */}
+      <div className="border-t border-border">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <ProductCarousel
+            excludeId={watch.id}
+            title="You Might Also Like"
+            desktopVisible={5}
+            mobileVisible={2}
+          />
         </div>
       </div>
     </main>
