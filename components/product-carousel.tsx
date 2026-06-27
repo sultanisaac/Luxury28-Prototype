@@ -37,6 +37,7 @@ export function ProductCarousel({
   const [products, setProducts] = useState<RecommendedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [addedId, setAddedId] = useState<string | null>(null);
+  const [cardWidth, setCardWidth] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -74,6 +75,19 @@ export function ProductCarousel({
 
     fetchProducts();
   }, [excludeId]);
+
+  // Responsive card width: mobileVisible on small screens, desktopVisible on md+
+  useEffect(() => {
+    const updateCardWidth = () => {
+      const isMobile = window.innerWidth < 768;
+      const visible = isMobile ? mobileVisible : desktopVisible;
+      const gaps = visible - 1;
+      setCardWidth(`calc((100% - (${gaps} * 0.75rem)) / ${visible})`);
+    };
+    updateCardWidth();
+    window.addEventListener('resize', updateCardWidth);
+    return () => window.removeEventListener('resize', updateCardWidth);
+  }, [desktopVisible, mobileVisible]);
 
   const checkScrollability = () => {
     const el = scrollRef.current;
@@ -169,8 +183,8 @@ export function ProductCarousel({
             data-card
             className="group flex-shrink-0 border border-border bg-card hover:border-primary/40 transition-all duration-300 flex flex-col"
             style={{
-              width: `calc((100% - (${desktopVisible - 1} * 0.75rem)) / ${desktopVisible})`,
-              minWidth: `calc((100% - (${mobileVisible - 1} * 0.75rem)) / ${mobileVisible})`,
+              width: cardWidth,
+              minWidth: cardWidth,
               scrollSnapAlign: 'start',
             }}
           >
