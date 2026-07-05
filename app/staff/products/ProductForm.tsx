@@ -14,6 +14,7 @@ import { Plus, Loader2, Package, Image as ImageIcon } from 'lucide-react'
 import { upsertProduct } from './actions'
 import { toast } from 'sonner'
 import { SmartImage } from '@/components/ui/smart-image'
+import { createClient } from '@/lib/supabase/client'
 
 interface ProductFormProps {
   categories: any[]
@@ -83,10 +84,51 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
     }
   }
 
-  const addImage = () => {
-    const url = prompt('Enter Image URL:')
-    if (url) {
-      setFormData({ ...formData, images: [...formData.images, url] })
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    const supabase = createClient()
+    const newImages: string[] = []
+
+    setLoading(true)
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        
+        // 1MB Limit
+        if (file.size > 1024 * 1024) {
+          toast.error(`File ${file.name} is larger than 1MB and was skipped`)
+          continue
+        }
+
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+        const filePath = `gallery/${fileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('products')
+          .upload(filePath, file)
+
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('products')
+          .getPublicUrl(filePath)
+
+        newImages.push(publicUrl)
+      }
+
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...newImages] }))
+      if (newImages.length > 0) {
+        toast.success(`Successfully uploaded ${newImages.length} image(s)`)
+      }
+    } catch (err: any) {
+      console.error('Image upload error:', err)
+      toast.error('Error uploading image: ' + err.message)
+    } finally {
+      setLoading(false)
+      e.target.value = ''
     }
   }
 
@@ -148,8 +190,11 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
                 required
                 type="number" 
                 placeholder="0.00"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                value={formData.price || ''}
+                onChange={(e) => {
+                  const val = Number(e.target.value)
+                  setFormData({ ...formData, price: val, price_idr: val * 16000 })
+                }}
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-blue-400/50 transition-all"
               />
             </div>
@@ -160,8 +205,11 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
                 required
                 type="number" 
                 placeholder="0"
-                value={formData.price_idr}
-                onChange={(e) => setFormData({ ...formData, price_idr: Number(e.target.value) })}
+                value={formData.price_idr || ''}
+                onChange={(e) => {
+                  const val = Number(e.target.value)
+                  setFormData({ ...formData, price_idr: val, price: Number((val / 16000).toFixed(2)) })
+                }}
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-blue-400/50 transition-all"
               />
             </div>
@@ -193,10 +241,17 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Gallery Assets</label>
-              <Button type="button" variant="outline" size="sm" onClick={addImage} className="border-zinc-800 h-8 text-xs hover:bg-zinc-800 text-white">
+              <label className="border border-zinc-800 h-8 text-xs hover:bg-zinc-800 flex items-center px-3 rounded-md cursor-pointer transition-colors text-white">
                 <ImageIcon size={14} className="mr-2" />
-                Add URL
-              </Button>
+                Upload Images (Max 1MB)
+                <input 
+                  type="file" 
+                  multiple 
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden" 
+                />
+              </label>
             </div>
             
             <div className="grid grid-cols-4 gap-4">
