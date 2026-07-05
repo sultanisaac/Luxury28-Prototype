@@ -20,8 +20,7 @@ export async function upsertProduct(data: {
   if (!user) throw new Error('Not authenticated')
 
   const productData = {
-    ...data,
-    updated_at: new Date().toISOString()
+    ...data
   }
 
   let result

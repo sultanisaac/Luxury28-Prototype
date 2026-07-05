@@ -68,6 +68,23 @@ export default function ProductsPage() {
     };
 
     fetchProducts();
+
+    // Subscribe to real-time product updates
+    const channel = supabase
+      .channel('public:products')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        () => {
+          // Re-fetch products to get updated data including category joins
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const filteredProducts = useMemo(() => {
