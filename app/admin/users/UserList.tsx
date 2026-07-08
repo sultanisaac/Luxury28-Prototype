@@ -111,7 +111,7 @@ export default function UserList({ users: initialUsers }: UserListProps) {
       </div>
 
       {/* Users Table */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-x-auto shadow-2xl">
         <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 flex flex-wrap gap-4 items-center justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />

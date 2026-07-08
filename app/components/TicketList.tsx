@@ -10,6 +10,7 @@ interface TicketWithUser {
   category: string
   status: string
   created_at: string
+  order_id?: string | null
   users?: { email?: string; first_name?: string; last_name?: string } | null
 }
 
@@ -94,33 +95,41 @@ export default function TicketList({ tickets, basePath, deleteAction, showCustom
         {localTickets.map((ticket) => (
           <div
             key={ticket.id}
-            className={`p-4 flex items-center gap-4 transition-colors ${
+            className={`p-4 flex flex-col sm:flex-row sm:items-center gap-4 transition-colors ${
               selectedIds.includes(ticket.id) ? 'bg-zinc-800/60' : 'hover:bg-zinc-800/40'
             }`}
           >
-            <input
-              type="checkbox"
-              checked={selectedIds.includes(ticket.id)}
-              onChange={() => toggleSelect(ticket.id)}
-              className="w-4 h-4 accent-white flex-shrink-0 cursor-pointer"
-            />
+            <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
+              <input
+                type="checkbox"
+                checked={selectedIds.includes(ticket.id)}
+                onChange={() => toggleSelect(ticket.id)}
+                className="w-4 h-4 accent-white flex-shrink-0 cursor-pointer mt-1 sm:mt-0"
+              />
 
-            <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-white truncate">{ticket.subject}</h3>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400 mt-1">
-                <span className="uppercase tracking-wider">{ticket.category}</span>
-                {showCustomer && ticket.users && (
-                  <>
-                    <span>•</span>
-                    <span>{ticket.users.first_name ? `${ticket.users.first_name} ${ticket.users.last_name || ''}`.trim() : ticket.users.email || 'Unknown'}</span>
-                  </>
-                )}
-                <span>•</span>
-                <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-white truncate">{ticket.subject}</h3>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400 mt-1">
+                  <span className="uppercase tracking-wider">{ticket.category}</span>
+                  {ticket.order_id && (
+                    <>
+                      <span>•</span>
+                      <span className="font-mono bg-zinc-800 px-1 rounded">Order #{ticket.order_id.slice(0, 8)}</span>
+                    </>
+                  )}
+                  {showCustomer && ticket.users && (
+                    <>
+                      <span>•</span>
+                      <span>{ticket.users.first_name ? `${ticket.users.first_name} ${ticket.users.last_name || ''}`.trim() : ticket.users.email || 'Unknown'}</span>
+                    </>
+                  )}
+                  <span>•</span>
+                  <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3 pl-8 sm:pl-0 flex-shrink-0">
               <span className={`px-2 py-0.5 text-xs uppercase tracking-wider rounded ${
                 ticket.status === 'Open' ? 'bg-blue-500/10 text-blue-400' :
                 ticket.status === 'In Progress' ? 'bg-amber-500/10 text-amber-400' :

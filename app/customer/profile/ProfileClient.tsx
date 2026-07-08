@@ -139,7 +139,7 @@ export default function ProfileClient({ initialUser, initialProfile }: {
 
         {/* Personal Info Form */}
         <form onSubmit={handleSave} className="space-y-6">
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs uppercase tracking-widest text-muted-foreground">First Name</label>
               <input type="text" value={form.first_name} onChange={e => setForm({ ...form, first_name: e.target.value })}
@@ -175,7 +175,7 @@ export default function ProfileClient({ initialUser, initialProfile }: {
             <h3 className="font-serif text-xl mb-1 flex items-center gap-2"><Lock size={18} className="text-primary" /> Security</h3>
             <p className="text-sm text-muted-foreground">Update your account password.</p>
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs uppercase tracking-widest text-muted-foreground">New Password</label>
               <input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })}

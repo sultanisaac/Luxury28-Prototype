@@ -21,7 +21,6 @@ interface OrderKanbanProps {
 }
 
 const COLUMNS = [
-  { id: 'Pending', label: 'Awaiting Payment', icon: Package, color: 'text-zinc-500', nextStatus: 'Paid' },
   { id: 'Paid', label: 'New Orders (Paid)', icon: Package, color: 'text-amber-500', nextStatus: 'Processing' },
   { id: 'Processing', label: 'Processing', icon: RefreshCcw, color: 'text-blue-400', nextStatus: 'Packaging' },
   { id: 'Packaging', label: 'Packaging', icon: Box, color: 'text-purple-400', nextAction: 'ship' },
@@ -32,7 +31,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
   const [orders, setOrders] = useState(initialOrders)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
-  const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'shipped'>('active')
+  const [activeTab, setActiveTab] = useState<'active' | 'shipped'>('active')
   const [noteText, setNoteText] = useState('')
   const [isSubmittingNote, setIsSubmittingNote] = useState(false)
   const supabase = createClient()
@@ -76,11 +75,12 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
               order_items (
                 *,
                 products (
-                  name
+                  name,
+                  images
                 )
               )
             `)
-            .in('status', ['Pending', 'Paid', 'Processing', 'Packaging', 'Shipped'])
+            .in('status', ['Paid', 'Processing', 'Packaging', 'Shipped'])
             .order('created_at', { ascending: false })
           if (data) setOrders(data)
         }
@@ -113,12 +113,6 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
       {/* Tab Navigation */}
       <div className="flex gap-1 p-1 bg-zinc-900 border border-zinc-800 rounded-lg w-fit">
         <button 
-          onClick={() => setActiveTab('pending')}
-          className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'pending' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
-        >
-          Awaiting Payment ({orders.filter(o => o.status === 'Pending').length})
-        </button>
-        <button 
           onClick={() => setActiveTab('active')}
           className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'active' ? 'bg-primary text-background shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
         >
@@ -135,7 +129,6 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
       <div className="flex gap-6 overflow-x-auto pb-4 snap-x">
         {COLUMNS.map((col) => {
           // Filter columns based on active tab
-          if (activeTab === 'pending' && col.id !== 'Pending') return null;
           if (activeTab === 'active' && !['Paid', 'Processing', 'Packaging'].includes(col.id)) return null;
           if (activeTab === 'shipped' && col.id !== 'Shipped') return null;
 
@@ -204,18 +197,7 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                   </div>
 
                   <div className="mt-4 flex flex-col gap-2">
-                    {col.id === 'Pending' ? (
-                      <Button 
-                        disabled={loadingId === order.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleVerifyPayment(order.id)
-                        }}
-                        className="w-full text-xs bg-amber-500/20 hover:bg-amber-600 border border-amber-500/30 text-amber-300 hover:text-white font-bold py-1.5"
-                      >
-                        {loadingId === order.id ? 'Checking...' : 'Sync Payment Status'} <RefreshCcw size={14} className="ml-1" />
-                      </Button>
-                    ) : col.nextStatus && (
+                    {col.nextStatus && (
                       <Button 
                         disabled={loadingId === order.id}
                         onClick={(e) => {
@@ -322,8 +304,12 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                 <div className="space-y-3">
                   {selectedOrder?.order_items?.map((item: any) => (
                     <div key={item.id} className="flex gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-lg">
-                      <div className="w-10 h-10 bg-zinc-800 rounded flex items-center justify-center flex-shrink-0">
-                        <Watch size={20} className="text-zinc-600" />
+                      <div className="w-10 h-10 bg-zinc-800 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {item.products?.images?.[0] ? (
+                          <img src={item.products.images[0]} alt={item.products?.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Watch size={20} className="text-zinc-600" />
+                        )}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-white">{item.products?.name}</p>

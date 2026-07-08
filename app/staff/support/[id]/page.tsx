@@ -40,6 +40,12 @@ export default async function StaffTicketPage({ params }: { params: Promise<{ id
           <h2 className="font-serif text-2xl mb-1">{ticket.subject}</h2>
           <div className="flex items-center gap-3 text-sm text-zinc-400">
             <span className="uppercase tracking-wider">{ticket.category}</span>
+            {ticket.order_id && (
+              <>
+                <span>•</span>
+                <span className="font-mono bg-zinc-800 px-1 rounded">Order #{ticket.order_id.slice(0, 8)}</span>
+              </>
+            )}
             <span>•</span>
             <span>Customer: {
               ticket.users?.first_name

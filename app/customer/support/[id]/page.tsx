@@ -33,11 +33,17 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="flex flex-col h-full bg-card border border-border rounded-lg overflow-hidden">
-      <div className="p-4 border-b border-border flex items-center justify-between bg-accent/20">
+      <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-accent/20">
         <div>
           <h2 className="font-serif text-xl">{ticket.subject}</h2>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <span className="uppercase tracking-wider">{ticket.category}</span>
+            {ticket.order_id && (
+              <>
+                <span>•</span>
+                <span className="font-mono bg-zinc-800/50 px-1 rounded">Order #{ticket.order_id.slice(0, 8)}</span>
+              </>
+            )}
             <span>•</span>
             <span>ID: {ticket.id.slice(0, 8)}</span>
           </div>
