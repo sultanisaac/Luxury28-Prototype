@@ -14,6 +14,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table'
+import { SmartImage } from '@/components/ui/smart-image'
 
 interface OrderListProps {
   initialOrders: any[]
@@ -296,17 +297,20 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                     {selectedOrder.order_items?.map((item: any) => (
                       <div key={item.id} className="flex gap-4 bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
                         <div className="w-16 h-16 bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0">
-                          {item.products?.images?.[0] ? (
-                            <img src={item.products.images[0]} alt={item.products.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-zinc-600"><Package size={24} /></div>
-                          )}
+                          <SmartImage 
+                            src={item.products?.images?.[0]} 
+                            alt={item.products?.name || 'Product'} 
+                            width={64}
+                            height={64}
+                            fallbackType="luxury"
+                            className="w-full h-full object-cover" 
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-white truncate">{item.products?.name}</p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-zinc-500">Qty: {item.quantity}</span>
-                            <span className="text-sm font-mono text-zinc-300">${Number(item.price_at_time).toLocaleString()}</span>
+                            <span className="text-sm font-mono text-zinc-300">${Number(item.unit_price).toLocaleString()}</span>
                           </div>
                         </div>
                       </div>

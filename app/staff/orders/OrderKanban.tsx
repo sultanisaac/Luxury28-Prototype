@@ -14,7 +14,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Mail, Phone, ExternalLink } from 'lucide-react'
+import { Mail, Phone, ExternalLink, X } from 'lucide-react'
+import { SmartImage } from '@/components/ui/smart-image'
 
 interface OrderKanbanProps {
   orders: any[]
@@ -253,13 +254,21 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
           <DialogHeader>
             <div className="flex items-center justify-between mb-2">
               <DialogTitle className="font-serif text-2xl">Order Details</DialogTitle>
-              <Badge className={
-                selectedOrder?.status === 'Paid' ? 'bg-amber-500/20 text-amber-500 border-amber-500/30' :
-                selectedOrder?.status === 'Shipped' ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30' :
-                'bg-zinc-800 text-zinc-400'
-              }>
-                {selectedOrder?.status}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <Badge className={
+                  selectedOrder?.status === 'Paid' ? 'bg-amber-500/20 text-amber-500 border-amber-500/30' :
+                  selectedOrder?.status === 'Shipped' ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30' :
+                  'bg-zinc-800 text-zinc-400'
+                }>
+                  {selectedOrder?.status}
+                </Badge>
+                <button 
+                  onClick={() => setSelectedOrder(null)}
+                  className="md:hidden p-1 text-zinc-400 hover:text-white rounded-full bg-zinc-900/50 border border-zinc-800"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
             <DialogDescription className="text-zinc-500 font-mono text-xs">
               ID: {selectedOrder?.id}
@@ -305,11 +314,14 @@ export default function OrderKanban({ orders: initialOrders }: OrderKanbanProps)
                   {selectedOrder?.order_items?.map((item: any) => (
                     <div key={item.id} className="flex gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-lg">
                       <div className="w-10 h-10 bg-zinc-800 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
-                        {item.products?.images?.[0] ? (
-                          <img src={item.products.images[0]} alt={item.products?.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Watch size={20} className="text-zinc-600" />
-                        )}
+                        <SmartImage 
+                          src={item.products?.images?.[0]} 
+                          alt={item.products?.name || 'Product'} 
+                          width={40}
+                          height={40}
+                          fallbackType="luxury"
+                          className="w-full h-full object-cover" 
+                        />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-white">{item.products?.name}</p>

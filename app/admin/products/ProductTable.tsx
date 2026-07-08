@@ -126,7 +126,7 @@ export default function ProductTable({ products: initialProducts, categories }: 
                 fallbackType="luxury"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />
-              <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+              <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-100 translate-x-0 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 md:translate-x-2 md:group-hover:translate-x-0">
                 <ProductForm 
                   categories={categories} 
                   product={product} 

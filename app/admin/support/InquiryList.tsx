@@ -149,40 +149,40 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
               <div 
                 key={inquiry.id} 
                 onClick={() => handleOpenInquiry(inquiry)}
-                className={`p-5 bg-zinc-900 border transition-all group flex items-start justify-between rounded-2xl hover:shadow-2xl hover:shadow-amber-500/5 cursor-pointer ${
+                className={`p-5 bg-zinc-900 border transition-all group flex flex-col sm:flex-row sm:items-start justify-between gap-4 rounded-2xl hover:shadow-2xl hover:shadow-amber-500/5 cursor-pointer ${
                   inquiry.status === 'unread' ? 'border-amber-500/20 bg-amber-500/[0.02]' : 'border-zinc-800 hover:border-zinc-700'
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-2xl border transition-all ${
+                <div className="flex items-start gap-3 sm:gap-4 w-full min-w-0">
+                  <div className={`shrink-0 p-3 rounded-2xl border transition-all ${
                     inquiry.status === 'unread' 
                     ? 'border-amber-500/30 bg-zinc-950 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]' 
                     : 'border-zinc-800 bg-zinc-950 text-zinc-600'
                   }`}>
                     <MessageSquare size={18} />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h4 className={`text-sm font-bold ${inquiry.status === 'unread' ? 'text-white' : 'text-zinc-300'}`}>
+                      <h4 className={`text-sm font-bold truncate ${inquiry.status === 'unread' ? 'text-white' : 'text-zinc-300'}`}>
                         {inquiry.subject || 'No Subject'}
                       </h4>
                       {inquiry.status === 'unread' && (
-                        <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span className="shrink-0 flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
                       )}
                     </div>
                     <p className="text-xs text-zinc-400 line-clamp-2 max-w-xl leading-relaxed mb-2">
                       {inquiry.message}
                     </p>
-                    <div className="flex flex-wrap items-center gap-4 mt-2">
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500">
-                        <User size={12} />
-                        {inquiry.name}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2">
+                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 truncate max-w-[120px] sm:max-w-none">
+                        <User size={12} className="shrink-0" />
+                        <span className="truncate">{inquiry.name}</span>
                       </span>
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500">
-                        <Mail size={12} />
-                        {inquiry.email}
+                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 truncate max-w-[150px] sm:max-w-none">
+                        <Mail size={12} className="shrink-0" />
+                        <span className="truncate">{inquiry.email}</span>
                       </span>
-                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500">
+                      <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 shrink-0">
                         <Clock size={12} />
                         {new Date(inquiry.created_at).toLocaleDateString()}
                       </span>
@@ -190,7 +190,7 @@ export default function InquiryList({ initialInquiries }: InquiryListProps) {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-end sm:justify-start gap-1 w-full sm:w-auto mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
                   <Button 
                     variant="ghost" 
                     size="icon" 

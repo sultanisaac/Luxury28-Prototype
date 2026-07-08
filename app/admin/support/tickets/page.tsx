@@ -30,18 +30,18 @@ export default async function AdminTicketsPage() {
         {tickets && tickets.length > 0 ? (
           <div className="divide-y divide-zinc-800">
             {tickets.map((ticket: any) => (
-              <div key={ticket.id} className="p-4 hover:bg-zinc-800/50 transition-colors flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-lg mb-1">{ticket.subject}</h3>
-                  <div className="flex items-center gap-3 text-sm text-zinc-400">
+              <div key={ticket.id} className="p-4 hover:bg-zinc-800/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-lg mb-1 truncate">{ticket.subject}</h3>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-400">
                     <span className="uppercase tracking-wider">{ticket.category}</span>
-                    <span>•</span>
-                    <span>{ticket.users?.email || 'Unknown User'}</span>
-                    <span>•</span>
-                    <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="truncate max-w-[150px] sm:max-w-none">{ticket.users?.email || 'Unknown User'}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="whitespace-nowrap">{new Date(ticket.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
                   <span className={`px-2 py-1 text-xs uppercase tracking-wider rounded ${
                     ticket.status === 'Open' ? 'bg-blue-500/10 text-blue-400' :
                     ticket.status === 'In Progress' ? 'bg-amber-500/10 text-amber-400' :

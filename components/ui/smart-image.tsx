@@ -38,6 +38,7 @@ export function SmartImage({ src, fallbackType = 'luxury', alt, className, ...pr
 
   return (
     <Image
+      key={currentSrc}
       {...props}
       src={currentSrc}
       alt={alt || 'Luxury Timepiece'}

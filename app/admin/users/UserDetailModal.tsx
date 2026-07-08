@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { SmartImage } from '@/components/ui/smart-image'
 
 interface UserDetailModalProps {
   user: any
@@ -71,9 +72,9 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl lg:max-w-5xl w-[95vw] bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 gap-0">
-        <DialogHeader className="p-8 border-b border-zinc-800 bg-zinc-900/50">
-          <DialogTitle className="text-2xl font-serif flex items-center gap-4">
+      <DialogContent className="sm:max-w-4xl lg:max-w-5xl w-full sm:w-[95vw] h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-zinc-950 border-0 sm:border sm:border-zinc-800 text-white overflow-hidden p-0 gap-0 sm:rounded-xl rounded-none">
+        <DialogHeader className="p-6 md:p-8 border-b border-zinc-800 bg-zinc-900/50 shrink-0 mt-8 sm:mt-0">
+          <DialogTitle className="text-xl md:text-2xl font-serif flex items-center gap-3 md:gap-4">
             <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center overflow-hidden relative">
               {user.avatar_url ? (
                 <img 
@@ -96,9 +97,9 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row h-[60vh]">
+        <div className="flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-hidden">
           {/* Left Sidebar - Summary */}
-          <div className="w-full md:w-72 bg-zinc-900/30 p-8 border-b md:border-b-0 md:border-r border-zinc-800 space-y-8 overflow-y-auto">
+          <div className="w-full md:w-72 shrink-0 bg-zinc-900/30 p-6 md:p-8 border-b md:border-b-0 md:border-r border-zinc-800 space-y-6 md:space-y-8 md:overflow-y-auto">
             <div className="space-y-4">
               <h4 className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Contact Information</h4>
               <div className="space-y-3">
@@ -139,7 +140,7 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
           </div>
 
           {/* Right Area - Orders & Products */}
-          <div className="flex-1 p-8 overflow-y-auto space-y-8">
+          <div className="flex-1 p-6 md:p-8 md:overflow-y-auto space-y-6 md:space-y-8">
             <div>
               <h4 className="text-sm font-bold text-white font-serif mb-4 flex items-center gap-2">
                 <Package size={16} className="text-amber-500" />
@@ -177,12 +178,14 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
                         {order.order_items.map((item: any) => (
                           <div key={item.id} className="flex items-center justify-between text-xs gap-4 py-1">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
-                              <div className="w-10 h-10 bg-zinc-950 border border-zinc-800 rounded p-1 shrink-0 flex items-center justify-center">
-                                {item.products.images?.[0] ? (
-                                  <img src={item.products.images[0]} alt={item.products.name} className="w-full h-full object-contain" />
-                                ) : (
-                                  <Package size={14} className="text-zinc-700" />
-                                )}
+                              <div className="w-10 h-10 bg-zinc-950 border border-zinc-800 rounded shrink-0 relative overflow-hidden flex items-center justify-center">
+                                <SmartImage 
+                                  src={item.products.images?.[0]} 
+                                  alt={item.products.name}
+                                  fill
+                                  sizes="40px"
+                                  className="object-contain p-1"
+                                />
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className="text-zinc-300 font-medium truncate" title={item.products.name}>
