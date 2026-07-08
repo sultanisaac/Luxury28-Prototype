@@ -9,6 +9,43 @@ export async function updateOrderStatus(orderId: string, status: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
+  // If moving to Packaging, deduct stock
+  if (status === 'Packaging') {
+    // Check current status to prevent double-deduction
+    const { data: currentOrder } = await supabase.from('orders').select('status').eq('id', orderId).single()
+    
+    if (currentOrder && currentOrder.status !== 'Packaging') {
+      const { data: orderItems } = await supabase
+        .from('order_items')
+        .select('product_id, quantity')
+        .eq('order_id', orderId)
+        
+      if (orderItems && orderItems.length > 0) {
+        const { createClient: createSupabaseAdminClient } = await import('@supabase/supabase-js')
+        const supabaseAdmin = createSupabaseAdminClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        )
+        
+        for (const item of orderItems) {
+          const { data: product } = await supabaseAdmin
+            .from('products')
+            .select('stock_quantity')
+            .eq('id', item.product_id)
+            .single()
+            
+          if (product) {
+            const newStock = Math.max(0, (product.stock_quantity || 0) - item.quantity)
+            await supabaseAdmin
+              .from('products')
+              .update({ stock_quantity: newStock })
+              .eq('id', item.product_id)
+          }
+        }
+      }
+    }
+  }
+
   const { error } = await supabase
     .from('orders')
     .update({ status })

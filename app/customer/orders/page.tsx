@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import OrderHistoryClient from './order-history-client'
 
 export default async function OrdersPage() {
@@ -15,7 +16,15 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl mb-8">Order History</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <h1 className="font-serif text-3xl">Order History</h1>
+        <Link 
+          href="/products" 
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 uppercase tracking-widest text-xs font-bold transition-all"
+        >
+          Continue Shopping
+        </Link>
+      </div>
       <OrderHistoryClient initialOrders={orders || []} userId={user.id} />
     </div>
   )

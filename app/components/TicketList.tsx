@@ -10,6 +10,7 @@ interface TicketWithUser {
   category: string
   status: string
   created_at: string
+  order_id?: string | null
   users?: { email?: string; first_name?: string; last_name?: string } | null
 }
 
@@ -109,6 +110,12 @@ export default function TicketList({ tickets, basePath, deleteAction, showCustom
               <h3 className="font-medium text-white truncate">{ticket.subject}</h3>
               <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400 mt-1">
                 <span className="uppercase tracking-wider">{ticket.category}</span>
+                {ticket.order_id && (
+                  <>
+                    <span>•</span>
+                    <span className="font-mono bg-zinc-800 px-1 rounded">Order #{ticket.order_id.slice(0, 8)}</span>
+                  </>
+                )}
                 {showCustomer && ticket.users && (
                   <>
                     <span>•</span>

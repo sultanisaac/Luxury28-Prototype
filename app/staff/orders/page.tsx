@@ -13,7 +13,8 @@ export default async function StaffOrdersPage() {
       order_items (
         *,
         products (
-          name
+          name,
+          images
         )
       )
     `)
@@ -23,7 +24,7 @@ export default async function StaffOrdersPage() {
     <div className="space-y-8 pb-12">
       <div>
         <h1 className="text-3xl font-bold font-serif tracking-wide text-white drop-shadow-md">Fulfillment Queue</h1>
-        <p className="text-zinc-400 mt-2">Manage order progression from payment to shipping.</p>
+        <p className="text-zinc-400 mt-2">Manage order progression from packing to shipping.</p>
       </div>
 
       <OrderKanban orders={orders || []} />

@@ -38,6 +38,12 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
           <h2 className="font-serif text-xl">{ticket.subject}</h2>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <span className="uppercase tracking-wider">{ticket.category}</span>
+            {ticket.order_id && (
+              <>
+                <span>•</span>
+                <span className="font-mono bg-zinc-800/50 px-1 rounded">Order #{ticket.order_id.slice(0, 8)}</span>
+              </>
+            )}
             <span>•</span>
             <span>ID: {ticket.id.slice(0, 8)}</span>
           </div>

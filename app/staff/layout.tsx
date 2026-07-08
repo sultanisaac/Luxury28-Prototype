@@ -10,7 +10,8 @@ export default async function StaffLayout({ children }: { children: ReactNode })
   const navItems = [
     { name: 'Overview', href: '/staff', icon: 'LayoutDashboard' },
     { name: 'Fulfillment Queue', href: '/staff/orders', icon: 'ShoppingCart' },
-    { name: 'Product Manager', href: '/staff/products', icon: 'Package' },
+    { name: 'Product Management', href: '/staff/products', icon: 'Package' },
+    { name: 'Authenticity Vault', href: '/staff/authenticity', icon: 'ShieldCheck' },
     { name: 'Support Inbox', href: '/staff/support', icon: 'MessageSquare' },
     { name: 'Customers', href: '/staff/customers', icon: 'Users' },
     { name: 'My Profile', href: '/staff/profile', icon: 'UserCircle' },

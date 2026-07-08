@@ -16,7 +16,7 @@ export default function AuthenticityClient({ initialRecords, userId }: { initial
           const { data: orders } = await supabase.from('orders').select('id').eq('customer_id', userId)
           if (!orders?.length) return
           const orderIds = orders.map(o => o.id)
-          const { data } = await supabase.from('authenticity_records').select('*, products(name)').in('order_id', orderIds)
+          const { data } = await supabase.from('authenticity_records').select('*, products(name, images)').in('order_id', orderIds)
           if (data) setRecords(data)
         }
       ).subscribe()
@@ -39,12 +39,18 @@ export default function AuthenticityClient({ initialRecords, userId }: { initial
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {records.map((record) => (
             <div key={record.id} className="border border-border bg-card overflow-hidden group flex flex-col sm:flex-row">
-              <div className="bg-[#111] p-8 flex items-center justify-center border-b sm:border-b-0 sm:border-r border-border relative overflow-hidden sm:w-1/3 shrink-0">
-                <ShieldCheck size={120} className="text-primary/10 absolute -right-4 -bottom-4 rotate-12 transition-transform duration-700 group-hover:rotate-0 group-hover:scale-110" />
-                <div className="text-center relative z-10">
-                  <ShieldCheck size={32} className="text-primary mx-auto mb-4" />
-                  <h3 className="font-serif tracking-widest text-white text-sm">CERTIFIED</h3>
-                </div>
+              <div className="bg-[#111] flex items-center justify-center border-b sm:border-b-0 sm:border-r border-border relative overflow-hidden sm:w-1/3 shrink-0 aspect-square sm:aspect-auto">
+                {record.products?.images?.[0] ? (
+                  <img src={record.products.images[0]} alt={record.products.name} className="w-full h-full object-cover relative z-10 opacity-90 group-hover:opacity-100 transition-opacity" />
+                ) : (
+                  <>
+                    <ShieldCheck size={120} className="text-primary/10 absolute -right-4 -bottom-4 rotate-12 transition-transform duration-700 group-hover:rotate-0 group-hover:scale-110" />
+                    <div className="text-center relative z-10 p-8">
+                      <ShieldCheck size={32} className="text-primary mx-auto mb-4" />
+                      <h3 className="font-serif tracking-widest text-white text-sm">CERTIFIED</h3>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>

@@ -31,11 +31,12 @@ import {
 
 interface AuthenticityManagerProps {
   initialRecords: any[]
-  products: any[]
-  orders: any[]
+  products?: any[]
+  orders?: any[]
+  readOnly?: boolean
 }
 
-export default function AuthenticityManager({ initialRecords, products, orders }: AuthenticityManagerProps) {
+export default function AuthenticityManager({ initialRecords, products = [], orders = [], readOnly = false }: AuthenticityManagerProps) {
   const [records, setRecords] = useState(initialRecords)
   const [searchTerm, setSearchTerm] = useState('')
   
@@ -131,18 +132,18 @@ export default function AuthenticityManager({ initialRecords, products, orders }
             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-all shadow-lg"
           />
         </div>
-        
-        <Dialog open={isIssueModalOpen} onOpenChange={setIsIssueModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg w-full md:w-auto font-bold tracking-wide">
-              <Shield size={16} className="mr-2" />
-              Issue New Authenticity
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="font-serif text-xl tracking-wide">Issue Serial Number</DialogTitle>
-            </DialogHeader>
+        {!readOnly && (
+          <Dialog open={isIssueModalOpen} onOpenChange={setIsIssueModalOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg w-full md:w-auto font-bold tracking-wide">
+                <Shield size={16} className="mr-2" />
+                Issue New Authenticity
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="font-serif text-xl tracking-wide">Issue Serial Number</DialogTitle>
+              </DialogHeader>
             <div className="space-y-6 pt-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Select Paid Order</label>
@@ -206,6 +207,7 @@ export default function AuthenticityManager({ initialRecords, products, orders }
             </div>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
@@ -232,8 +234,13 @@ export default function AuthenticityManager({ initialRecords, products, orders }
                   <TableCell className="px-6 py-4 font-mono font-bold text-sm text-white">
                     {record.serial_number}
                   </TableCell>
-                  <TableCell className="px-6 py-4 text-sm text-zinc-300">
-                    {record.products?.name}
+                  <TableCell className="px-6 py-4 text-sm text-zinc-300 flex items-center gap-3">
+                    {record.products?.images?.[0] && (
+                      <div className="w-8 h-8 rounded bg-zinc-800 overflow-hidden flex-shrink-0">
+                        <img src={record.products.images[0]} alt={record.products.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <span>{record.products?.name}</span>
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <div className="flex flex-col">
@@ -324,7 +331,7 @@ export default function AuthenticityManager({ initialRecords, products, orders }
                       </Dialog>
                     )}
 
-                    {record.status === 'active' && (
+                    {record.status === 'active' && !readOnly && (
                       <Button 
                         variant="ghost" 
                         size="sm" 

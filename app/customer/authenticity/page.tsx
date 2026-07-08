@@ -13,7 +13,7 @@ export default async function AuthenticityVaultPage() {
 
   let records: any[] = []
   if (orderIds.length > 0) {
-    const { data } = await supabase.from('authenticity_records').select('*, products(name)').in('order_id', orderIds)
+    const { data } = await supabase.from('authenticity_records').select('*, products(name, images)').in('order_id', orderIds)
     records = data || []
   }
 

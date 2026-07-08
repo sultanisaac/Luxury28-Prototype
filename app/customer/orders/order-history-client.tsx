@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -71,7 +72,13 @@ export default function OrderHistoryClient({ initialOrders, userId }: { initialO
       <div className="text-center py-16 border border-dashed border-border bg-background/30">
         <Package size={48} className="mx-auto text-muted-foreground/30 mb-4" />
         <h3 className="font-serif text-xl mb-2">No orders yet</h3>
-        <p className="text-muted-foreground text-sm">Your purchase history will appear here.</p>
+        <p className="text-muted-foreground text-sm mb-6">Your purchase history will appear here.</p>
+        <Link 
+          href="/products" 
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 uppercase tracking-widest text-xs font-bold transition-all inline-flex items-center justify-center"
+        >
+          Continue Shopping
+        </Link>
       </div>
     )
   }

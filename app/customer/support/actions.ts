@@ -15,11 +15,13 @@ export async function createTicket(formData: FormData) {
 
   const subject = formData.get('subject') as string
   const category = formData.get('category') as TicketCategory
+  const orderId = formData.get('order_id') as string
 
   const { data, error } = await supabase.from('tickets').insert({
     user_id: user.id,
     subject,
-    category
+    category,
+    order_id: orderId || null
   }).select().single()
 
   if (error) {
