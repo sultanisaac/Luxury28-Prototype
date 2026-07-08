@@ -146,7 +146,7 @@ export default function AdminTicketChat({ ticket, initialMessages, currentUserId
                   ) : (
                     <>
                       <p className="whitespace-pre-wrap">{msg.message}</p>
-                      <div className={`opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2 mt-1 -mr-1 ${msg.is_internal_note ? 'text-amber-500/70' : isCustomer ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                      <div className={`opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex justify-end gap-2 mt-1 -mr-1 ${msg.is_internal_note ? 'text-amber-500/70' : isCustomer ? 'text-zinc-400' : 'text-zinc-500'}`}>
                         <button onClick={() => { setEditingId(msg.id); setEditContent(msg.message) }} className="hover:text-current">
                           <PencilIcon className="w-3 h-3" />
                         </button>

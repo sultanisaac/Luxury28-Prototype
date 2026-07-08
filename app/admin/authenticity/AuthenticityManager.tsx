@@ -236,18 +236,16 @@ export default function AuthenticityManager({ initialRecords, products = [], ord
                     {record.serial_number}
                   </TableCell>
                   <TableCell className="px-6 py-4 text-sm text-zinc-300 flex items-center gap-3">
-                    {record.products?.images?.[0] && (
-                      <div className="w-8 h-8 rounded bg-zinc-800 overflow-hidden flex-shrink-0">
-                        <SmartImage 
-                          src={record.products.images[0]} 
-                          alt={record.products.name} 
-                          width={32}
-                          height={32}
-                          fallbackType="luxury"
-                          className="w-full h-full object-cover" 
-                        />
-                      </div>
-                    )}
+                    <div className="w-8 h-8 rounded bg-zinc-800 overflow-hidden flex-shrink-0">
+                      <SmartImage 
+                        src={record.products?.images?.[0]} 
+                        alt={record.products?.name || 'Product'} 
+                        width={32}
+                        height={32}
+                        fallbackType="luxury"
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
                     <span>{record.products?.name}</span>
                   </TableCell>
                   <TableCell className="px-6 py-4">
