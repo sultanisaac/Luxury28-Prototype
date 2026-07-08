@@ -71,9 +71,9 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl lg:max-w-5xl w-[95vw] bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 gap-0">
-        <DialogHeader className="p-8 border-b border-zinc-800 bg-zinc-900/50">
-          <DialogTitle className="text-2xl font-serif flex items-center gap-4">
+      <DialogContent className="sm:max-w-4xl lg:max-w-5xl w-[95vw] max-h-[90vh] flex flex-col bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 gap-0">
+        <DialogHeader className="p-6 md:p-8 border-b border-zinc-800 bg-zinc-900/50 shrink-0">
+          <DialogTitle className="text-xl md:text-2xl font-serif flex items-center gap-3 md:gap-4">
             <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center overflow-hidden relative">
               {user.avatar_url ? (
                 <img 
@@ -96,9 +96,9 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row h-[60vh]">
+        <div className="flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-hidden">
           {/* Left Sidebar - Summary */}
-          <div className="w-full md:w-72 bg-zinc-900/30 p-8 border-b md:border-b-0 md:border-r border-zinc-800 space-y-8 overflow-y-auto">
+          <div className="w-full md:w-72 shrink-0 bg-zinc-900/30 p-6 md:p-8 border-b md:border-b-0 md:border-r border-zinc-800 space-y-6 md:space-y-8 md:overflow-y-auto">
             <div className="space-y-4">
               <h4 className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Contact Information</h4>
               <div className="space-y-3">
@@ -139,7 +139,7 @@ export default function UserDetailModal({ user, isOpen, onClose }: UserDetailMod
           </div>
 
           {/* Right Area - Orders & Products */}
-          <div className="flex-1 p-8 overflow-y-auto space-y-8">
+          <div className="flex-1 p-6 md:p-8 md:overflow-y-auto space-y-6 md:space-y-8">
             <div>
               <h4 className="text-sm font-bold text-white font-serif mb-4 flex items-center gap-2">
                 <Package size={16} className="text-amber-500" />

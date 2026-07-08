@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Search, Shield, Ban, CheckCircle, User, Eye, Package } from 'lucide-react'
 import { toast } from 'sonner'
 import { issueSerialNumber, revokeSerialNumber } from './actions'
+import { SmartImage } from '@/components/ui/smart-image'
 import {
   Table,
   TableBody,
@@ -237,7 +238,14 @@ export default function AuthenticityManager({ initialRecords, products = [], ord
                   <TableCell className="px-6 py-4 text-sm text-zinc-300 flex items-center gap-3">
                     {record.products?.images?.[0] && (
                       <div className="w-8 h-8 rounded bg-zinc-800 overflow-hidden flex-shrink-0">
-                        <img src={record.products.images[0]} alt={record.products.name} className="w-full h-full object-cover" />
+                        <SmartImage 
+                          src={record.products.images[0]} 
+                          alt={record.products.name} 
+                          width={32}
+                          height={32}
+                          fallbackType="luxury"
+                          className="w-full h-full object-cover" 
+                        />
                       </div>
                     )}
                     <span>{record.products?.name}</span>
