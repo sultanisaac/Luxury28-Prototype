@@ -127,7 +127,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
         </div>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-x-auto shadow-2xl">
         <Table>
           <TableHeader className="bg-zinc-950/30">
             <TableRow className="border-zinc-800 hover:bg-transparent">

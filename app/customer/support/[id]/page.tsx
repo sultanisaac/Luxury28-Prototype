@@ -33,7 +33,7 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="flex flex-col h-full bg-card border border-border rounded-lg overflow-hidden">
-      <div className="p-4 border-b border-border flex items-center justify-between bg-accent/20">
+      <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-accent/20">
         <div>
           <h2 className="font-serif text-xl">{ticket.subject}</h2>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
