@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 import { SmartImage } from '@/components/ui/smart-image';
 import { createClient } from '@/lib/supabase/client';
 import { useCart } from '@/context/CartContext';
+import { WishlistButton } from '@/components/wishlist-button';
 
 interface RecommendedProduct {
   id: string;
@@ -189,8 +190,8 @@ export function ProductCarousel({
             }}
           >
             {/* Image — clickable */}
-            <Link href={`/product/${product.id}`} onClick={onProductClick} className="block">
-              <div className="aspect-square bg-[#111] relative overflow-hidden">
+            <div className="aspect-square bg-[#111] relative overflow-hidden">
+              <Link href={`/product/${product.id}`} onClick={onProductClick} className="block w-full h-full">
                 <SmartImage
                   src={product.image}
                   alt={product.name}
@@ -198,8 +199,11 @@ export function ProductCarousel({
                   fallbackType="luxury"
                   className="object-contain p-3 group-hover:scale-110 transition-transform duration-500"
                 />
+              </Link>
+              <div className="absolute top-1 right-1 z-10">
+                <WishlistButton productId={product.id} iconSize={14} className="bg-background/50 backdrop-blur-sm border border-border/50 hover:bg-background/80 p-1.5" />
               </div>
-            </Link>
+            </div>
 
             {/* Info */}
             <div className="p-2.5 flex flex-col flex-1">

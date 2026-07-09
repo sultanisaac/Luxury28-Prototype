@@ -105,8 +105,7 @@ export async function deleteTickets(ticketIds: string[]) {
   if (!user) throw new Error('Not authenticated')
   if (!ticketIds || ticketIds.length === 0) return
 
-  // Delete messages first, then the tickets
-  await supabase.from('ticket_messages').delete().in('ticket_id', ticketIds)
+  // Rely on CASCADE to delete messages when the ticket is deleted.
 
   const { error } = await supabase
     .from('tickets')

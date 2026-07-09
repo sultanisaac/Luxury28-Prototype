@@ -6,6 +6,21 @@ import { Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
+const WishlistImage = ({ src, alt }: { src?: string, alt?: string }) => {
+  const [error, setError] = useState(false)
+  if (!src || error) {
+    return <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 bg-[#111]"><Heart size={48} /></div>
+  }
+  return (
+    <img 
+      src={src} 
+      alt={alt || "Product image"} 
+      onError={() => setError(true)}
+      className="object-cover w-full h-full p-8 group-hover:scale-110 transition-transform duration-700 opacity-80" 
+    />
+  )
+}
+
 export default function WishlistClient({ initialItems, userId }: { initialItems: any[], userId: string }) {
   const supabase = createClient()
   const [items, setItems] = useState(initialItems)
@@ -46,11 +61,7 @@ export default function WishlistClient({ initialItems, userId }: { initialItems:
             return (
               <div key={item.id} className="bg-background/30 border border-border text-center group flex flex-col h-full">
                 <div className="aspect-square relative overflow-hidden bg-[#111]">
-                  {product.images?.[0] ? (
-                    <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full p-8 group-hover:scale-110 transition-transform duration-700 opacity-80" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground/20"><Heart size={48} /></div>
-                  )}
+                  <WishlistImage src={product.images?.[0]} alt={product.name} />
                   <button onClick={() => handleRemove(item.id)} className="absolute top-4 right-4 text-primary bg-background/80 backdrop-blur p-2 hover:bg-primary hover:text-background transition-colors border border-primary/20">
                     <Heart size={16} fill="currentColor" />
                   </button>

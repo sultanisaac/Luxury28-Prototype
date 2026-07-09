@@ -162,7 +162,7 @@ export function Sidebar({ navItems, userEmail, role, notificationComponent }: Si
       </aside>
 
       {/* Mobile Header */}
-      <header className="h-16 md:hidden border-b border-zinc-800 bg-zinc-900 flex items-center justify-between px-4 sticky top-0 z-40">
+      <header className="h-16 md:hidden border-b border-zinc-800 bg-zinc-900 flex items-center justify-between px-6 sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
