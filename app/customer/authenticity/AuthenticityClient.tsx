@@ -5,6 +5,31 @@ import { createClient } from '@/lib/supabase/client'
 import { ShieldCheck, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
+const RecordImage = ({ src, alt }: { src?: string, alt?: string }) => {
+  const [error, setError] = useState(false)
+  
+  if (!src || error) {
+    return (
+      <>
+        <ShieldCheck size={120} className="text-primary/10 absolute -right-4 -bottom-4 rotate-12 transition-transform duration-700 group-hover:rotate-0 group-hover:scale-110" />
+        <div className="text-center relative z-10 p-8">
+          <ShieldCheck size={32} className="text-primary mx-auto mb-4" />
+          <h3 className="font-serif tracking-widest text-white text-sm">CERTIFIED</h3>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <img 
+      src={src} 
+      alt={alt || "Product image"} 
+      onError={() => setError(true)}
+      className="w-full h-full object-cover relative z-10 opacity-90 group-hover:opacity-100 transition-opacity" 
+    />
+  )
+}
+
 export default function AuthenticityClient({ initialRecords, userId }: { initialRecords: any[], userId: string }) {
   const supabase = createClient()
   const [records, setRecords] = useState(initialRecords)
@@ -40,17 +65,7 @@ export default function AuthenticityClient({ initialRecords, userId }: { initial
           {records.map((record) => (
             <div key={record.id} className="border border-border bg-card overflow-hidden group flex flex-col sm:flex-row">
               <div className="bg-[#111] flex items-center justify-center border-b sm:border-b-0 sm:border-r border-border relative overflow-hidden sm:w-1/3 shrink-0 aspect-square sm:aspect-auto">
-                {record.products?.images?.[0] ? (
-                  <img src={record.products.images[0]} alt={record.products.name} className="w-full h-full object-cover relative z-10 opacity-90 group-hover:opacity-100 transition-opacity" />
-                ) : (
-                  <>
-                    <ShieldCheck size={120} className="text-primary/10 absolute -right-4 -bottom-4 rotate-12 transition-transform duration-700 group-hover:rotate-0 group-hover:scale-110" />
-                    <div className="text-center relative z-10 p-8">
-                      <ShieldCheck size={32} className="text-primary mx-auto mb-4" />
-                      <h3 className="font-serif tracking-widest text-white text-sm">CERTIFIED</h3>
-                    </div>
-                  </>
-                )}
+                <RecordImage src={record.products?.images?.[0]} alt={record.products?.name} />
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>

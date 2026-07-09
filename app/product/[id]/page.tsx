@@ -14,6 +14,7 @@ import { Logo } from '@/components/logo';
 
 import { useCart } from '@/context/CartContext';
 import { ProductCarousel } from '@/components/product-carousel';
+import { WishlistButton } from '@/components/wishlist-button';
 
 import { Watch } from '@/lib/watches';
 
@@ -72,19 +73,15 @@ export default function ProductPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-foreground font-sans">
-      {/* MINIMAL NAVBAR */}
-      <nav className="w-full border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center text-sm uppercase tracking-widest text-muted-foreground hover:text-white transition-colors">
-            <ArrowLeft size={16} className="mr-2" /> Back
-          </Link>
-          <Logo size={24} className="scale-90" />
-          <div className="w-[70px]"></div> {/* Spacer */}
-        </div>
-      </nav>
+    <main className="min-h-screen bg-background text-foreground font-sans pt-20">
+      <div className="max-w-7xl mx-auto px-6 py-8 md:py-16">
+        <Link 
+          href="/" 
+          className="inline-flex items-center text-xs md:text-sm uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8 md:mb-12"
+        >
+          <ArrowLeft size={16} className="mr-2" /> Back to Collection
+        </Link>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           
           {/* LEFT: IMAGE GALLERY */}
@@ -123,8 +120,19 @@ export default function ProductPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col justify-center"
           >
-            <div className="mb-2 text-xs uppercase tracking-widest text-primary">{watch.tier}</div>
-            <h1 className="text-4xl md:text-5xl font-serif mb-6">{watch.name}</h1>
+            <div className="flex justify-between items-start mb-6 gap-4">
+              <div>
+                <div className="mb-2 text-xs uppercase tracking-widest text-primary">{watch.tier}</div>
+                <h1 className="text-4xl md:text-5xl font-serif">{watch.name}</h1>
+              </div>
+              <div className="mt-4">
+                <WishlistButton 
+                  productId={watch.id} 
+                  iconSize={24} 
+                  className="bg-zinc-900 border border-zinc-800 shadow-lg hover:border-primary/50 flex-shrink-0 w-12 h-12 flex items-center justify-center" 
+                />
+              </div>
+            </div>
             
             <p className="text-gray-400 font-light italic mb-8 border-l-2 border-primary pl-4">
               "Worn by collectors who value precision and presence."

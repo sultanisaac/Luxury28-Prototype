@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client';
 import { GlobalHeader } from '@/components/global-header';
 import { Search, SlidersHorizontal, ArrowDownUp, ShoppingCart, Zap } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { WishlistButton } from '@/components/wishlist-button';
 
 interface Watch {
   id: string;
@@ -247,6 +248,11 @@ export default function ProductsPage() {
                           </span>
                         )}
                       </div>
+                    </div>
+
+                    {/* Wishlist Button Overlay */}
+                    <div className="absolute top-2 right-2 z-20">
+                      <WishlistButton productId={watch.id} iconSize={18} className="bg-background/50 backdrop-blur-sm border border-border/50 hover:bg-background/80" />
                     </div>
                   </div>
                 </Link>
