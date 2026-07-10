@@ -89,18 +89,40 @@ export default function ProductPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-6"
+            className="space-y-4 md:space-y-6"
           >
-            <div className="bg-[#111] border border-border aspect-square relative group overflow-hidden flex items-center justify-center p-12">
-              <SmartImage 
-                src={watch.image} 
-                alt={watch.name} 
-                fill
-                fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'vintage'}
-                className="object-contain p-12 group-hover:scale-110 transition-transform duration-700" 
-              />
+            {/* Mobile Carousel & Desktop Main Image */}
+            <div className="flex md:block overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 gap-4 md:gap-0">
+              {/* Main Image */}
+              <div className="w-full flex-shrink-0 snap-center md:mb-6">
+                <div className="bg-[#111] border border-border aspect-square relative group overflow-hidden flex items-center justify-center p-8 md:p-12">
+                  <SmartImage 
+                    src={watch.image} 
+                    alt={watch.name} 
+                    fill
+                    fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'vintage'}
+                    className="object-contain p-8 md:p-12 group-hover:scale-110 transition-transform duration-700" 
+                  />
+                </div>
+              </div>
+              
+              {/* Image 2 (Wrist Shot) */}
+              <div className="w-full flex-shrink-0 snap-center md:hidden">
+                <div className="bg-[#111] border border-border aspect-square relative group overflow-hidden flex items-center justify-center">
+                  <Image src="/wrist-shot.png" alt="On Wrist" fill className="object-cover opacity-80" />
+                </div>
+              </div>
+
+              {/* Image 3 (Details) */}
+              <div className="w-full flex-shrink-0 snap-center md:hidden">
+                <div className="bg-[#111] border border-border aspect-square relative group overflow-hidden flex items-center justify-center">
+                  <Image src="/hero-watch.png" alt="Details" fill className="object-cover opacity-80" />
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+
+            {/* Desktop Thumbnails */}
+            <div className="hidden md:grid grid-cols-3 gap-4">
                <div className="bg-[#111] border border-border aspect-square relative cursor-pointer hover:border-primary/50 transition-colors">
                   <SmartImage src={watch.image} alt={watch.name} fill fallbackType="luxury" className="object-contain p-4" />
                </div>
@@ -110,6 +132,13 @@ export default function ProductPage() {
                <div className="bg-[#111] border border-border aspect-square relative cursor-pointer hover:border-primary/50 transition-colors flex items-center justify-center group">
                  <div className="text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Play Video</div>
                </div>
+            </div>
+
+            {/* Mobile Swipe Indicator (Decorative) */}
+            <div className="md:hidden flex justify-center gap-2 pt-2">
+              <div className="w-8 h-1 rounded-full bg-primary"></div>
+              <div className="w-2 h-1 rounded-full bg-zinc-800"></div>
+              <div className="w-2 h-1 rounded-full bg-zinc-800"></div>
             </div>
           </motion.div>
 

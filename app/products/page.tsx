@@ -7,7 +7,7 @@ import { SmartImage } from '@/components/ui/smart-image';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { GlobalHeader } from '@/components/global-header';
-import { Search, SlidersHorizontal, ArrowDownUp, ShoppingCart, Zap } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowDownUp, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { WishlistButton } from '@/components/wishlist-button';
 
@@ -263,7 +263,6 @@ export default function ProductsPage() {
                     onClick={(e) => handleBuyNow(e, watch)}
                     className="flex items-center justify-center gap-1.5 py-2.5 text-[10px] uppercase tracking-widest font-semibold bg-primary text-background hover:bg-primary/85 transition-colors"
                   >
-                    <Zap size={10} />
                     Buy Now
                   </button>
                   <button

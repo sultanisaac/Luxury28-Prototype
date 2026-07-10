@@ -77,6 +77,18 @@ export function GlobalHeader() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   if (isDashboardRoute) return null;
 
   const isHome = pathname === '/';
@@ -135,7 +147,7 @@ export function GlobalHeader() {
                 )}
                 
                 {user ? (
-                  <div className="flex items-center gap-2">
+                  <div className="hidden md:flex items-center gap-2">
                     <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 sm:px-6 h-9 text-xs uppercase tracking-widest flex items-center gap-2" asChild>
                       <Link href="/dashboard-redirect">
                         <User size={16} /> Profile
@@ -148,7 +160,7 @@ export function GlobalHeader() {
                     </form>
                   </div>
                 ) : (
-                  <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 sm:px-6 h-9 text-xs uppercase tracking-widest" asChild>
+                  <Button variant="outline" className="hidden md:inline-flex border-primary text-primary hover:bg-primary hover:text-background rounded-none px-4 sm:px-6 h-9 text-xs uppercase tracking-widest" asChild>
                     <Link href="/login">Join Us</Link>
                   </Button>
                 )}
@@ -158,7 +170,7 @@ export function GlobalHeader() {
             {/* Mobile Menu Toggle */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-primary p-2 focus:outline-none"
+              className="md:hidden text-primary p-2 focus:outline-none relative z-50"
             >
               <div className="space-y-1.5">
                 <motion.span 
@@ -182,10 +194,11 @@ export function GlobalHeader() {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: "-100%" }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-20 left-0 w-full bg-background/98 backdrop-blur-xl border-b border-border z-40 md:hidden p-8 flex flex-col items-center gap-8 shadow-2xl"
+              exit={{ opacity: 0, y: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.6 }}
+              className="fixed inset-0 top-0 h-[100dvh] w-full bg-background/98 backdrop-blur-3xl z-40 md:hidden pt-20 flex flex-col items-center justify-center gap-8"
             >
               {navLinks.map((link) => (
                 <Link 
