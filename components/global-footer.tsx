@@ -34,7 +34,7 @@ export function GlobalFooter() {
             <h5 className="uppercase tracking-widest text-sm mb-6 text-white">Navigation</h5>
             <ul className="space-y-4 text-muted-foreground text-sm font-light">
               <li><Link href="/products" className="hover:text-primary transition-colors">Products</Link></li>
-              <li><Link href="/#trust" className="hover:text-primary transition-colors">Our Standard</Link></li>
+              <li><a href="/#trust" className="hover:text-primary transition-colors">Our Standard</a></li>
               <li><Link href="/#faq" className="hover:text-primary transition-colors">Before Investing</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Support</Link></li>
             </ul>
