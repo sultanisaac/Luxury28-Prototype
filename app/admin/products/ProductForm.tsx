@@ -30,7 +30,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
     description: '',
     price: 0,
     price_idr: 0,
-    stock_quantity: 0,
+    stock_quantity: 1,
     category_id: '',
     status: 'active',
     images: [] as string[]
@@ -43,7 +43,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
         description: product.description || '',
         price: Number(product.price) || 0,
         price_idr: Number(product.price_idr) || 0,
-        stock_quantity: product.stock_quantity || 0,
+        stock_quantity: product.stock_quantity !== undefined ? product.stock_quantity : 1,
         category_id: product.category_id || '',
         status: product.status || 'active',
         images: product.images || []
@@ -68,7 +68,7 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
             description: '',
             price: 0,
             price_idr: 0,
-            stock_quantity: 0,
+            stock_quantity: 1,
             category_id: '',
             status: 'active',
             images: []
@@ -215,14 +215,33 @@ export default function ProductForm({ categories, product, trigger }: ProductFor
             </div>
 
             <div className="space-y-2">
+              <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Stock Status</label>
+              <select 
+                value={formData.stock_quantity > 0 ? 'in_stock' : 'out_of_stock'}
+                onChange={(e) => {
+                  if (e.target.value === 'out_of_stock') {
+                    setFormData({ ...formData, stock_quantity: 0 })
+                  } else if (formData.stock_quantity === 0) {
+                    setFormData({ ...formData, stock_quantity: 1 })
+                  }
+                }}
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-500/50 transition-all"
+              >
+                <option value="in_stock">In Stock</option>
+                <option value="out_of_stock">Out of Stock</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Stock Quantity</label>
               <input 
                 required
-                type="number" 
+                type="number"
+                min="0"
                 placeholder="0"
                 value={formData.stock_quantity}
                 onChange={(e) => setFormData({ ...formData, stock_quantity: Number(e.target.value) })}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-400/50 transition-all"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-500/50 transition-all"
               />
             </div>
           </div>

@@ -135,26 +135,26 @@ export default function Home() {
             <div className="w-16 h-1 bg-primary mx-auto"></div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8 mb-16">
             {featuredWatches.map((watch) => (
               <Link href={`/product/${watch.id}`} key={watch.id} className="group cursor-pointer">
-                <div className="bg-card p-6 border border-border transition-all duration-500 hover:border-primary/50 relative overflow-hidden h-[400px] flex flex-col justify-end">
-                  <div className="absolute inset-0 p-8 flex items-center justify-center">
+                <div className="bg-card p-2.5 sm:p-6 border border-border transition-all duration-500 hover:border-primary/50 relative overflow-hidden h-[250px] sm:h-[400px] flex flex-col justify-end">
+                  <div className="absolute inset-0 p-4 sm:p-8 flex items-center justify-center">
                     <SmartImage 
                       src={watch.image} 
                       alt={watch.name} 
-                      width={250} 
-                      height={250} 
-                      fallbackType="luxury"
-                      className="object-contain group-hover:scale-110 transition-transform duration-700" 
+                      width={300} 
+                      height={300} 
+                      fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'modern'}
+                      className="object-contain transform group-hover:scale-110 transition-transform duration-700" 
                     />
                   </div>
-                  <div className="relative z-10 bg-background/90 backdrop-blur p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="font-serif text-lg mb-1 truncate">{watch.name}</h3>
-                    <p className="text-primary font-medium tracking-wider">${watch.price.toLocaleString()}</p>
-                    <div className="mt-4 flex items-center text-xs uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
-                      <span>Lihat Detail</span>
-                      <span className="ml-2">→</span>
+                  <div className="relative z-10 bg-background/90 backdrop-blur p-2.5 sm:p-4 transform translate-y-0 sm:translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <h3 className="font-serif text-xs sm:text-lg mb-0.5 sm:mb-1 truncate">{watch.name}</h3>
+                    <p className="text-primary text-[10px] sm:text-base font-medium tracking-wider">${watch.price.toLocaleString()}</p>
+                    <div className={`mt-2 sm:mt-4 flex items-center text-[8px] sm:text-xs uppercase tracking-widest transition-colors ${watch.stock === 0 ? 'text-red-500/80 font-bold' : 'text-muted-foreground group-hover:text-foreground'}`}>
+                      <span>{watch.stock === 0 ? 'Out of Stock' : 'Lihat Detail'}</span>
+                      {watch.stock > 0 && <span className="ml-1 sm:ml-2">→</span>}
                     </div>
                   </div>
                 </div>

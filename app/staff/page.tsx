@@ -6,14 +6,14 @@ export default async function StaffOverviewPage() {
 
   const [ordersRes, productsRes, inquiriesRes, logsRes] = await Promise.all([
     supabase.from('orders').select('status'),
-    supabase.from('products').select('stock_quantity').lt('stock_quantity', 5),
+    supabase.from('products').select('stock_quantity').eq('stock_quantity', 0),
     supabase.from('contact_inquiries').select('status').eq('status', 'unread'),
     supabase.from('audit_logs').select('action_type, resource, created_at').order('created_at', { ascending: false }).limit(5)
   ])
 
   const pendingOrders = ordersRes.data?.filter(o => o.status === 'Pending').length || 0
   const ordersToShip = ordersRes.data?.filter(o => o.status === 'Packaging' || o.status === 'Processing').length || 0
-  const lowStockCount = productsRes.data?.length || 0
+  const outOfStockCount = productsRes.data?.length || 0
   const unreadMessages = inquiriesRes.data?.length || 0
   const recentLogs = logsRes.data || []
 
@@ -26,7 +26,7 @@ export default async function StaffOverviewPage() {
       <StaffOverviewClient
         initialPendingOrders={pendingOrders}
         initialOrdersToShip={ordersToShip}
-        initialLowStockCount={lowStockCount}
+        initialOutOfStockCount={outOfStockCount}
         initialUnreadMessages={unreadMessages}
         initialRecentLogs={recentLogs}
       />

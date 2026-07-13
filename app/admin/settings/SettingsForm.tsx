@@ -407,19 +407,20 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
             {activeTab === 'Notifications' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Low Inventory Threshold</label>
-                  <input 
-                    type="number" 
-                    disabled={isLocked}
-                    value={notificationsRule.low_inventory || 5}
-                    onChange={(e) => setNotificationsRule({ ...notificationsRule, low_inventory: parseInt(e.target.value) })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-amber-500/50 transition-all text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-                  />
-                  <p className="text-[10px] text-zinc-600">Triggers an alert when product stock drops below this number.</p>
-                </div>
-
                 <div className="space-y-4 md:col-span-2 pt-4 border-t border-zinc-800">
+                  <div className="flex items-center justify-between bg-zinc-950 p-4 border border-zinc-800/80 rounded-xl">
+                    <div>
+                      <span className="text-sm font-bold text-white block">Out of Stock Alerts</span>
+                      <span className="text-xs text-zinc-500 mt-1">Triggers an alert when a product stock status is marked as Out of Stock.</span>
+                    </div>
+                    <input 
+                      type="checkbox"
+                      disabled={isLocked}
+                      checked={!!notificationsRule.out_of_stock_alerts}
+                      onChange={(e) => setNotificationsRule({ ...notificationsRule, out_of_stock_alerts: e.target.checked })}
+                      className="w-5 h-5 accent-amber-500 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    />
+                  </div>
                   <div className="flex items-center justify-between bg-zinc-950 p-4 border border-zinc-800/80 rounded-xl">
                     <div>
                       <span className="text-sm font-bold text-white block">Email Alerts on Orders</span>
