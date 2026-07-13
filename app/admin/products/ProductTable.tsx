@@ -180,12 +180,15 @@ export default function ProductTable({ products: initialProducts, categories }: 
 
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-800/50">
                 <div className="space-y-1">
-                  <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Inventory</p>
+                  <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Stock Status</p>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-bold ${product.stock_quantity > 0 ? 'text-zinc-300' : 'text-red-500'}`}>
-                      {product.stock_quantity}
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                      product.stock_quantity > 0 
+                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+                      : 'bg-red-500/10 text-red-500 border-red-500/20'
+                    }`}>
+                      {product.stock_quantity > 0 ? `In Stock (${product.stock_quantity})` : 'Out of Stock'}
                     </span>
-                    <span className="text-[10px] text-zinc-600">units</span>
                   </div>
                 </div>
                 <div className="space-y-1 text-right">

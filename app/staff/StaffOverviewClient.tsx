@@ -8,7 +8,7 @@ import Link from 'next/link'
 interface StaffOverviewClientProps {
   initialPendingOrders: number
   initialOrdersToShip: number
-  initialLowStockCount: number
+  initialOutOfStockCount: number
   initialUnreadMessages: number
   initialRecentLogs: any[]
 }
@@ -16,13 +16,13 @@ interface StaffOverviewClientProps {
 export default function StaffOverviewClient({
   initialPendingOrders,
   initialOrdersToShip,
-  initialLowStockCount,
+  initialOutOfStockCount,
   initialUnreadMessages,
   initialRecentLogs,
 }: StaffOverviewClientProps) {
   const [pendingOrders, setPendingOrders] = useState(initialPendingOrders)
   const [ordersToShip, setOrdersToShip] = useState(initialOrdersToShip)
-  const [lowStockCount, setLowStockCount] = useState(initialLowStockCount)
+  const [outOfStockCount, setOutOfStockCount] = useState(initialOutOfStockCount)
   const [unreadMessages, setUnreadMessages] = useState(initialUnreadMessages)
   const [recentLogs, setRecentLogs] = useState(initialRecentLogs)
   const supabase = createClient()
@@ -30,13 +30,13 @@ export default function StaffOverviewClient({
   const refetchKPIs = async () => {
     const [ordersRes, productsRes, inquiriesRes, logsRes] = await Promise.all([
       supabase.from('orders').select('status'),
-      supabase.from('products').select('stock_quantity').lt('stock_quantity', 5),
+      supabase.from('products').select('stock_quantity').eq('stock_quantity', 0),
       supabase.from('contact_inquiries').select('status').eq('status', 'unread'),
       supabase.from('audit_logs').select('action_type, resource, created_at').order('created_at', { ascending: false }).limit(5)
     ])
     setPendingOrders(ordersRes.data?.filter(o => o.status === 'Pending').length || 0)
     setOrdersToShip(ordersRes.data?.filter(o => o.status === 'Packaging' || o.status === 'Processing').length || 0)
-    setLowStockCount(productsRes.data?.length || 0)
+    setOutOfStockCount(productsRes.data?.length || 0)
     setUnreadMessages(inquiriesRes.data?.length || 0)
     setRecentLogs(logsRes.data || [])
   }
@@ -69,7 +69,7 @@ export default function StaffOverviewClient({
   const stats = [
     { label: 'Pending Orders', value: pendingOrders, icon: Clock, color: 'text-blue-400', link: '/staff/orders' },
     { label: 'To Ship Today', value: ordersToShip, icon: ShoppingCart, color: 'text-amber-500', link: '/staff/orders' },
-    { label: 'Low Stock Alerts', value: lowStockCount, icon: AlertTriangle, color: 'text-red-400', link: '/staff/products' },
+    { label: 'Out of Stock Alerts', value: outOfStockCount, icon: AlertTriangle, color: 'text-red-400', link: '/staff/products' },
     { label: 'Unread Messages', value: unreadMessages, icon: MessageSquare, color: 'text-emerald-400', link: '/staff/support' },
   ]
 

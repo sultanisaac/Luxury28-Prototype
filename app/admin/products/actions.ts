@@ -62,3 +62,17 @@ export async function toggleProductStatus(id: string, status: string) {
   revalidatePath('/admin/products')
   return { success: true }
 }
+
+export async function toggleStockStatus(id: string, currentStock: number) {
+  const supabase = await createClient()
+  const newStock = currentStock > 0 ? 0 : 1
+  const { error } = await supabase
+    .from('products')
+    .update({ stock_quantity: newStock })
+    .eq('id', id)
+
+  if (error) return { success: false, error: error.message }
+  
+  revalidatePath('/admin/products')
+  return { success: true }
+}

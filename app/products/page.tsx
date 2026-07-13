@@ -7,7 +7,7 @@ import { SmartImage } from '@/components/ui/smart-image';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { GlobalHeader } from '@/components/global-header';
-import { Search, SlidersHorizontal, ArrowDownUp, ShoppingCart } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowDownUp, ShoppingCart, Check } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { WishlistButton } from '@/components/wishlist-button';
 
@@ -208,73 +208,75 @@ export default function ProductsPage() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="aspect-[3/4] bg-card animate-pulse border border-border" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8">
             {filteredProducts.map((watch, index) => (
               <motion.div
                 key={watch.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="group"
+                className="group bg-card border border-border hover:border-primary/50 transition-all duration-500 overflow-hidden flex flex-col"
               >
                 {/* Card image — navigates to product */}
-                <Link href={`/product/${watch.id}`} className="block">
-                  <div className="bg-card border border-border group-hover:border-primary/50 transition-all duration-500 overflow-hidden relative aspect-[3/4] flex flex-col justify-end">
-                    <div className="absolute inset-0 p-8 flex items-center justify-center">
-                      <SmartImage
-                        src={watch.image}
-                        alt={watch.name}
-                        width={300}
-                        height={300}
-                        fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'modern'}
-                        className="object-contain group-hover:scale-110 transition-transform duration-700"
-                      />
-                    </div>
+                <Link href={`/product/${watch.id}`} className="block relative aspect-[3/4] flex flex-col justify-end overflow-hidden">
+                  <div className="absolute inset-0 p-4 sm:p-8 flex items-center justify-center">
+                    <SmartImage
+                      src={watch.image}
+                      alt={watch.name}
+                      width={300}
+                      height={300}
+                      fallbackType={watch.tier === 'Ultra Luxury' ? 'luxury' : 'modern'}
+                      className="object-contain group-hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
 
-                    <div className="relative z-10 bg-background/90 backdrop-blur p-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <div className="text-[10px] text-primary uppercase tracking-[0.2em] mb-1">{watch.tier}</div>
-                      <h3 className="font-serif text-lg mb-1 truncate">{watch.name}</h3>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-white font-medium tracking-wider">${watch.price.toLocaleString()}</span>
-                        {watch.price_idr && (
-                          <span className="text-[10px] text-muted-foreground tracking-widest uppercase">
-                            Rp {watch.price_idr.toLocaleString('id-ID')}
-                          </span>
-                        )}
-                      </div>
+                  <div className="relative z-10 bg-background/90 backdrop-blur p-2.5 sm:p-4 translate-y-0 sm:translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <div className="text-[8px] sm:text-[10px] text-primary uppercase tracking-[0.2em] mb-0.5 sm:mb-1">{watch.tier}</div>
+                    <h3 className="font-serif text-sm sm:text-lg mb-0.5 sm:mb-1 truncate">{watch.name}</h3>
+                    <div className="flex flex-col gap-0.5">
+                      {watch.price_idr && (
+                        <span className="text-[10px] sm:text-xs text-muted-foreground tracking-widest uppercase">
+                          Rp {watch.price_idr.toLocaleString('id-ID')}
+                        </span>
+                      )}
                     </div>
+                  </div>
 
-                    {/* Wishlist Button Overlay */}
-                    <div className="absolute top-2 right-2 z-20">
-                      <WishlistButton productId={watch.id} iconSize={18} className="bg-background/50 backdrop-blur-sm border border-border/50 hover:bg-background/80" />
-                    </div>
+                  {/* Wishlist Button Overlay */}
+                  <div className="absolute top-2 right-2 z-20" onClick={(e) => e.preventDefault()}>
+                    <WishlistButton productId={watch.id} iconSize={16} className="bg-background/50 backdrop-blur-sm border border-border/50 hover:bg-background/80" />
                   </div>
                 </Link>
 
-                {/* Action Buttons — below card */}
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                {/* Action Buttons — integrated into the card */}
+                <div className="grid grid-cols-2 mt-auto border-t border-border bg-background">
+                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 py-2 sm:py-3 text-[10px] sm:text-sm tracking-widest font-medium text-white border-r border-border">
+                    ${watch.price.toLocaleString()}
+                  </div>
                   <button
-                    onClick={(e) => handleBuyNow(e, watch)}
-                    className="flex items-center justify-center gap-1.5 py-2.5 text-[10px] uppercase tracking-widest font-semibold bg-primary text-background hover:bg-primary/85 transition-colors"
-                  >
-                    Buy Now
-                  </button>
-                  <button
-                    onClick={(e) => handleAddToCart(e, watch)}
-                    className={`flex items-center justify-center gap-1.5 py-2.5 text-[10px] uppercase tracking-widest font-medium border transition-all duration-200 ${
-                      addedId === watch.id
-                        ? 'border-primary bg-primary text-background'
-                        : 'border-border text-muted-foreground hover:border-primary/60 hover:text-white hover:bg-zinc-800/60'
+                    onClick={(e) => watch.stock > 0 && handleAddToCart(e, watch)}
+                    disabled={watch.stock === 0}
+                    className={`flex items-center justify-center py-2 sm:py-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      addedId === watch.id && watch.stock > 0
+                        ? 'bg-primary text-background'
+                        : watch.stock > 0 
+                          ? 'text-muted-foreground hover:text-primary hover:bg-zinc-900/50'
+                          : 'text-zinc-600 bg-zinc-900/50'
                     }`}
                   >
-                    <ShoppingCart size={10} />
-                    {addedId === watch.id ? 'Added!' : 'Add to Cart'}
+                    {watch.stock === 0 ? (
+                      <span className="text-[10px] tracking-widest uppercase">Out of Stock</span>
+                    ) : addedId === watch.id ? (
+                      <Check size={16} />
+                    ) : (
+                      <ShoppingCart size={16} />
+                    )}
                   </button>
                 </div>
               </motion.div>

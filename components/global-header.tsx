@@ -106,8 +106,32 @@ export function GlobalHeader() {
   return (
     <>
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${headerBg}`}>
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between md:justify-between">
+          
+          {/* Mobile Menu Toggle - Left on Mobile */}
+          <div className="flex md:hidden flex-1 justify-start">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-primary p-2 -ml-2 focus:outline-none relative z-50"
+            >
+              <div className="space-y-1.5">
+                <motion.span 
+                  animate={isMobileMenuOpen ? { rotate: 45, y: 7.5 } : { rotate: 0, y: 0 }}
+                  className="block w-6 h-0.5 bg-current transition-transform"
+                />
+                <motion.span 
+                  animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+                  className="block w-6 h-0.5 bg-current"
+                />
+                <motion.span 
+                  animate={isMobileMenuOpen ? { rotate: -45, y: -7.5 } : { rotate: 0, y: 0 }}
+                  className="block w-6 h-0.5 bg-current transition-transform"
+                />
+              </div>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4 flex-1 md:flex-none justify-center md:justify-start">
             <Logo />
             {(process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development') && (
               <div className="hidden md:flex items-center gap-1.5 bg-amber-500/10 text-amber-500 text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]">
@@ -117,7 +141,7 @@ export function GlobalHeader() {
             )}
           </div>
           
-          <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest text-muted-foreground">
+          <div className="hidden md:flex items-center justify-center flex-1 gap-8 text-sm uppercase tracking-widest text-muted-foreground">
             {navLinks.map((link) => (
               <Link key={link.name} href={link.href} className="hover:text-primary transition-colors">
                 {link.name}
@@ -125,7 +149,7 @@ export function GlobalHeader() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-1 md:flex-none justify-end">
             {!loading && (
               <div className="flex items-center gap-1 sm:gap-4">
                 {showCart && (
@@ -166,27 +190,6 @@ export function GlobalHeader() {
                 )}
               </div>
             )}
-
-            {/* Mobile Menu Toggle */}
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-primary p-2 focus:outline-none relative z-50"
-            >
-              <div className="space-y-1.5">
-                <motion.span 
-                  animate={isMobileMenuOpen ? { rotate: 45, y: 7.5 } : { rotate: 0, y: 0 }}
-                  className="block w-6 h-0.5 bg-current transition-transform"
-                />
-                <motion.span 
-                  animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-                  className="block w-6 h-0.5 bg-current"
-                />
-                <motion.span 
-                  animate={isMobileMenuOpen ? { rotate: -45, y: -7.5 } : { rotate: 0, y: 0 }}
-                  className="block w-6 h-0.5 bg-current transition-transform"
-                />
-              </div>
-            </button>
           </div>
         </div>
 
@@ -204,6 +207,7 @@ export function GlobalHeader() {
                 <Link 
                   key={link.name} 
                   href={link.href} 
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="text-lg uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.name}
@@ -214,6 +218,7 @@ export function GlobalHeader() {
                 <div className="flex flex-col items-center gap-6 w-full">
                   <Link 
                     href="/dashboard-redirect"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="text-lg uppercase tracking-[0.3em] text-primary font-semibold flex items-center gap-2 transition-colors hover:text-primary/80"
                   >
                     <User size={18} /> Profile
@@ -227,6 +232,7 @@ export function GlobalHeader() {
               ) : (
                 <Link 
                   href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="text-lg uppercase tracking-[0.3em] text-primary font-semibold transition-colors hover:text-primary/80"
                 >
                   Join Us

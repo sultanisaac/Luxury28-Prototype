@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { SmartImage } from '@/components/ui/smart-image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Truck, ArrowLeft, Lock } from 'lucide-react';
+import { ShieldCheck, Truck, ArrowLeft, Lock, Plus, Minus } from 'lucide-react';
 import { watches } from '@/lib/watches';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
@@ -24,6 +24,8 @@ export default function ProductPage() {
   const { id } = useParams();
   const [watch, setWatch] = useState<Watch | null>(null);
   const [loading, setLoading] = useState(true);
+  const [added, setAdded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const supabase = createClient();
@@ -68,8 +70,12 @@ export default function ProductPage() {
   }
 
   const handleAddToCart = () => {
-    addItem(watch);
-    alert(`${watch.name} added to cart!`);
+    addItem(watch, quantity);
+    setAdded(true);
+    setTimeout(() => {
+      setAdded(false);
+      setQuantity(1);
+    }, 2000);
   };
 
   return (
@@ -177,22 +183,40 @@ export default function ProductPage() {
             )}
 
             <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-3 text-sm font-medium inline-block mb-10">
-              Only {watch.stock} left — Limited collector's edition
+              Limited collector's edition
             </div>
 
-            <div className="space-y-4 mb-12">
+            <div className="flex gap-4 mb-12">
+              <div className="flex items-center border border-border h-16 w-32 justify-between px-4 text-lg bg-zinc-900/30">
+                <button 
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:hover:text-muted-foreground"
+                  disabled={quantity <= 1 || watch.stock === 0}
+                >
+                  <Minus size={18} />
+                </button>
+                <span className="font-medium text-white">{quantity}</span>
+                <button 
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:hover:text-muted-foreground"
+                  disabled={watch.stock === 0}
+                >
+                  <Plus size={18} />
+                </button>
+              </div>
               <Button
-                onClick={() => router.push(`/checkout?productId=${watch.id}`)}
-                className="w-full bg-primary text-background hover:bg-primary/90 rounded-none h-16 text-lg uppercase tracking-widest"
-              >
-                Buy Now
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full rounded-none h-16 text-lg uppercase tracking-widest border-border hover:bg-white hover:text-background"
+                variant={added ? "default" : "outline"}
+                disabled={watch.stock === 0}
+                className={`flex-1 rounded-none h-16 text-lg uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed ${
+                  added && watch.stock > 0
+                    ? 'bg-primary text-background hover:bg-primary/90 border-transparent' 
+                    : watch.stock > 0 
+                      ? 'border-border hover:bg-white hover:text-background'
+                      : 'border-zinc-800 text-zinc-600 bg-zinc-900/50'
+                }`}
                 onClick={handleAddToCart}
               >
-                Add to Cart
+                {watch.stock === 0 ? 'Out of Stock' : (added ? 'Added to Cart ✓' : 'Add to Cart')}
               </Button>
             </div>
 

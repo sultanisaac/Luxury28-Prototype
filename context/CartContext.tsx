@@ -14,7 +14,7 @@ export type CartItem = {
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (product: any) => void;
+  addItem: (product: any, quantity?: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -45,12 +45,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('luxury28_cart', JSON.stringify(items));
   }, [items]);
 
-  const addItem = (product: any) => {
+  const addItem = (product: any, quantity: number = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
       return [
@@ -62,7 +62,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           price_idr: product.price_idr ? Number(product.price_idr) : undefined,
           image: product.images?.[0] || product.image,
           category: product.tier || product.category,
-          quantity: 1,
+          quantity: quantity,
         },
       ];
     });

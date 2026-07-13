@@ -91,3 +91,28 @@ export async function toggleProductStatus(id: string, status: string) {
   revalidatePath('/staff/products')
   return { success: true }
 }
+
+export async function toggleStockStatus(id: string, currentStock: number) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const newStock = currentStock > 0 ? 0 : 1
+  const { error } = await supabase
+    .from('products')
+    .update({ stock_quantity: newStock })
+    .eq('id', id)
+
+  if (error) return { success: false, error: error.message }
+  
+  if (user) {
+    await supabase.from('audit_logs').insert([{
+      user_id: user.id,
+      role: 'staff',
+      action_type: 'TOGGLE_STOCK_STATUS',
+      resource: `Product ID: ${id} stock to ${newStock}`
+    }])
+  }
+
+  revalidatePath('/staff/products')
+  return { success: true }
+}
