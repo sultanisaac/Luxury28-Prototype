@@ -1,12 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, X, Users, Copy, Check, Key } from 'lucide-react';
 
 export function PrototypeOverlay() {
   const [isOpen, setIsOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Show in development by default, or if explicitly enabled via environment variable
   const isPrototype = process.env.NEXT_PUBLIC_IS_PROTOTYPE === 'true' || process.env.NODE_ENV === 'development';
@@ -48,7 +64,7 @@ export function PrototypeOverlay() {
 
 
       {/* Floating Accounts Widget */}
-      <div className="fixed bottom-4 right-4 z-[100] font-sans">
+      <div ref={overlayRef} className="fixed bottom-4 right-4 z-[100] font-sans">
         <AnimatePresence>
           {isOpen && (
             <motion.div
